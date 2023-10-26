@@ -1,0 +1,34 @@
+{
+  "name": "server",
+  "version": "0.0.1",
+  "description": "Mandatory 2 server",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/norskemarcus/Mandatory_2.git"
+  },
+  "keywords": [
+    "fullstack",
+    "javascript",
+    "node.js",
+    "svelte",
+    "express",
+    "toast",
+    "nodemailer"
+  ],
+  "author": "Marcus Holje",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/norskemarcus/Mandatory_2/issues"
+  },
+  "homepage": "https://github.com/norskemarcus/Mandatory_2#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.2",
+    "nodemailer": "^6.9.7"
+  }
+}
