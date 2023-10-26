@@ -11,6 +11,7 @@
 
   let name = '';
   let email = '';
+  let subject = '';
   let message = '';
 
   
@@ -20,7 +21,7 @@
       toastr.info('Please fill in all fields');
     } else {
    
-      await handleSubmit(name, email, message);
+      await handleSubmit(name, email, subject, message);
     }
   }
 
@@ -35,12 +36,13 @@
 
       <label for="email">Email</label>
       <input id="email" type="email" name="email" bind:value={email}>
-      <!--value="example@gmail.com" -->
-
+    
+      <label for="subject">Subject</label>
+      <input id="subject" type="subject" name="subject" bind:value={subject}>
+    
       <label for="message">Message</label>
       <textarea class="message" id="message" name="message" cols="100" rows="10" bind:value={message} placeholder="I wonder why..."></textarea>
-      <!-- bind:value={message} -->
-
+      
       <div class="profile-buttons">
         <button type="submit">Send</button>
         <button>Cancel</button>

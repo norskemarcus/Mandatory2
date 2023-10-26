@@ -1,11 +1,14 @@
-import nodemailer from 'nodemailer';
+import nodemailer from 'nodemailer'; // npm install nodemailer
+import dotenv from 'dotenv'; // npm install dotenv
+
 
 const transporter = nodemailer.createTransport({
-  service: 'YourEmailServiceProvider', // e.g., 'Gmail', 'Yahoo', etc.
+  host: 'smtp.ethereal.email',
+  port: 587,
   auth: {
-    user: 'your_email@gmail.com', // Your email address
-    pass: 'your_email_password', // Your email password or an app-specific password
-  },
+      user: 'mary.kuphal81@ethereal.email',
+      pass: 'YeCHNKbHt6x7jwHwXj'
+  }
 });
 
 const mailOptions = {

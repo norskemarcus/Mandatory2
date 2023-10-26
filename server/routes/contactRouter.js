@@ -1,18 +1,50 @@
-
 import Router from "express";
+import nodemailer from 'nodemailer'; // npm install nodemailer
+import dotenv from 'dotenv'; // npm install dotenv
+
 const router = Router();
 
-// Create an array to simulate a database
 const database = [];
 
-router.post('/api/submit', (req, res) => {
-  const { name, email, message } = req.body;
-  database.push({ name, email, message });
+dotenv.config(); 
 
-  // TODO: Use Nodemailer to send the email
+const emailHost = process.env.EMAIL_HOST;
+const emailPort = process.env.EMAIL_PORT;
+const emailUser = process.env.EMAIL_USER;
+const emailPassword = process.env.EMAIL_PASSWORD;
 
-  // Handle the response and send back a confirmation to the client
-  res.send({ success: true, message: 'Email sent successfully.' });
+
+const transporter = nodemailer.createTransport({
+  host: emailHost,
+  port: emailPort,
+  auth: {
+    user: emailUser,
+    pass: emailPassword,
+  }
+});
+
+router.post('/api/submit', async (req, res) => {
+ 
+  try {
+    const { name, email, subject, message } = req.body;
+    database.push({ name, email, message });
+  
+
+    const info = await transporter.sendMail({
+      from: '"Fred Foo 👻" <foo@example.com>', // sender address
+      // from: `${name} <${process.env.EMAIL_USER}>`, // sender address
+      to: email, // list of receivers,
+      subject: subject, 
+      html: message, 
+    });
+  
+    console.log("Message sent: %s", info.messageId);
+    res.send({ success: true, message: 'Email sent successfully.' });
+   
+  } catch (error){
+    console.error('Error:', error);
+    res.status(500).json({ success: false, message: 'Failed to send email.' });
+  }
 });
 
 
