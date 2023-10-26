@@ -2,14 +2,25 @@
 import Router from "express";
 const router = Router();
 
-router.post('/api/submit', (req, res) => {
-  // Extract form data from req.body
-  const { name, email, message } = req.body;
+// Create an array to simulate a database
+const database = [];
 
-  // Use Nodemailer to send the email
+router.post('/api/submit', (req, res) => {
+  const { name, email, message } = req.body;
+  database.push({ name, email, message });
+
+  // TODO: Use Nodemailer to send the email
 
   // Handle the response and send back a confirmation to the client
-  res.json({ success: true, message: 'Email sent successfully.' });
+  res.send({ success: true, message: 'Email sent successfully.' });
 });
+
+
+// Add an additional route to retrieve the saved data
+router.get('/api/data', (req, res) => {
+  res.send(database);
+});
+
+
 
 export default router;

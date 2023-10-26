@@ -4,9 +4,11 @@
 </style>
 
 <script>
-  import axios from '../../axios';
+  import axios from 'axios';
   import { handleSubmit } from './contact.js'; 
-  import { toast } from '@sveltejs/vite-plugin-svelte'; // npm install svelte-toast
+  import toastr from 'toastr';
+  import 'toastr/build/toastr.css';
+
   let name = '';
   let email = '';
   let message = '';
@@ -15,9 +17,7 @@
   async function submitForm() {
     if (!name || !email || !message) {
    
-      toast.push('Please fill in all fields', {
-        theme: 'error',
-      });
+      toastr.info('Please fill in all fields');
     } else {
    
       await handleSubmit(name, email, message);
