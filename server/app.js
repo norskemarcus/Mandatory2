@@ -1,9 +1,16 @@
 import express from 'express';
 import { rateLimit } from 'express-rate-limit'
+import session from 'express-session';
+import dotenv from 'dotenv';
+
+// npm install express express-session cookie-parser
 
 const app = express();
 
+dotenv.config(); 
+
 app.use(express.json());
+app.use(express.urlencoded({extended: false})); // parsing incoming HTTP request bodies when the data is submitted as form data in the x-www-form-urlencoded format.
 
 // npm i express-rate-limit
 const allRoutesRateLimiter = rateLimit({
@@ -27,6 +34,19 @@ const authRateLimiter = rateLimit({
 app.use(allRoutesRateLimiter) // asynkron funktion som er middleware
 app.use("/auth", authRateLimiter);
 
+
+
+import authRouter from './routes/authRouter.js'
+app.use(authRouter);
+
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 
 import mainRouter from './routes/mainRouter.js';

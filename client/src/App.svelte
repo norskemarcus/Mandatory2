@@ -4,9 +4,10 @@
   import Home from "./pages/Home/Home.svelte"
   import Contact from "./pages/Contact/Contact.svelte";
   import Login from "./pages/Login/Login.svelte";
-  import Test from "./pages/Example/Test.svelte";
+  import Test from "./pages/Example/SecretPage.svelte";
   import PrivateRouteGuard from "./PrivateRouteGuard.svelte";
   import PrivateRoute from "./PrivateRoute.svelte";
+  import SecretPage from "./pages/Example/SecretPage.svelte";
 
 
   // OBS use this one when security is implemented!!
@@ -14,9 +15,9 @@
 
   let user = { loggedIn: true };
 
-	// function handleLogout() {
-	// 	$user = null;
-	// }
+	function handleLogout() {
+		//$user = null;
+	}
 
 
   function toggle() {
@@ -29,7 +30,8 @@
   <nav>
     <Link to="/">Home</Link>
     <Link to="/contact">Contact us</Link>
-    <!-- <Link to="/examples">Useful functions</Link> -->
+    <Link to="/secretPage">Secret Page</Link>
+   
    
 
     {#if user.loggedIn}
@@ -44,10 +46,10 @@
     <Route path="/" component={Home}></Route>
     <Route path="/contact" component={Contact}></Route>
 
-    <!-- <PrivateRoute path="profile let:location"> -->
-      <!-- <Route path="/examples" component={Test}></Route> -->
-      <!-- <button on:click={handleLogout}>Logout</button> -->
-    <!-- </PrivateRoute> -->
+    <PrivateRoute path="profile let:location"> 
+      <Route path="/secretPage" component={SecretPage}></Route>
+      <button on:click={handleLogout}>Logout</button>
+    </PrivateRoute>
   
     <Route path="/login" component={Login}></Route>
   </div>

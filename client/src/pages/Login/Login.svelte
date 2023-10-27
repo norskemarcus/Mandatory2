@@ -29,12 +29,13 @@
 </style>
 
 <!-- form on:submit={handleSubmit} -->
-<form action="/login" method="POST">
-  <label for="name">Your name</label>
-  <input id="name" name="name" placeholder="Your name" value="TestPerson" >
+<form action="/auth/login" method="POST">
 
   <label for="email">Your email</label>
-  <input id="email" type="email" name="email" placeholder="Your email" value="example@gmail.com">
+  <input id="email" type="email" name="email" placeholder="Your email" value="test@test.com">
+
+  <label for="password">Password</label>
+  <input id="password" name="password" placeholder="Password" value="test1234" >
 
   <button type="submit">Log in</button>
 </form>
