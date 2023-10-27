@@ -29,7 +29,7 @@
 
 <div class="contact-container">
   <div class="contact-info-container">
-    <form on:submit={() => handleSubmit(name, email, message)} class="contact-form" action="/api/submit" method="POST">
+    <form on:submit={() => handleSubmit(name, email, subject, message)} class="contact-form" action="/api/submit" method="POST">
       <label for="name">Your name</label>
       <input id="name" name="name" placeholder="Your name" bind:value={name}> 
       

@@ -1,7 +1,13 @@
 import axios from 'axios';
 
 
-async function handleSubmit(name, email, message) { 
+/**
+ * @param {string} name
+ * @param {string} email
+ * @param {string} subject
+ * @param {string} message
+ */
+async function handleSubmit(name, email, subject, message) { 
 
     // let name = '';
     // let email = '';
@@ -18,7 +24,8 @@ async function handleSubmit(name, email, message) {
  
   const formData =  {     
     name: name,
-    email: email,   // { name, email, message };
+    email: email, 
+    subject: subject,  
     message: message,
   };
 

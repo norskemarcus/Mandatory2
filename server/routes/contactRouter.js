@@ -1,7 +1,9 @@
 import Router from "express";
 import nodemailer from 'nodemailer'; // npm install nodemailer
-import dotenv from 'dotenv'; // npm install dotenv
+// import dotenv from 'dotenv'; // npm install dotenv, remember to install it at the same level as the .env file. In this case: server, and not root
 
+
+import dotenv from 'dotenv';
 const router = Router();
 
 const database = [];
@@ -23,11 +25,13 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+console.log(emailHost, emailPort, emailUser, emailPassword);
+
 router.post('/api/submit', async (req, res) => {
  
   try {
     const { name, email, subject, message } = req.body;
-    database.push({ name, email, message });
+    database.push({ name, email, subject, message });
   
 
     const info = await transporter.sendMail({
