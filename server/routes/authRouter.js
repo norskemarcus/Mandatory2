@@ -16,10 +16,12 @@ router.post('/auth/login', async (req, res) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // req.session.user = {
-    //   uid: user.uid,
-    //   // email: user.email,
-    //  };
+    req.session.user = {
+      uid: user.uid,
+  
+     };
+
+     console.log("req.session.user:" , req.session.user)
 
     res.send({ message: 'Authentication successful', user });
   } catch (error) {
@@ -37,11 +39,11 @@ router.post('/auth/register', async (req, res) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const newUser = userCredential.user;
 
-    // req.session.newUser = {
-    //   uid: newUser.uid,
-    // };
+    req.session.newUser = {
+      uid: newUser.uid,
+    };
 
-    //console.log("req.session.user", req.session.user);
+   
 
     res.send({ message: 'New user successfully registered', newUser });
   } catch (error) {
@@ -59,8 +61,14 @@ router.post('/auth/register', async (req, res) => {
 
 
 router.post('/auth/logout', (req, res) => {
-  req.session.user = null; 
-  res.send({ message: 'Logout successful' });
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+    } else {
+      res.send({ message: 'Logout successful' });
+    }
+  });
+
 });
 
 

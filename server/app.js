@@ -35,11 +35,6 @@ app.use(allRoutesRateLimiter) // asynkron funktion som er middleware
 app.use("/auth", authRateLimiter);
 
 
-
-import authRouter from './routes/authRouter.js'
-app.use(authRouter);
-
-
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -47,6 +42,10 @@ app.use(
     saveUninitialized: true,
   })
 );
+
+
+import authRouter from './routes/authRouter.js'
+app.use(authRouter);
 
 
 import mainRouter from './routes/mainRouter.js';
