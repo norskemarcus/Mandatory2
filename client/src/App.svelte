@@ -4,6 +4,7 @@
   import Home from "./pages/Home/Home.svelte"
   import Contact from "./pages/Contact/Contact.svelte";
   import Login from "./pages/Login/Login.svelte";
+  import Signup from "./pages/Signup/Signup.svelte";
   import Test from "./pages/Example/SecretPage.svelte";
   import PrivateRouteGuard from "./PrivateRouteGuard.svelte";
   import PrivateRoute from "./PrivateRoute.svelte";
@@ -38,6 +39,9 @@
     <button on:click={toggle}> Log out </button>
     {:else}
     <Link to="/login" class="login">Log in</Link>
+    <Link to="/signup" class="signup">Sign up</Link>
+    
+    
   {/if}
 
   </nav>
@@ -52,6 +56,7 @@
     </PrivateRoute>
   
     <Route path="/login" component={Login}></Route>
+    <Route path="/signup" component={Signup}></Route>
   </div>
 
 

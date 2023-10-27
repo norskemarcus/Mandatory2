@@ -32,7 +32,7 @@ router.post('/auth/login', async (req, res) => {
 
 
  // Create a new user
-router.post('/auth/register', async (req, res) => {
+router.post('/auth/signup', async (req, res) => {
   try {
     const { email, password } = req.body;
 

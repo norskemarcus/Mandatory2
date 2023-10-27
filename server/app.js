@@ -2,12 +2,15 @@ import express from 'express';
 import { rateLimit } from 'express-rate-limit'
 import session from 'express-session';
 import dotenv from 'dotenv';
-
+import cors from 'cors';
 // npm install express express-session cookie-parser
 
 const app = express();
 
 dotenv.config(); 
+
+// Enable CORS for all routes
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false})); // parsing incoming HTTP request bodies when the data is submitted as form data in the x-www-form-urlencoded format.

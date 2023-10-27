@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 const router = Router();
 
 const database = []; // dummy database
+
 dotenv.config(); 
 
 const emailHost = process.env.EMAIL_HOST;
