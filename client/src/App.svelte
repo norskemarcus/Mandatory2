@@ -50,10 +50,10 @@
     <Route path="/" component={Home}></Route>
     <Route path="/contact" component={Contact}></Route>
 
-    <PrivateRoute path="profile let:location"> 
+    <!-- <PrivateRoute path="profile let:location">  -->
       <Route path="/secretPage" component={SecretPage}></Route>
       <button on:click={handleLogout}>Logout</button>
-    </PrivateRoute>
+    <!-- </PrivateRoute> -->
   
     <Route path="/login" component={Login}></Route>
     <Route path="/signup" component={Signup}></Route>
