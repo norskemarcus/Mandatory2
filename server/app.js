@@ -10,7 +10,12 @@ const app = express();
 dotenv.config(); 
 
 // Enable CORS for all routes
-app.use(cors());
+// app.use(cors());
+app.use(cors ({
+  credentials: true,
+  origin: true
+})); // tillader cors for alt
+
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false})); // parsing incoming HTTP request bodies when the data is submitted as form data in the x-www-form-urlencoded format.

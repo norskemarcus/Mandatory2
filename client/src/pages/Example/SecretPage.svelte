@@ -1,14 +1,17 @@
 <script>
-  let message = "Hello, Svelte!";
+  // Ensure that you add export let user; at the beginning of your SecretPage.svelte component so that it can accept the user prop when you use it in your PrivateRoute.
+
+  export let user; // Define the user prop
+  let message = 'Hello, Svelte!';
 </script>
+
+<div>
+  <h1>{message}</h1>
+  <button on:click={() => (message = 'Hello, this is a secret page, just for logged in users!')}>Click me</button>
+</div>
 
 <style>
   h1 {
     color: #333;
   }
 </style>
-
-<div>
-  <h1>{message}</h1>
-  <button on:click={() => message = "Hello, this is a secret page, just for logged in users!"}>Click me</button>
-</div>

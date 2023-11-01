@@ -1,63 +1,72 @@
-
 <script>
-	import { Router, Link, Route } from "svelte-navigator";
-  import Home from "./pages/Home/Home.svelte"
-  import Contact from "./pages/Contact/Contact.svelte";
-  import Login from "./pages/Login/Login.svelte";
-  import Signup from "./pages/Signup/Signup.svelte";
-  import Test from "./pages/Example/SecretPage.svelte";
-  import PrivateRouteGuard from "./PrivateRouteGuard.svelte";
-  import PrivateRoute from "./PrivateRoute.svelte";
-  import SecretPage from "./pages/Example/SecretPage.svelte";
+  import { Router, Link, Route } from 'svelte-navigator';
+  import Home from './pages/Home/Home.svelte';
+  import Contact from './pages/Contact/Contact.svelte';
+  import Login from './pages/Login/Login.svelte';
+  import Signup from './pages/Signup/Signup.svelte';
+  import Test from './pages/Example/SecretPage.svelte';
+  import PrivateRouteGuard from './PrivateRouteGuard.svelte';
+  import PrivateRoute from './PrivateRoute.svelte';
+  import SecretPage from './pages/Example/SecretPage.svelte';
+  import { user } from './store/stores.js';
 
+  // get from local storage
+  let storedUserId = localStorage.getItem('userId');
 
-  // OBS use this one when security is implemented!!
-  //import { user } from "./store/stores.js";
+  // If a user ID is found, set it in the user store
+  if (storedUserId) {
+    user.set({ id: storedUserId });
+  }
 
-  let user = { loggedIn: true };
+  async function handleLogout() {
+    try {
+      const response = await fetch('http://localhost:8080/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Include credentials (cookies) in the request
+      });
 
-	function handleLogout() {
-		//$user = null;
-	}
+      if (response.ok) {
+        // update the user store
+        user.set(null);
+        storedUserId = null;
 
-
-  function toggle() {
-		user.loggedIn = !user.loggedIn;
-	}
+        // Clear the user ID from local storage
+        localStorage.removeItem('userId');
+        // window.location.href = '/';
+      } else {
+        console.error('Error logging out:', response.status);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  }
 </script>
-
 
 <Router>
   <nav>
     <Link to="/">Home</Link>
     <Link to="/contact">Contact us</Link>
     <Link to="/secretPage">Secret Page</Link>
-   
-   
 
-    {#if user.loggedIn}
-    <button on:click={toggle}> Log out </button>
+    {#if $user}
+      <button on:click={handleLogout}>Log out</button>
     {:else}
-    <Link to="/login" class="login">Log in</Link>
-    <Link to="/signup" class="signup">Sign up</Link>
-    
-    
-  {/if}
-
+      <Link to="/login" class="login">Log in</Link>
+      <Link to="/signup" class="signup">Sign up</Link>
+    {/if}
   </nav>
 
   <div class="mainRouter">
-    <Route path="/" component={Home}></Route>
-    <Route path="/contact" component={Contact}></Route>
-
-    <!-- <PrivateRoute path="profile let:location">  -->
-      <Route path="/secretPage" component={SecretPage}></Route>
-      <button on:click={handleLogout}>Logout</button>
-    <!-- </PrivateRoute> -->
-  
-    <Route path="/login" component={Login}></Route>
-    <Route path="/signup" component={Signup}></Route>
+    <Route path="/" component={Home} />
+    <Route path="/contact" component={Contact} />
+    <!-- Render the PrivateRoute with a user prop -->
+    <PrivateRoute when="/secretPage" {user}>
+      <SecretPage {user} />
+    </PrivateRoute>
+    <Route path="/login" component={Login} />
+    <Route path="/signup" component={Signup} />
   </div>
-
-
 </Router>

@@ -1,14 +1,14 @@
-import Router from "express";
+import Router from 'express';
 const router = Router();
 
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword  } from "firebase/auth";
-import { auth } from "../firebase/config.js";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase/config.js';
 
 // Login a user
 router.post('/auth/login', async (req, res) => {
   try {
     console.log(req.body);
-    
+
     const { email, password } = req.body;
     console.log(email);
     console.log(password);
@@ -18,20 +18,28 @@ router.post('/auth/login', async (req, res) => {
 
     req.session.user = {
       uid: user.uid,
-  
-     };
+    };
 
-     console.log("req.session.user:" , req.session.user)
+    console.log('req.session.user:', req.session.user);
 
     res.send({ message: 'Authentication successful', user });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(401).send({ error: 'Authentication failed' });
   }
 });
 
+router.post('/auth/login-accept', async (req, res) => {
+  const { uid } = req.body;
 
- // Create a new user
+  req.session.user = {
+    uid: uid,
+  };
+
+  res.send({ message: 'Authentication successful', user });
+});
+
+// Create a new user
 router.post('/auth/signup', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -42,8 +50,6 @@ router.post('/auth/signup', async (req, res) => {
     req.session.newUser = {
       uid: newUser.uid,
     };
-
-   
 
     res.send({ message: 'New user successfully registered', newUser });
   } catch (error) {
@@ -58,19 +64,16 @@ router.post('/auth/signup', async (req, res) => {
   }
 });
 
-
-
 router.post('/auth/logout', (req, res) => {
-  req.session.destroy((err) => {
+  req.session.destroy(err => {
     if (err) {
       console.error('Error destroying session:', err);
     } else {
+      // Clear the session cookie by setting it to an empty value and expiring it
+      res.cookie('sessionID', '', { expires: new Date(0) });
       res.send({ message: 'Logout successful' });
     }
   });
-
 });
 
-
 export default router;
-
