@@ -62,9 +62,9 @@
   <div class="mainRouter">
     <Route path="/" component={Home} />
     <Route path="/contact" component={Contact} />
-    <!-- Render the PrivateRoute with a user prop -->
-    <PrivateRoute when="/secretPage" {user}>
-      <SecretPage {user} />
+
+    <PrivateRoute when="/secretPage">
+      <SecretPage />
     </PrivateRoute>
     <Route path="/login" component={Login} />
     <Route path="/signup" component={Signup} />

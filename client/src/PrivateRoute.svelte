@@ -1,22 +1,4 @@
-<script>
-  export let when;
-  export let user;
-</script>
-
 <!-- <script>
-	import { Route } from "svelte-navigator";
-	import PrivateRouteGuard from "./PrivateRouteGuard.svelte";
-
-	export let path;
-</script>
-
-<Route {path} let:params let:location let:navigate>
-	<PrivateRouteGuard>
-		<slot {params} {location} {navigate} />
-	</PrivateRouteGuard>
-</Route> -->
-<!-- 
-<script>
   import { Route } from 'svelte-navigator';
   import { user } from './store/stores.js';
 
@@ -34,15 +16,25 @@
   }
 </script>
 
- Check if the user is authenticated; if not, redirect to a login page -->
-<!-- {#if authenticated}
-  <Route {when} {component} {...restProps} />
-{:else}
-  <Route path="/login" />
-{/if} -->
-
-{#if $user}
-  <svelte:component this={when} />
+ Check if the user is authenticated; if not, redirect to a login page 
+{#if authenticated}
+  {#if when === null || (typeof when === 'function' && when(user))}
+    <Route {restProps} {component} />
+  {:else}
+    <Route path="/login" />
+  {/if}
 {:else}
   <p>You must be logged in to access this page.</p>
-{/if}
+{/if} -->
+<script>
+  import { Route } from 'svelte-navigator';
+  import PrivateRouteGuard from './PrivateRouteGuard.svelte';
+
+  export let path;
+</script>
+
+<Route {path} let:params let:location let:navigate>
+  <PrivateRouteGuard>
+    <slot {params} {location} {navigate} />
+  </PrivateRouteGuard>
+</Route>
