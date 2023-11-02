@@ -1,6 +1,10 @@
 <script>
   import { setContext } from 'svelte';
   import { writable } from 'svelte/store';
+  import { createEventDispatcher } from 'svelte';
+
+  // Create an event dispatcher, to pass a signal from Login to App.svelte, to inform at the user has logged out, and the message should be cleared
+  const dispatch = createEventDispatcher();
 
   export let email = 'test1@test.com';
   export let password = 'test1234';
@@ -14,15 +18,29 @@
   // ...and add it to the context for child components to access
   setContext('user', user);
 
-  function navigateToSignup() {
-    window.location.href = '/auth/signup';
+  async function handlePasswordReset() {
+    try {
+      const response = await fetch('/api/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        // Password reset email sent successfully
+        console.log('Password reset email sent successfully.');
+      } else {
+        // Handle any errors from the server response
+        console.error('Error sending password reset email:', response.status);
+      }
+    } catch (error) {
+      // Handle network errors
+      console.error('Error sending password reset email:', error);
+    }
   }
-
   async function handleSubmit() {
-    // event
-
-    //event.preventDefault();
-
     try {
       const response = await fetch('http://localhost:8080/auth/login', {
         method: 'POST',
@@ -38,22 +56,21 @@
         const data = await response.json();
         message = data.message;
         console.log(data.user.uid);
-
+        dispatch('logout');
         user.set(data.user); // Update the user store with the user's data
-        //$: user.set(data.user);
 
-        // gemme i local storage
+        // gemme i local storage, pga svelte refresher og sletter id
         localStorage.setItem('userId', data.user.uid);
 
         window.location.href = '/';
       } else {
         message = 'Error: Something went wrong';
-        // user.set(null);
+        user.set(null);
       }
     } catch (error) {
       console.error(error);
       message = 'Error: Something went wrong';
-      //user.set(null);
+      user.set(null);
     }
   }
 </script>
@@ -69,14 +86,10 @@
 
     <div class="button-container">
       <button type="submit">Log in</button>
-      <button on:click={navigateToSignup} class="signup-btn">Signup</button>
+      <button on:click={handlePasswordReset} class="forgot-btn">Forgot password</button>
     </div>
     {#if message}
       <div>{message}</div>
-    {/if}
-
-    {#if user}
-      <div>User successfully logged in</div>
     {/if}
   </form>
 </main>
@@ -98,7 +111,7 @@
     background-color: #5f26a8;
     color: #fff;
     padding: 7px 20px;
-    margin-top: 3em;
+    margin-top: 1em;
     border: none;
     cursor: pointer;
   }
@@ -113,12 +126,11 @@
   }
 
   .button-container {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
+    /* justify-content: space-between; */
+    align-items: center;
   }
 
-  .signup-btn {
+  .forgot-btn {
     background-color: #34303a;
     color: #fff;
   }

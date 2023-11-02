@@ -3,6 +3,9 @@ const router = Router();
 
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/config.js';
+import { sendPasswordResetEmail } from 'firebase/auth';
+// import admin from './firebase/firebase-admin.js';
+// import serviceAccount from '../firebase/config.js';
 
 // Login a user
 router.post('/auth/login', async (req, res) => {
@@ -74,6 +77,21 @@ router.post('/auth/logout', (req, res) => {
       res.send({ message: 'Logout successful' });
     }
   });
+});
+
+router.post('/auth/reset-password', (req, res) => {
+  const { email } = req.body;
+
+  admin
+    .auth()
+    .sendPasswordResetEmail(email)
+    .then(() => {
+      res.status(200).send('Password reset email sent successfully');
+    })
+    .catch(error => {
+      console.error('Error sending password reset email:', error);
+      res.status(500).send('Error sending password reset email');
+    });
 });
 
 export default router;

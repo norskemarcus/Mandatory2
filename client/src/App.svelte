@@ -1,14 +1,18 @@
 <script>
+  // @ts-nocheck
+
   import { Router, Link, Route } from 'svelte-navigator';
   import Home from './pages/Home/Home.svelte';
   import Contact from './pages/Contact/Contact.svelte';
   import Login from './pages/Login/Login.svelte';
   import Signup from './pages/Signup/Signup.svelte';
-  import Test from './pages/Example/SecretPage.svelte';
+  import Test from './pages/SecretPage/SecretPage.svelte';
   import PrivateRouteGuard from './PrivateRouteGuard.svelte';
   import PrivateRoute from './PrivateRoute.svelte';
-  import SecretPage from './pages/Example/SecretPage.svelte';
+  import SecretPage from './pages/SecretPage/SecretPage.svelte';
   import { user } from './store/stores.js';
+
+  let message = '';
 
   // get from local storage
   let storedUserId = localStorage.getItem('userId');
@@ -16,6 +20,10 @@
   // If a user ID is found, set it in the user store
   if (storedUserId) {
     user.set({ id: storedUserId });
+  }
+
+  function clearMessage() {
+    message = '';
   }
 
   async function handleLogout() {
@@ -36,6 +44,10 @@
         // Clear the user ID from local storage
         localStorage.removeItem('userId');
         // window.location.href = '/';
+
+        // Reset the message and user variables
+        //message = '';
+        user.set(null);
       } else {
         console.error('Error logging out:', response.status);
       }
@@ -49,9 +61,9 @@
   <nav>
     <Link to="/">Home</Link>
     <Link to="/contact">Contact us</Link>
-    <Link to="/secretPage">Secret Page</Link>
 
     {#if $user}
+      <Link to="/secretPage">Secret Page</Link>
       <button on:click={handleLogout}>Log out</button>
     {:else}
       <Link to="/login" class="login">Log in</Link>
@@ -61,12 +73,11 @@
 
   <div class="mainRouter">
     <Route path="/" component={Home} />
-    <Route path="/contact" component={Contact} />
-
+    <Route path="/contact" primary={false} component={Contact} />
     <PrivateRoute when="/secretPage">
       <SecretPage />
     </PrivateRoute>
-    <Route path="/login" component={Login} />
+    <Route path="/login" on:click={clearMessage} component={Login} />
     <Route path="/signup" component={Signup} />
   </div>
 </Router>

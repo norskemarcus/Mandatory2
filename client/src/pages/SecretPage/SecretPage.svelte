@@ -1,7 +1,6 @@
 <script>
-  // Ensure that you add export let user; at the beginning of your SecretPage.svelte component so that it can accept the user prop when you use it in your PrivateRoute.
-
-  export let user; // Define the user prop
+  // add export let user so that it can accept the user prop when you use it in your PrivateRoute.
+  // export let user; // Define the user prop
   let message = 'Hello, Svelte!';
 </script>
 
