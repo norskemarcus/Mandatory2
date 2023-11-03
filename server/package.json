@@ -34,7 +34,9 @@
     "express-session": "^1.17.3",
     "firebase": "^10.5.2",
     "firebase-admin": "^11.11.0",
+    "mysql2": "^3.6.3",
     "nodemailer": "^6.9.7",
-    "session": "^0.1.0"
+    "session": "^0.1.0",
+    "sqlite3": "^5.1.6"
   }
 }
