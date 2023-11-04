@@ -18,28 +18,29 @@
   // ...and add it to the context for child components to access
   setContext('user', user);
 
-  async function handlePasswordReset() {
-    try {
-      const response = await fetch('/api/reset-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
+  // async function handlePasswordReset() {
+  //   try {
+  //     const response = await fetch('/api/reset-password', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ email }),
+  //     });
 
-      if (response.ok) {
-        // Password reset email sent successfully
-        console.log('Password reset email sent successfully.');
-      } else {
-        // Handle any errors from the server response
-        console.error('Error sending password reset email:', response.status);
-      }
-    } catch (error) {
-      // Handle network errors
-      console.error('Error sending password reset email:', error);
-    }
-  }
+  //     if (response.ok) {
+  //       // Password reset email sent successfully
+  //       console.log('Password reset email sent successfully.');
+  //     } else {
+  //       // Handle any errors from the server response
+  //       console.error('Error sending password reset email:', response.status);
+  //     }
+  //   } catch (error) {
+  //     // Handle network errors
+  //     console.error('Error sending password reset email:', error);
+  //   }
+  // }
+
   async function handleSubmit() {
     try {
       const response = await fetch('http://localhost:8080/auth/login', {
@@ -86,7 +87,7 @@
 
     <div class="button-container">
       <button type="submit">Log in</button>
-      <button on:click={handlePasswordReset} class="forgot-btn">Forgot password</button>
+      <!-- <button on:click={handlePasswordReset} class="forgot-btn">Forgot password</button> -->
     </div>
     {#if message}
       <div>{message}</div>

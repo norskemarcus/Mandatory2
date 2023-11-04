@@ -1,13 +1,10 @@
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
-import session from 'express-session';
+import session from 'express-session'; // npm install express express-session cookie-parser
 import dotenv from 'dotenv';
-import cors from 'cors';
-// npm install express express-session cookie-parser
-
-const app = express();
-
 dotenv.config();
+import cors from 'cors';
+const app = express();
 
 // Enable CORS for all routes
 // app.use(cors());
@@ -16,7 +13,7 @@ app.use(
     credentials: true,
     origin: true,
   }),
-); // tillader cors for alt
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false })); // parsing incoming HTTP request bodies when the data is submitted as form data in the x-www-form-urlencoded format.
@@ -51,9 +48,6 @@ app.use(
 
 import authRouter from './routes/authRouter.js';
 app.use(authRouter);
-
-import mainRouter from './routes/mainRouter.js';
-app.use(mainRouter);
 
 // Mount the contact route at the /api path
 import contactRoute from './routes/contactRouter.js';

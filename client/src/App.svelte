@@ -10,6 +10,7 @@
   import EditLegoSet from './pages/Lego/EditLegoSet.svelte';
   import LegoSetCard from './pages/Lego/LegoSetCard.svelte';
   import LegoSetList from './pages/Lego/LegoSetList.svelte';
+
   import { user } from './store/stores.js';
   import 'iconify-icon';
 
@@ -69,7 +70,7 @@
       <!-- <Link to="/secretPage">Secret Page</Link> -->
       <Link to="/addLego">+ Lego</Link>
       <Link to="/editLego">Edit Lego</Link>
-      <Link to="/legoDetails">Lego Details</Link>
+      <!-- <Link to="/legoDetails">Lego Details</Link> -->
       <Link to="/legoSetList">The Lego List</Link>
       <button on:click={handleLogout}>Log out</button>
     {:else}
@@ -95,19 +96,19 @@
     <!-- <PrivateRoute when="/secretPage">
       <SecretPage />
     </PrivateRoute> -->
-    <PrivateRoute when="/addLego">
+    <PrivateRoute path="/addLego">
       <AddLegoSet />
     </PrivateRoute>
 
-    <PrivateRoute when="/editLego">
+    <PrivateRoute path="/editLego">
       <EditLegoSet />
     </PrivateRoute>
 
-    <PrivateRoute when="/legoDetails">
+    <!-- <PrivateRoute path="/legoDetails">
       <LegoSetCard />
-    </PrivateRoute>
+    </PrivateRoute> -->
 
-    <PrivateRoute when="/legoSetList">
+    <PrivateRoute path="/legoSetList">
       <LegoSetList />
     </PrivateRoute>
     <Route path="/login" on:click={clearMessage} component={Login} />

@@ -1,10 +1,12 @@
 import mysql from 'mysql2';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   port: 3306,
-  user: 'admin_lego',
-  password: 'Hjalte2018!',
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
 });
 
 connection.connect(err => {
@@ -36,7 +38,8 @@ connection.connect(err => {
       // Create the table if it doesn't exist
       const createTableSQL = `
         CREATE TABLE IF NOT EXISTS lego_sets (
-          itemNumber INTEGER PRIMARY KEY,
+          id INTEGER PRIMARY KEY AUTO_INCREMENT,
+          itemNumber INTEGER,
           name TEXT,
           age INTEGER
         );
