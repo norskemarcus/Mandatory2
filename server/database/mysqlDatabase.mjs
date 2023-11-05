@@ -41,7 +41,8 @@ connection.connect(err => {
           id INTEGER PRIMARY KEY AUTO_INCREMENT,
           itemNumber INTEGER,
           name TEXT,
-          age INTEGER
+          age INTEGER,
+          user_id TEXT
         );
       `;
 

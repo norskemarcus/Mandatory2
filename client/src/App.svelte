@@ -1,6 +1,8 @@
 <script>
   import { Router, Link, Route } from 'svelte-navigator';
   import Home from './pages/Home/Home.svelte';
+  import Parent from './pages/Communication/Parent.svelte';
+  import Child from './pages/Communication/Child.svelte';
   import Contact from './pages/Contact/Contact.svelte';
   import Login from './pages/Login/Login.svelte';
   import Signup from './pages/Signup/Signup.svelte';
@@ -65,11 +67,12 @@
     <Link to="/">
       <iconify-icon icon="mdi:home" class="house-icon" />
     </Link>
+    <Link to="/parent">Parent</Link>
+    <Link to="/child">Child</Link>
 
     {#if $user}
       <!-- <Link to="/secretPage">Secret Page</Link> -->
       <Link to="/addLego">+ Lego</Link>
-      <Link to="/editLego">Edit Lego</Link>
       <!-- <Link to="/legoDetails">Lego Details</Link> -->
       <Link to="/legoSetList">The Lego List</Link>
       <button on:click={handleLogout}>Log out</button>
@@ -92,6 +95,8 @@
 
   <div class="mainRouter">
     <Route path="/" component={Home} />
+    <Route path="/parent" component={Parent} />
+    <Route path="/cihld" component={Child} />
     <Route path="/contact" primary={false} component={Contact} />
     <!-- <PrivateRoute when="/secretPage">
       <SecretPage />

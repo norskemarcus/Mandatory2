@@ -67,33 +67,42 @@
     <LegoSetCard {legoSet} />
   {/each}
 </ul> -->
-<button on:click={toggleView}>
-  {#if edit}
-    Display Cards
-  {:else}
-    Display Edit/Delete Buttons
-  {/if}
-</button>
 
-<div class="lego-set-list">
-  {#each legoSets as legoSet (legoSet.id)}
-    {#if !edit}
-      <LegoSetCard {legoSet} />
+<div class="lego-set-container">
+  <button on:click={toggleView} class="display-btn">
+    {#if edit}
+      Display Cards
     {:else}
-      <div class="lego-set-item">
-        <span>{legoSet.name}</span>
-        <button on:click={() => handleEdit(legoSet)}>Edit</button>
-        <button on:click={() => handleDelete(legoSet)}>Delete</button>
-      </div>
+      Display Edit/Delete Buttons
     {/if}
-  {/each}
+  </button>
+
+  <div class="lego-set-list">
+    {#each legoSets as legoSet (legoSet.id)}
+      {#if !edit}
+        <LegoSetCard {legoSet} />
+      {:else}
+        <div class="lego-set-item">
+          <span>{legoSet.name}</span>
+          <button on:click={() => handleEdit(legoSet)}>Edit</button>
+          <button on:click={() => handleDelete(legoSet)}>Delete</button>
+        </div>
+      {/if}
+    {/each}
+  </div>
+
+  {#if edit}
+    <button on:click={handleConfirmDelete}>Confirm Delete</button>
+  {/if}
 </div>
 
-{#if edit}
-  <button on:click={handleConfirmDelete}>Confirm Delete</button>
-{/if}
-
 <style>
+  .lego-set-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
   .lego-set-list {
     display: flex;
     flex-wrap: wrap;
@@ -120,5 +129,10 @@
   .lego-set-item button {
     width: 50%;
     margin-top: 10px;
+  }
+
+  .display-btn {
+    width: 50%;
+    align-items: center;
   }
 </style>
