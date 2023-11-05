@@ -18,13 +18,14 @@ router.get('/api/legosets', (req, res) => {
 
 router.post('/api/legosets', (req, res) => {
   if (!req.session.user) {
+    console.log('User is not logged in');
     return res.status(401).send({ error: 'User is not logged in' });
   }
 
-  const { itemNumber, name, age } = req.body;
   const userId = req.session.user.uid; // Get the user's UID from the session
+  const { itemNumber, name, age } = req.body;
 
-  console.log(userId);
+  console.log('userId in the post:', userId);
 
   const checkExistingSQL = 'SELECT itemNumber FROM lego_sets WHERE itemNumber = ? AND user_id = ?';
 
@@ -51,9 +52,10 @@ router.post('/api/legosets', (req, res) => {
 });
 
 router.delete('/api/legosets/:itemNumber', (req, res) => {
+  const userId = req.session.user.uid;
   const itemNumber = req.params.itemNumber;
 
-  const checkExistingSQL = 'SELECT itemNumber FROM lego_sets WHERE itemNumber = ?';
+  const checkExistingSQL = 'SELECT itemNumber, user_id FROM lego_sets WHERE itemNumber = ?';
   connection.query(checkExistingSQL, [itemNumber], (checkErr, results) => {
     if (checkErr) {
       console.error('Error checking for existing Lego set:', checkErr);
@@ -62,6 +64,11 @@ router.delete('/api/legosets/:itemNumber', (req, res) => {
 
     if (results.length === 0) {
       return res.status(404).json({ error: 'Lego set not found' });
+    }
+
+    // Check if the Lego set belongs to the logged-in user
+    if (results[0].user_id !== userId) {
+      return res.status(403).json({ error: 'Permission denied. You cannot delete this Lego set.' });
     }
 
     const deleteSQL = 'DELETE FROM lego_sets WHERE itemNumber = ?';

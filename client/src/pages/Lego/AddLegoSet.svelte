@@ -17,6 +17,7 @@
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ itemNumber, name, age }),
+          credentials: 'include',
         });
 
         if (response.ok) {

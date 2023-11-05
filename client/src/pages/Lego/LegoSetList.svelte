@@ -32,7 +32,9 @@
 
   async function fetchLegoSets() {
     try {
-      const response = await fetch('http://localhost:8080/api/legosets');
+      const response = await fetch('http://localhost:8080/api/legosets', {
+        credentials: 'include',
+      });
 
       if (response.ok) {
         const contentType = response.headers.get('content-type');
@@ -102,7 +104,6 @@
     flex-direction: column;
     align-items: center;
   }
-
   .lego-set-list {
     display: flex;
     flex-wrap: wrap;

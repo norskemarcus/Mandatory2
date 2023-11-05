@@ -1,6 +1,6 @@
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
-import session from 'express-session'; // npm install express express-session cookie-parser
+import session from 'express-session'; // npm install express-session cookie-parser
 import dotenv from 'dotenv';
 dotenv.config();
 import cors from 'cors';
