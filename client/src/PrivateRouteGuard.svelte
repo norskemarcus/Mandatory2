@@ -13,10 +13,7 @@
   // }
 </script>
 
-<!-- {#if $user}
-  <slot />
-{/if}
- -->
+
 
 {#if $user}
   <slot />

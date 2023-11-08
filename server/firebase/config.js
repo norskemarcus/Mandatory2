@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import dotenv from 'dotenv';
 import { sendPasswordResetEmail } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 dotenv.config();
 
@@ -19,7 +20,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-export { app, auth };
+// Initialize Firestore
+const db = getFirestore(app);
+
+export { app, auth, db };
 
 // Export the sendResetEmail function
 export const sendResetEmail = email => {

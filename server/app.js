@@ -3,11 +3,13 @@ import { rateLimit } from 'express-rate-limit';
 import session from 'express-session'; // npm install express-session cookie-parser
 import dotenv from 'dotenv';
 dotenv.config();
+import helmet from 'helmet';
 import cors from 'cors';
 const app = express();
 
+app.use(helmet()); // This middleware adds various security-related HTTP headers to your responses, which can help protect your application against certain attacks.
+
 // Enable CORS for all routes
-// app.use(cors());
 app.use(
   cors({
     credentials: true,

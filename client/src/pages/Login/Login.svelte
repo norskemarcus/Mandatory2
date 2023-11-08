@@ -49,14 +49,14 @@
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
+        credentials: 'include', // Include cookies in the request
         body: JSON.stringify({ email: email, password: password }),
       });
 
       if (response.ok) {
         const data = await response.json();
         message = data.message;
-        console.log(data.user.uid);
+        console.log('Data user uid in handleSubmit (Login.svelte)', data.user.uid);
         dispatch('logout');
         user.set(data.user); // Update the user store with the user's data
 

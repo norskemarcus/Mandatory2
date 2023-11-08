@@ -4,6 +4,7 @@ const router = Router();
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/config.js';
 import { sendPasswordResetEmail } from 'firebase/auth';
+import { saveUserSession } from '../firebase/sessionManager.js';
 // import admin from './firebase/firebase-admin.js';
 // import serviceAccount from '../firebase/config.js';
 
@@ -13,8 +14,6 @@ router.post('/auth/login', async (req, res) => {
     console.log(req.body);
 
     const { email, password } = req.body;
-    console.log(email);
-    console.log(password);
 
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
@@ -23,8 +22,6 @@ router.post('/auth/login', async (req, res) => {
       uid: user.uid,
     };
 
-    console.log('req.session.user:', req.session.user);
-
     res.send({ message: 'Authentication successful', user });
   } catch (error) {
     console.log(error);
@@ -32,6 +29,7 @@ router.post('/auth/login', async (req, res) => {
   }
 });
 
+// This can be useful for scenarios where you have a different authentication flow, such as logging in through a third-party service, and you want to set the user's UID in the session after successful authentication.
 router.post('/auth/login-accept', async (req, res) => {
   const { uid } = req.body;
 
@@ -40,6 +38,15 @@ router.post('/auth/login-accept', async (req, res) => {
   };
 
   res.send({ message: 'Authentication successful', user });
+});
+
+// check if the user is logged in
+router.get('/auth/check-login', (req, res) => {
+  if (req.session.user) {
+    res.send({ loggedIn: true, user: req.session.user });
+  } else {
+    res.send({ loggedIn: false });
+  }
 });
 
 // Create a new user

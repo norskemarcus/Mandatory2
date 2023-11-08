@@ -1,31 +1,41 @@
 <script>
   import { Router, Link, Route } from 'svelte-navigator';
   import Home from './pages/Home/Home.svelte';
-  import Parent from './pages/Communication/Parent.svelte';
-  import Child from './pages/Communication/Child.svelte';
   import Contact from './pages/Contact/Contact.svelte';
   import Login from './pages/Login/Login.svelte';
   import Signup from './pages/Signup/Signup.svelte';
   import PrivateRoute from './PrivateRoute.svelte';
-  // import SecretPage from './pages/SecretPage/SecretPage.svelte';
   import AddLegoSet from './pages/Lego/AddLegoSet.svelte';
   import EditLegoSet from './pages/Lego/EditLegoSet.svelte';
   import LegoSetCard from './pages/Lego/LegoSetCard.svelte';
   import LegoSetList from './pages/Lego/LegoSetList.svelte';
-
+  import { fetchUser } from './user/userApi';
   import { user } from './store/stores.js';
+  import { onMount } from 'svelte';
   import 'iconify-icon';
 
   let message = '';
   let showLegoDropdown = false;
 
-  // get from local storage
-  let storedUserId = localStorage.getItem('userId');
+  // Check the user's login status using the fetchUser function
+  async function checkUserLoginStatus() {
+    try {
+      const response = await fetchUser(user);
 
-  // If a user ID is found, set it in the user store
-  if (storedUserId) {
-    user.set({ id: storedUserId });
+      if (response) {
+        user.set(response); // Update the user store with the user's data
+      } else {
+        user.set(null);
+      }
+    } catch (error) {
+      console.error('User login status check error:', error);
+    }
   }
+
+  // Use the function to check the user's login status when the component mounts
+  onMount(() => {
+    checkUserLoginStatus();
+  });
 
   function toggleLegoDropdown() {
     showLegoDropdown = !showLegoDropdown;
@@ -42,15 +52,12 @@
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Include credentials (cookies) in the request
+        credentials: 'include',
       });
 
       if (response.ok) {
-        // update the user store
         user.set(null);
-        storedUserId = null;
-        localStorage.removeItem('userId');
-        // window.location.href = '/';
+        window.location.href = '/';
 
         user.set(null);
       } else {
@@ -67,11 +74,8 @@
     <Link to="/">
       <iconify-icon icon="mdi:home" class="house-icon" />
     </Link>
-    <Link to="/parent">Parent</Link>
-    <Link to="/child">Child</Link>
 
     {#if $user}
-      <!-- <Link to="/secretPage">Secret Page</Link> -->
       <Link to="/addLego">+ Lego</Link>
       <!-- <Link to="/legoDetails">Lego Details</Link> -->
       <Link to="/legoSetList">The Lego List</Link>
@@ -95,12 +99,8 @@
 
   <div class="mainRouter">
     <Route path="/" component={Home} />
-    <Route path="/parent" component={Parent} />
-    <Route path="/cihld" component={Child} />
     <Route path="/contact" primary={false} component={Contact} />
-    <!-- <PrivateRoute when="/secretPage">
-      <SecretPage />
-    </PrivateRoute> -->
+
     <PrivateRoute path="/addLego">
       <AddLegoSet />
     </PrivateRoute>
@@ -109,13 +109,10 @@
       <EditLegoSet />
     </PrivateRoute>
 
-    <!-- <PrivateRoute path="/legoDetails">
-      <LegoSetCard />
-    </PrivateRoute> -->
-
     <PrivateRoute path="/legoSetList">
       <LegoSetList />
     </PrivateRoute>
+
     <Route path="/login" on:click={clearMessage} component={Login} />
     <Route path="/signup" component={Signup} />
   </div>
