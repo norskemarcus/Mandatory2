@@ -59,6 +59,10 @@
   <Toaster />
 </div>
 
+<svelte:head>
+  <title>Add a lego set</title>
+</svelte:head>
+
 <style>
   .lego-set-form {
     min-width: 50%;

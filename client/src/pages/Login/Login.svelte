@@ -10,8 +10,6 @@
   export let password = 'test1234';
   export let message = '';
 
-  //export let data;
-
   // Create a writable store for user login state
   const user = writable();
 
@@ -20,7 +18,7 @@
 
   // async function handlePasswordReset() {
   //   try {
-  //     const response = await fetch('/api/reset-password', {
+  //     const response = await fetch('http://localhost:8080/auth/reset-password', {
   //       method: 'POST',
   //       headers: {
   //         'Content-Type': 'application/json',
@@ -29,38 +27,14 @@
   //     });
 
   //     if (response.ok) {
-  //       // Password reset email sent successfully
   //       console.log('Password reset email sent successfully.');
   //     } else {
-  //       // Handle any errors from the server response
   //       console.error('Error sending password reset email:', response.status);
   //     }
   //   } catch (error) {
-  //     // Handle network errors
   //     console.error('Error sending password reset email:', error);
   //   }
   // }
-
-  // function signInWithGoogle() {
-  //   const provider = new firebase.auth.GoogleAuthProvider();
-  //   firebase
-  //     .auth()
-  //     .signInWithPopup(provider)
-  //     .then(result => {
-  //       // The user is signed in. You can access user data in result.user.
-  //     })
-  //     .catch(error => {
-  //       // Handle errors here, such as 'auth/cancelled-popup-request' or 'auth/popup-closed-by-user'.
-  //     });
-  // }
-
-  // firebase.auth().onAuthStateChanged(user => {
-  //   if (user) {
-  //     // User is signed in.
-  //   } else {
-  //     // User is signed out.
-  //   }
-  // });
 
   async function handleSubmit() {
     try {
@@ -94,7 +68,6 @@
 </script>
 
 <main>
-  <!-- <form action="/auth/login" method="POST"> -->
   <form on:submit|preventDefault={handleSubmit}>
     <label for="email">Your email</label>
     <input id="email" required type="email" name="email" placeholder="Your email" bind:value={email} />
@@ -104,13 +77,17 @@
 
     <div class="button-container">
       <button type="submit">Log in</button>
-      <!-- <button on:click={handlePasswordReset} class="forgot-btn">Forgot password</button> -->
     </div>
     {#if message}
       <div>{message}</div>
     {/if}
   </form>
+  <!-- <button on:click={handlePasswordReset} class="forgot-btn">Forgot password</button> -->
 </main>
+
+<svelte:head>
+  <title>Login</title>
+</svelte:head>
 
 <style>
   label {

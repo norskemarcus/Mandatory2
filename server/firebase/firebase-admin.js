@@ -1,5 +1,5 @@
 import admin from 'firebase-admin';
-import serviceAccount from './serviceAccountKey.js'; // Replace with the actual path to your Firebase config JSON file
+import serviceAccount from './serviceAccountKey.js';
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

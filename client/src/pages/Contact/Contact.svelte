@@ -59,6 +59,10 @@
   <Toaster />
 </div>
 
+<svelte:head>
+  <title>Contact us</title>
+</svelte:head>
+
 <style>
   @import './contact.css';
 </style>

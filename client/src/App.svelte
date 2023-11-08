@@ -13,17 +13,17 @@
   import { user } from './store/stores.js';
   import { onMount } from 'svelte';
   import 'iconify-icon';
+  // import LoginWithGoogle from './components/Auth/LoginWithGoogle.svelte';
 
   let message = '';
   let showLegoDropdown = false;
 
-  // Check the user's login status using the fetchUser function
   async function checkUserLoginStatus() {
     try {
-      const response = await fetchUser(user);
+      const response = await fetchUser();
 
       if (response) {
-        user.set(response); // Update the user store with the user's data
+        user.set(response);
       } else {
         user.set(null);
       }
@@ -32,7 +32,6 @@
     }
   }
 
-  // Use the function to check the user's login status when the component mounts
   onMount(() => {
     checkUserLoginStatus();
   });
@@ -77,11 +76,11 @@
 
     {#if $user}
       <Link to="/addLego">+ Lego</Link>
-
       <Link to="/legoSetList">The Lego List</Link>
       <Link to="/" on:click={handleLogout}>Log out</Link>
     {:else}
       <Link to="/login" class="login">Log in</Link>
+      <!-- <LoginWithGoogle /> -->
       <Link to="/signup" class="signup">Sign up</Link>
     {/if}
   </nav>
@@ -135,9 +134,9 @@
     color: white;
     padding: 20px 0;
     text-align: center;
-    position: sticky; /* Position the footer as fixed */
-    bottom: 0; /* Stick it to the bottom */
-    width: 100%; /* Make it full-width */
+    position: sticky;
+    bottom: 0;
+    width: 100%;
   }
 
   .footer-content {

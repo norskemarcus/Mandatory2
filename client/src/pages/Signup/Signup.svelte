@@ -61,6 +61,10 @@
   {/if}
 </main>
 
+<svelte:head>
+  <title>Signup</title>
+</svelte:head>
+
 <style>
   label {
     font-weight: bold;

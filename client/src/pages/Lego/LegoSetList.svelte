@@ -108,6 +108,10 @@
   {/if}
 </div>
 
+<svelte:head>
+  <title>My lego list</title>
+</svelte:head>
+
 <style>
   .lego-set-container {
     display: flex;

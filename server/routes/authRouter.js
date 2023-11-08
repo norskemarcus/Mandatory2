@@ -92,19 +92,16 @@ router.post('/auth/logout', (req, res) => {
   });
 });
 
-// router.post('/auth/reset-password', (req, res) => {
+// router.post('/auth/reset-password', async (req, res) => {
 //   const { email } = req.body;
 
-//   admin
-//     .auth()
-//     .sendPasswordResetEmail(email)
-//     .then(() => {
-//       res.status(200).send('Password reset email sent successfully');
-//     })
-//     .catch(error => {
-//       console.error('Error sending password reset email:', error);
-//       res.status(500).send('Error sending password reset email');
-//     });
+//   try {
+//     await admin.auth().sendPasswordResetEmail(email);
+//     res.status(200).send('Password reset email sent successfully');
+//   } catch (error) {
+//     console.error('Error sending password reset email:', error);
+//     res.status(500).send('Error sending password reset email');
+//   }
 // });
 
 export default router;
