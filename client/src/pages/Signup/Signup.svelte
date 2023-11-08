@@ -26,11 +26,18 @@
         message = data.message;
         newUser = data.newUser;
       } else {
-        message = 'Error: Something went wrong';
+        const errorData = await response.json();
+        console.error('Server error response:', errorData);
+        // Look at the Server error response, to see that it is the errorMessage and not error that is auth/email
+        if (errorData.errorMessage == 'auth/email-already-in-use') {
+          message = 'A user with this email already exists';
+        } else {
+          message = 'Error: Something went wrong';
+        }
         newUser = null;
       }
     } catch (error) {
-      console.error(error);
+      console.error('Fetch error:', error);
       message = 'Error: Something went wrong';
       newUser = null;
     }
@@ -38,22 +45,24 @@
 </script>
 
 <main>
-  <form on:submit|preventDefault={handleSubmit}>
-    <label for="email">Email</label>
-    <input required type="email" id="email" name="email" bind:value={email} />
+  <div class="form-container">
+    <form on:submit|preventDefault={handleSubmit}>
+      <label for="email">Email</label>
+      <input required type="email" id="email" name="email" bind:value={email} />
 
-    <label for="password">Password</label>
-    <input required type="password" name="password" id="password" placeholder="Password" bind:value={password} />
+      <label for="password">Password</label>
+      <input required type="password" name="password" id="password" placeholder="Password" bind:value={password} />
 
-    <button type="submit">Create account</button>
-  </form>
+      <button type="submit">Create account</button>
+    </form>
+  </div>
 
   {#if message}
-    <div>{message}</div>
+    <div class="message">{message}</div>
   {/if}
 
   {#if newUser}
-    <div>New user successfully registered</div>
+    <div class="message">New user successfully registered</div>
   {/if}
 </main>
 
@@ -77,6 +86,15 @@
     margin-top: 3em;
     border: none;
     cursor: pointer;
+  }
+
+  .form-container {
+    text-align: center; /* Center the form content horizontally */
+  }
+
+  .message {
+    text-align: center; /* Center the message content horizontally */
+    margin-top: 1em; /* Add some space between the form and the message */
   }
 
   form {
