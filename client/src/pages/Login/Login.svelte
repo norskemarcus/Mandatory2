@@ -41,6 +41,27 @@
   //   }
   // }
 
+  // function signInWithGoogle() {
+  //   const provider = new firebase.auth.GoogleAuthProvider();
+  //   firebase
+  //     .auth()
+  //     .signInWithPopup(provider)
+  //     .then(result => {
+  //       // The user is signed in. You can access user data in result.user.
+  //     })
+  //     .catch(error => {
+  //       // Handle errors here, such as 'auth/cancelled-popup-request' or 'auth/popup-closed-by-user'.
+  //     });
+  // }
+
+  // firebase.auth().onAuthStateChanged(user => {
+  //   if (user) {
+  //     // User is signed in.
+  //   } else {
+  //     // User is signed out.
+  //   }
+  // });
+
   async function handleSubmit() {
     try {
       const response = await fetch('http://localhost:8080/auth/login', {
@@ -49,7 +70,7 @@
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Include cookies in the request
+        credentials: 'include',
         body: JSON.stringify({ email: email, password: password }),
       });
 
@@ -59,10 +80,6 @@
         console.log('Data user uid in handleSubmit (Login.svelte)', data.user.uid);
         dispatch('logout');
         user.set(data.user); // Update the user store with the user's data
-
-        // gemme i local storage, pga svelte refresher og sletter id
-        localStorage.setItem('userId', data.user.uid);
-
         window.location.href = '/';
       } else {
         message = 'Error: Something went wrong';

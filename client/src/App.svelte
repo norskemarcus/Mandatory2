@@ -77,25 +77,14 @@
 
     {#if $user}
       <Link to="/addLego">+ Lego</Link>
-      <!-- <Link to="/legoDetails">Lego Details</Link> -->
+
       <Link to="/legoSetList">The Lego List</Link>
-      <button on:click={handleLogout}>Log out</button>
+      <Link to="/" on:click={handleLogout}>Log out</Link>
     {:else}
       <Link to="/login" class="login">Log in</Link>
       <Link to="/signup" class="signup">Sign up</Link>
     {/if}
   </nav>
-
-  <footer>
-    <div class="footer-content">
-      <div class="footer-links">
-        <Link to="/contact">Contact Us</Link>
-      </div>
-      <div class="footer-links">
-        <a href="https://kea.dk">KEA</a>
-      </div>
-    </div>
-  </footer>
 
   <div class="mainRouter">
     <Route path="/" component={Home} />
@@ -116,6 +105,17 @@
     <Route path="/login" on:click={clearMessage} component={Login} />
     <Route path="/signup" component={Signup} />
   </div>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-links">
+        <Link to="/contact">Contact Us</Link>
+      </div>
+      <div class="footer-links">
+        <a href="https://kea.dk">KEA</a>
+      </div>
+    </div>
+  </footer>
 </Router>
 
 <style>
@@ -135,7 +135,7 @@
     color: white;
     padding: 20px 0;
     text-align: center;
-    position: fixed; /* Position the footer as fixed */
+    position: sticky; /* Position the footer as fixed */
     bottom: 0; /* Stick it to the bottom */
     width: 100%; /* Make it full-width */
   }

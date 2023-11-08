@@ -12,6 +12,7 @@
   // export let deleteLegoSet = null;
   let toBeDeleted = null;
   //let legoSets = writable([]);
+  let dialogRef;
 
   function handleEdit(legoSet) {
     edit = legoSet;
@@ -19,6 +20,7 @@
 
   function handleDelete(legoSet) {
     toBeDeleted = legoSet; // Set the Lego set to be deleted
+    dialogRef.showModal();
   }
 
   async function handleConfirmDelete() {
@@ -39,6 +41,7 @@
         console.error('Delete Lego set error:', error);
       }
     }
+    dialogRef.close();
   }
 
   function toggleView() {
@@ -88,7 +91,6 @@
         <LegoSetCard {legoSet} />
       {:else}
         <div class="lego-set-item">
-          <!-- <span>{legoSet.name}</span> -->
           <LegoSetCard {legoSet} />
           <div class="buttons">
             <button on:click={() => handleEdit(legoSet)} id="edit-btn">Edit</button>
@@ -100,7 +102,9 @@
   </div>
 
   {#if edit}
-    <button on:click={handleConfirmDelete} class="del-btn">Confirm Delete</button>
+    <dialog id="confirm-delete" bind:this={dialogRef}>
+      <button on:click={handleConfirmDelete} class="del-btn">Confirm Delete</button>
+    </dialog>
   {/if}
 </div>
 
@@ -121,7 +125,7 @@
     border-radius: 5px;
     padding: 10px;
     margin: 10px;
-    flex: 1;
+    /* flex: 1; */
     position: relative;
   }
 

@@ -5,12 +5,6 @@
   let newUser = null;
 
   async function handleSubmit(event) {
-    //   event.preventDefault(); // Prevent the default form submission behavior: By default, when you submit a form, the browser performs a full-page refresh or redirects to the URL specified in the action attribute of the <form> element.
-
-    //   const formData = new FormData();
-    //   formData.append('email', email);
-    //   formData.append('password', password);
-
     try {
       const response = await fetch('http://localhost:8080/auth/signup', {
         method: 'POST',
@@ -28,7 +22,7 @@
       } else {
         const errorData = await response.json();
         console.error('Server error response:', errorData);
-        // Look at the Server error response, to see that it is the errorMessage and not error that is auth/email
+
         if (errorData.errorMessage == 'auth/email-already-in-use') {
           message = 'A user with this email already exists';
         } else {
@@ -44,6 +38,7 @@
   }
 </script>
 
+<!-- preventDefault = shortcut for preventing the default form submission behavior, without having to explicitly call event.preventDefault(); -->
 <main>
   <div class="form-container">
     <form on:submit|preventDefault={handleSubmit}>
