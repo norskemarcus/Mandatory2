@@ -2,7 +2,7 @@ import Router from 'express';
 const router = Router();
 
 import { connection } from '../database/mysqlDatabase.mjs';
-import { getUserSession } from '../firebase/sessionManager.js';
+
 
 router.get('/api/legosets', async (req, res) => {
   if (!req.session.user) {
@@ -12,9 +12,7 @@ router.get('/api/legosets', async (req, res) => {
 
   let userId = req.session.user.uid;
   console.log('userId from session in get legosets', userId);
-  //const userSessionData = await getUserSession(userId);
-  //console.log('userSessionData in get legosets', userSessionData);
-
+ 
   if (userId) {
     const query = `SELECT * FROM lego_sets WHERE user_id = "${userId}"`;
     console.log('Query:', query);
@@ -39,8 +37,6 @@ router.post('/api/legosets', (req, res) => {
 
   const userId = req.session.user.uid;
   const { itemNumber, name, age } = req.body;
-
-  // console.log('userId in the post:', userId);
 
   const checkExistingSQL = 'SELECT itemNumber FROM lego_sets WHERE itemNumber = ? AND user_id = ?';
 

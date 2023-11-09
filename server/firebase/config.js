@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 import dotenv from 'dotenv';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';

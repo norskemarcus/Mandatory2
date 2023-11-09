@@ -19,8 +19,8 @@
   </p>
 
   <p>
-    "Time is precious, and so is your journey through the world of Full Stack Development! Our clock not only keeps you on schedule but also symbolizes the timely progression of skills and knowledge as you explore the intricacies of building a complete authentication system. Embrace every moment,
-    and let the ticking seconds inspire your coding adventures!"
+    Time is precious, and so is your journey through the world of Full Stack Development! Our clock not only keeps you on schedule but also symbolizes the timely progression of skills and knowledge as you explore the intricacies of building a complete authentication system. Embrace every moment, and
+    let the ticking seconds inspire your coding adventures!
   </p>
 
   <h2>{formatter.format($time)}</h2>

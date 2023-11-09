@@ -27,7 +27,7 @@ router.post('/auth/login', async (req, res) => {
   }
 });
 
-// This can be useful for scenarios where you have a different authentication flow, such as logging in through a third-party service, and you want to set the user's UID in the session after successful authentication.
+
 router.post('/auth/login-accept', async (req, res) => {
   const { uid } = req.body;
 
@@ -38,7 +38,7 @@ router.post('/auth/login-accept', async (req, res) => {
   res.send({ message: 'Authentication successful', user });
 });
 
-// check if the user is logged in
+
 router.get('/auth/check-login', (req, res) => {
   if (req.session.user) {
     res.send({ loggedIn: true, user: req.session.user });
@@ -47,12 +47,10 @@ router.get('/auth/check-login', (req, res) => {
   }
 });
 
-// Create a new user
+
 router.post('/auth/signup', async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // Check if a user with the same email already exists
     const isEmailExist = await emailExists(email);
 
     if (isEmailExist) {
