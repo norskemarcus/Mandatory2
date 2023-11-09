@@ -1,29 +1,31 @@
 <script>
   import { time } from '../../store/stores.js';
 
-  const formatter = new Intl.DateTimeFormat('en', {
-    hour12: true,
+  const formatter = new Intl.DateTimeFormat('da-DK', {
     hour: 'numeric',
-    minute: '2-digit',
-    second: '2-digit',
+    minute: 'numeric',
+    second: 'numeric',
   });
 </script>
 
 <h2>Mandatory 2</h2>
 
 <div>
-  <p>Denne website er udviklet som en del af Mandatory 2 i valgfaget <strong>Full Stack Development with NodeJS</strong>, ved KEA (Københavns Erhvervsakademi).</p>
+  <p>This website has been developed as part of Mandatory 2 in the elective course <strong>Full Stack Development with NodeJS</strong> at KEA (Copenhagen School of Design and Technology).</p>
 
   <p>
-    Fokus er centreret omkring at skabe en fuldstack-authentifikationssystem ved hjælp af et webframework. Projektet inkluderer en webapplikation med både frontend og backend-komponenter, der benytter en database, og tillader brugere at oprette konti, logge ind og administrere deres
-    brugeroplysninger. Website'en omfatter også funktionalitet til at sende e-mails, herunder bekræftelses-emails og gendannelses-emails til glemt adgangskode. Desuden er der implementeret beskednotifikationer for at forbedre brugeroplevelsen.
+    The focus is centered around creating a full-stack authentication system using a web framework. The project includes a web application with both frontend and backend components, utilizing two different databases (mySQL and sqlite). Users can create accounts, log in, and explore the hidden
+    features of the site. The website also features functionality to send emails (contact us). Additionally, message notifications have been implemented to enhance the user experience with svelte-toast.
   </p>
 
-  <p>På forsiden er der en login- og logud-komponent, og website'ens tema kan tilpasses efter ønske. Målet med dette projekt er at demonstrere evnen til at opbygge et komplet autentifikationssystem ved hjælp af moderne teknologier og bevise forståelsen af sikkerhedsaspekter i webudvikling."</p>
-
-  <p>Siden er udviklet af Marcus Holje</p>
+  <p>
+    "Time is precious, and so is your journey through the world of Full Stack Development! Our clock not only keeps you on schedule but also symbolizes the timely progression of skills and knowledge as you explore the intricacies of building a complete authentication system. Embrace every moment,
+    and let the ticking seconds inspire your coding adventures!"
+  </p>
 
   <h2>{formatter.format($time)}</h2>
+
+  <p>This page has been developed by Marcus Holje, a computer science student (datamatiker) at KEA.</p>
 </div>
 
 <svelte:head>

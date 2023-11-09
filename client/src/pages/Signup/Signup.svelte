@@ -88,12 +88,12 @@
   }
 
   .form-container {
-    text-align: center; /* Center the form content horizontally */
+    text-align: center; 
   }
 
   .message {
-    text-align: center; /* Center the message content horizontally */
-    margin-top: 1em; /* Add some space between the form and the message */
+    text-align: center; 
+    margin-top: 1em; 
   }
 
   form {

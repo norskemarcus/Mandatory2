@@ -121,12 +121,11 @@
   }
 
   .button-container {
-    /* justify-content: space-between; */
     align-items: center;
   }
 
-  .forgot-btn {
+  /* .forgot-btn {
     background-color: #34303a;
     color: #fff;
-  }
+  } */
 </style>

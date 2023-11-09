@@ -13,6 +13,7 @@
   import { user } from './store/stores.js';
   import { onMount } from 'svelte';
   import 'iconify-icon';
+  import Footer from './components/Footer.svelte';
   // import LoginWithGoogle from './components/Auth/LoginWithGoogle.svelte';
 
   let message = '';
@@ -105,16 +106,7 @@
     <Route path="/signup" component={Signup} />
   </div>
 
-  <footer>
-    <div class="footer-content">
-      <div class="footer-links">
-        <Link to="/contact">Contact Us</Link>
-      </div>
-      <div class="footer-links">
-        <a href="https://kea.dk">KEA</a>
-      </div>
-    </div>
-  </footer>
+  <Footer />
 </Router>
 
 <style>
@@ -127,29 +119,5 @@
     display: flex;
     flex-direction: column;
     min-height: 77vh;
-  }
-
-  footer {
-    background-color: #333;
-    color: white;
-    padding: 20px 0;
-    text-align: center;
-    position: sticky;
-    bottom: 0;
-    width: 100%;
-  }
-
-  .footer-content {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .footer-links a {
-    color: white;
-    margin-right: 20px;
-    text-decoration: none;
   }
 </style>

@@ -1,6 +1,4 @@
 <script>
-  import axios from 'axios';
-  import { handleSubmit } from './contact.js';
   import toast, { Toaster } from 'svelte-french-toast';
 
   let name = '';
