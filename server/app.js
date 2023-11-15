@@ -1,12 +1,12 @@
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
-import session from 'express-session'; // npm install express-session cookie-parser
+import session from 'express-session';
 import dotenv from 'dotenv';
 dotenv.config();
 import helmet from 'helmet';
 import cors from 'cors';
 const app = express();
-//import passport from 'passport';
+// import passport from 'passport';
 
 app.use(helmet()); // This middleware adds various security-related HTTP headers to your responses, which can help protect your application against certain attacks.
 
@@ -49,21 +49,19 @@ app.use(
   }),
 );
 
-//app.use(passport.initialize());
-//app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 import authRouter from './routes/authRouter.js';
 app.use(authRouter);
 
-import googleAuthRouter from './routes/googleAuthRouter.js';
-app.use(googleAuthRouter);
+// import googleAuthRouter from './routes/googleAuthRouter.js';
+// app.use(googleAuthRouter);
 
-// Mount the contact route at the /api path
 import contactRoute from './routes/contactRouter.js';
 app.use(contactRoute);
 
 import legoRouter from './routes/legoRouter.js';
-import passport from 'passport';
 app.use(legoRouter);
 
 const PORT = process.env.PORT || 8080;

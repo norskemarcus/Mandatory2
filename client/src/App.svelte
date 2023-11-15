@@ -7,84 +7,44 @@
   import PrivateRoute from './PrivateRoute.svelte';
   import AddLegoSet from './pages/Lego/AddLegoSet.svelte';
   import EditLegoSet from './pages/Lego/EditLegoSet.svelte';
-  import LegoSetCard from './pages/Lego/LegoSetCard.svelte';
+  // import LegoSetCard from './pages/Lego/LegoSetCard.svelte';
   import LegoSetList from './pages/Lego/LegoSetList.svelte';
-  import { fetchUser } from './user/userApi';
-  import { user } from './store/stores.js';
-  import { onMount } from 'svelte';
   import 'iconify-icon';
   import Footer from './components/Footer.svelte';
-  // import LoginWithGoogle from './components/Auth/LoginWithGoogle.svelte';
+  import Navbar from './components/Navbar.svelte';
 
   let message = '';
-  let showLegoDropdown = false;
+  // let showLegoDropdown = false;
 
-  async function checkUserLoginStatus() {
-    try {
-      const response = await fetchUser();
+  // async function checkUserLoginStatus() {
+  //   try {
+  //     const response = await fetchUser();
 
-      if (response) {
-        user.set(response);
-      } else {
-        user.set(null);
-      }
-    } catch (error) {
-      console.error('User login status check error:', error);
-    }
-  }
+  //     if (response) {
+  //       user.set(response);
+  //     } else {
+  //       user.set(null);
+  //     }
+  //   } catch (error) {
+  //     console.error('User login status check error:', error);
+  //   }
+  // }
 
-  onMount(() => {
-    checkUserLoginStatus();
-  });
+  // onMount(() => {
+  //   checkUserLoginStatus();
+  // });
 
-  function toggleLegoDropdown() {
-    showLegoDropdown = !showLegoDropdown;
-  }
+  // function toggleLegoDropdown() {
+  //   showLegoDropdown = !showLegoDropdown;
+  // }
 
   function clearMessage() {
     message = '';
   }
-
-  async function handleLogout() {
-    try {
-      const response = await fetch('http://localhost:8080/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        user.set(null);
-        window.location.href = '/';
-
-        user.set(null);
-      } else {
-        console.error('Error logging out:', response.status);
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  }
 </script>
 
 <Router>
-  <nav>
-    <Link to="/">
-      <iconify-icon icon="mdi:home" class="house-icon" />
-    </Link>
-
-    {#if $user}
-      <Link to="/addLego">+ Lego</Link>
-      <Link to="/legoSetList">The Lego List</Link>
-      <Link to="/" on:click={handleLogout}>Log out</Link>
-    {:else}
-      <Link to="/login" class="login">Log in</Link>
-      <!-- <LoginWithGoogle /> -->
-      <Link to="/signup" class="signup">Sign up</Link>
-    {/if}
-  </nav>
+  <Navbar />
 
   <div class="mainRouter">
     <Route path="/" component={Home} />
@@ -110,11 +70,6 @@
 </Router>
 
 <style>
-  .house-icon {
-    color: white;
-    font-size: 24px;
-  }
-
   .mainRouter {
     display: flex;
     flex-direction: column;

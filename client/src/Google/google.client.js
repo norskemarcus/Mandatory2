@@ -1,5 +1,5 @@
-// import necessary Firebase functions
-//import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+//import necessary Firebase functions
+// import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 // export async function loginWithGoogle() {
 //   const auth = getAuth();
@@ -11,5 +11,5 @@
 //   }
 // }
 
-// Use this?
-// npm install firebase --legacy - peer - deps;
+// npm install firebase --legacy - peer - deps; use this to install firebase on the client?
+// npm install firebase --save
