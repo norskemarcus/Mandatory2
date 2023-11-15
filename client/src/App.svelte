@@ -6,37 +6,25 @@
   import Signup from './pages/Signup/Signup.svelte';
   import PrivateRoute from './PrivateRoute.svelte';
   import AddLegoSet from './pages/Lego/AddLegoSet.svelte';
-  import EditLegoSet from './pages/Lego/EditLegoSet.svelte';
-  // import LegoSetCard from './pages/Lego/LegoSetCard.svelte';
   import LegoSetList from './pages/Lego/LegoSetList.svelte';
   import 'iconify-icon';
   import Footer from './components/Footer.svelte';
   import Navbar from './components/Navbar.svelte';
+  import { isDarkMode } from './store/stores.js';
+  import { onMount } from 'svelte';
 
   let message = '';
-  // let showLegoDropdown = false;
 
-  // async function checkUserLoginStatus() {
-  //   try {
-  //     const response = await fetchUser();
-
-  //     if (response) {
-  //       user.set(response);
-  //     } else {
-  //       user.set(null);
-  //     }
-  //   } catch (error) {
-  //     console.error('User login status check error:', error);
-  //   }
-  // }
-
-  // onMount(() => {
-  //   checkUserLoginStatus();
-  // });
-
-  // function toggleLegoDropdown() {
-  //   showLegoDropdown = !showLegoDropdown;
-  // }
+  onMount(() => {
+    const unsubscribe = isDarkMode.subscribe(value => {
+      if (value) {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+    });
+    return unsubscribe;
+  });
 
   function clearMessage() {
     message = '';
@@ -52,10 +40,6 @@
 
     <PrivateRoute path="/addLego">
       <AddLegoSet />
-    </PrivateRoute>
-
-    <PrivateRoute path="/editLego">
-      <EditLegoSet />
     </PrivateRoute>
 
     <PrivateRoute path="/legoSetList">

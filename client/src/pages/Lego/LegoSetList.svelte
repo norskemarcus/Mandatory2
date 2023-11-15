@@ -5,13 +5,9 @@
   import { fetchUser } from '../../user/userApi.js';
   import { user } from '../../store/stores.js';
 
-  // import { legoSets, setLegoSets } from '../../store/stores'; // Import the legoSets store
-  // let user = null;
   let legoSets = [];
   let edit = false;
-  // export let deleteLegoSet = null;
   let toBeDeleted = null;
-  //let legoSets = writable([]);
   let dialogRef;
 
   function handleEdit(legoSet) {
@@ -19,7 +15,7 @@
   }
 
   function handleDelete(legoSet) {
-    toBeDeleted = legoSet; // Set the Lego set to be deleted
+    toBeDeleted = legoSet; 
     dialogRef.showModal();
   }
 
@@ -68,7 +64,7 @@
   onMount(async () => {
     const fetchedUser = await fetchUser();
     if (fetchedUser) {
-      user.set(fetchedUser); // Update the user store with the fetched user data
+      user.set(fetchedUser); 
       fetchLegoSets();
     }
   });
@@ -129,7 +125,6 @@
     border-radius: 5px;
     padding: 10px;
     margin: 10px;
-    /* flex: 1; */
     position: relative;
   }
 
@@ -149,6 +144,7 @@
   .display-btn {
     width: 50%;
     align-items: center;
+    background-color: gray;
   }
 
   .del-btn {

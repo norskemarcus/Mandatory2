@@ -1,4 +1,4 @@
-<script>
+<!-- <script>
   import { onMount } from 'svelte';
   import { toast, Toaster } from 'svelte-french-toast';
   import LegoSetList from './LegoSetList.svelte';
@@ -52,4 +52,4 @@
 </div>
 
 <style>
-</style>
+</style> -->

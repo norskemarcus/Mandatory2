@@ -5,7 +5,7 @@
 <footer>
   <div class="footer-content">
     <div class="footer-links">
-      <a href={contactLink}>Contact Us</a>
+      <a href={contactLink}>Contact me</a>
     </div>
     <div class="footer-links">
       <a href="https://kea.dk">KEA</a>

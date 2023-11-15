@@ -31,20 +31,20 @@
   h2 {
     padding: 0 0 0.2em 0;
     margin: 0 0 1em 0;
-    border-bottom: 1px solid #5f26a8;
+    border-bottom: 1px solid black;
     font-size: 1rem;
   }
 
   .lego-item-number::before {
     content: '#';
-    color: #5f26a8;
+    color: black;
     font-weight: bold;
     margin-right: 5px;
   }
 
   .lego-age::before {
     content: 'Years:';
-    color: #5f26a8;
+    color: black;
     font-size: 1em;
     margin-right: 5px;
   }

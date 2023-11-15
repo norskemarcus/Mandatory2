@@ -6,8 +6,14 @@
   import { fetchUser } from '../user/userApi';
   import { user } from '../store/stores.js';
   import { onMount } from 'svelte';
+  import { isDarkMode } from '../store/stores.js';
+  import { FormGroup, Input } from 'sveltestrap';
 
   let isOpen = false;
+
+  function toggleTheme(event) {
+    isDarkMode.set(event.target.checked);
+  }
 
   function handleUpdate(event) {
     isOpen = event.detail.isOpen;
@@ -59,8 +65,10 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
 </svelte:head>
 
-<Navbar color="success-subtle" light expand="md">
-  <NavbarBrand href="/"><iconify-icon icon="mdi:home" class="house-icon" /></NavbarBrand>
+<Navbar class={$isDarkMode ? 'navbar-dark bg-dark' : 'navbar-light bg-light'} light={!$isDarkMode} dark={$isDarkMode} expand="md">
+  <NavbarBrand href="/">
+    <iconify-icon icon="mdi:home" class="house-icon" style="color: {$isDarkMode ? '#ccc' : 'rgb(31, 13, 13)'}" />
+  </NavbarBrand>
   <NavbarToggler on:click={() => (isOpen = !isOpen)} />
   <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
     <Nav class="ms-auto" navbar>
@@ -92,6 +100,9 @@
             <DropdownItem><Link to="/" on:click={handleLogout} class="dropdown-item">Log out</Link></DropdownItem>
           </DropdownMenu>
         </Dropdown>
+        <FormGroup>
+          <Input id="c3" type="switch" label="Dark mode" on:change={toggleTheme} />
+        </FormGroup>
       {:else}
         <NavItem>
           <Link to="/login" class="nav-link">Log in</Link>
@@ -99,6 +110,9 @@
         <NavItem>
           <Link to="/signup" class="nav-link">Sign up</Link>
         </NavItem>
+        <FormGroup>
+          <Input id="c3" type="switch" label="Dark mode" on:change={toggleTheme} />
+        </FormGroup>
       {/if}
     </Nav>
   </Collapse>
@@ -110,14 +124,11 @@
     font-size: 24px;
   }
 
-  /* .nav-link {
-    color: inherit;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
+  .navbar .form-check .form-check-input {
+    background-color: #eee !important; /* Default background for the unchecked state */
   }
-  .dropdown-item {
-    color: inherit;
-    text-decoration: none;
-    padding: 0.25rem 1.5rem;
-  } */
+
+  .navbar .form-check .form-check-input:checked {
+    background-color: #4caf50 !important; /* Background for the checked state */
+  }
 </style>

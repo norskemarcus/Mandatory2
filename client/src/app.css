@@ -14,19 +14,58 @@
   -webkit-text-size-adjust: 100%;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+body.dark-mode {
+  --bs-body-bg: #212529;
+  --bs-body-color: #fff;
+  --bs-navbar-bg: #343a40;
+  --bs-navbar-color: #fff;
 }
 
 body {
   margin: 0;
-  
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
+
+
+:global(body.dark-mode) .navbar {
+  background-color: var(--bs-navbar-bg) !important;
+  color: var(--bs-navbar-color) !important;
+}
+
+:global(body.dark-mode) .navbar-dark .navbar-nav .nav-link {
+  color: var(--bs-navbar-dark-color) !important;
+}
+:global(body.dark-mode) .navbar-dark .navbar-nav .nav-link:hover {
+  color: var(--bs-navbar-dark-hover-color) !important;
+}
+
+
+:global(body.dark-mode) .form-check-input:checked {
+  background-color: #ccc !important; 
+}
+
+
+/* :global(.navbar .form-check .form-check-input) {
+  background-color: #eee !important; 
+}
+
+:global(.navbar .form-check .form-check-input:checked) {
+  background-color: #4caf50 !important; 
+} */
+
+.form-check-input {
+  background-color: #eee !important; 
+}
+
+.form-check-input:checked {
+  background-color: grey !important; 
+}
+
+.navbar {
+  background-color: var(--navbar-color);
+}
+
 
 h1 {
   font-size: 3.2em;
@@ -34,24 +73,15 @@ h1 {
 }
 
 
-nav {
-  display: flex;
-  background-color: #5f26a8; 
-  padding: 10px; 
-  justify-content: space-between; /* Use space-between to push elements to both ends */
-  align-items: center; /* Vertically center the elements */
-}
-
 
 nav a {
-  color: #fff; 
-  text-decoration: none; 
   margin-right: 20px; 
 }
 
 nav a.active {
   font-weight: bold; 
 }
+
 nav a.login {
   margin-right: 2em; 
   margin-left: auto; 
@@ -59,21 +89,10 @@ nav a.login {
 
 .mainRouter {
   max-width: 90%;
-  /* margin: 0 auto; */
-  /* margin-top: 1em; */
   padding: 1em;
 }
 
-/* .card {
-  padding: 2em;
-} */
 
-/* #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-} */
 
 button {
   border-radius: 8px;
@@ -87,7 +106,7 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: black;
 }
 button:focus,
 button:focus-visible {
