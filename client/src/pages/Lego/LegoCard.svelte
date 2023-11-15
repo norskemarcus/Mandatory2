@@ -26,6 +26,7 @@
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
     padding: 1em;
     margin: 1em;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
   }
 
   h2 {
@@ -33,6 +34,7 @@
     margin: 0 0 1em 0;
     border-bottom: 1px solid black;
     font-size: 1rem;
+    transition: border-color 0.3s;
   }
 
   .lego-item-number::before {
@@ -53,5 +55,26 @@
   .missing-item-number,
   .missing-age {
     color: #999;
+  }
+
+  :global(body.dark-mode) .lego-set-card {
+    background-color: #333;
+    border-color: #444;
+    color: #ddd;
+  }
+
+  :global(body.dark-mode) h2 {
+    border-color: #555;
+  }
+
+  :global(body.dark-mode) .lego-item-number::before,
+  :global(body.dark-mode) .lego-age::before {
+    color: #ccc;
+  }
+
+  :global(body.dark-mode) .missing-name,
+  :global(body.dark-mode) .missing-item-number,
+  :global(body.dark-mode) .missing-age {
+    color: #666;
   }
 </style>

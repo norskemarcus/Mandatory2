@@ -73,37 +73,33 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
   }
 
   label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
+    transition: color 0.3s;
   }
 
-  .small-input {
-    width: 100%;
+  .small-input,
+  input[type='text'],
+  input[type='number'] {
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
   }
 
   input[type='text'] {
-    width: 80%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    min-width: 50px;
+    width: 100%;
   }
 
   input[type='number'] {
-    width: 50%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    width: calc(50% - 20px);
+    display: inline-block;
   }
 
   button {
@@ -113,6 +109,7 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
   }
 
   button:hover {
@@ -121,5 +118,31 @@
 
   .button-container {
     text-align: start;
+  }
+
+  :global(body.dark-mode) .lego-set-form {
+    background-color: #333;
+    border-color: #444;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  }
+
+  :global(body.dark-mode) label {
+    color: #ddd;
+  }
+
+  :global(body.dark-mode) .small-input,
+  :global(body.dark-mode) input[type='text'],
+  :global(body.dark-mode) input[type='number'] {
+    background-color: #444;
+    border-color: #555;
+    color: #ddd;
+  }
+
+  :global(body.dark-mode) button {
+    background-color: #6c757d; /* Bootstrap's gray */
+  }
+
+  :global(body.dark-mode) button:hover {
+    background-color: #5a6268; /* A darker shade of bootstrap's gray for hover */
   }
 </style>
