@@ -9,6 +9,7 @@ router.post('/auth/signup', async (req, res) => {
 
     const user = await signUp(email, password);
     req.session.user = { id: user.id };
+    req.session.save();
 
     res.status(201).send({ message: 'User created successfully' });
   } catch (error) {
@@ -46,10 +47,8 @@ router.post('/auth/login-accept', async (req, res) => {
 
 router.get('/auth/check-login', (req, res) => {
   if (req.session.user) {
-    console.log('check login true');
     res.send({ loggedIn: true, user: req.session.user });
   } else {
-    console.log('check login false');
     res.send({ loggedIn: false });
   }
 });

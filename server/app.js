@@ -58,24 +58,6 @@ app.use(
   }),
 );
 
-// app.use(session({
-//   secret: process.env.SESSION_SECRET,
-//   resave: false,
-//   saveUninitialized: false,
-//   cookie: {
-//     httpOnly: true, // cookie is not accessible via JavaScript in the browser
-//     secure: process.env.NODE_ENV === 'production', // Secure cookie should be set to true in production if using HTTPS
-//     maxAge: 24 * 60 * 60 * 1000 // 24 hours
-//   }
-// }));
-
-// app.use(passport.initialize());
-// app.use(passport.session());
-
-// OBS IKKE SLETTE FØR BCRYPT VIRKER!!!
-//import authRouter from './routes/authRouter.js';
-//app.use(authRouter);
-
 import contactRoute from './routes/contactRouter.js';
 app.use(contactRoute);
 

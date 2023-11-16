@@ -11,7 +11,7 @@ router.get('/api/legosets', async (req, res) => {
     return res.status(401).send({ error: 'User is not logged in' });
   }
 
-  let userId = req.session.user.uid;
+  let userId = req.session.user.id;
   console.log('userId from session in get legosets', userId);
 
   if (userId) {
@@ -36,7 +36,7 @@ router.post('/api/legosets', (req, res) => {
     return res.status(401).send({ error: 'User is not logged in' });
   }
 
-  const userId = req.session.user.uid;
+  const userId = req.session.user.id;
   const { itemNumber, name, age } = req.body;
 
   const checkExistingSQL = 'SELECT itemNumber FROM lego_sets WHERE itemNumber = ? AND user_id = ?';
@@ -64,7 +64,7 @@ router.post('/api/legosets', (req, res) => {
 });
 
 router.delete('/api/legosets/:itemNumber', (req, res) => {
-  const userId = req.session.user.uid;
+  const userId = req.session.user.id;
   const itemNumber = req.params.itemNumber;
 
   const checkExistingSQL = 'SELECT itemNumber, user_id FROM lego_sets WHERE itemNumber = ?';
