@@ -1,8 +1,8 @@
 <script>
-  import { Router, Link, Route } from 'svelte-navigator';
+  import { Router, Route } from 'svelte-navigator';
   import Home from './pages/Home/Home.svelte';
   import Contact from './pages/Contact/Contact.svelte';
-  import Login from './pages/Login/Login.svelte';
+  import Login from './pages/Login/LoginBcrypt.svelte';
   import Signup from './pages/Signup/Signup.svelte';
   import PrivateRoute from './PrivateRoute.svelte';
   import AddLegoSet from './pages/Lego/AddLegoSet.svelte';

@@ -1,8 +1,9 @@
 import Router from 'express';
 const router = Router();
+import connection from '../database/connection.js';
+import { createLegoSetsTable } from '../database/createLegoset.js';
 
-import { connection } from '../database/mysqlDatabase.mjs';
-
+createLegoSetsTable();
 
 router.get('/api/legosets', async (req, res) => {
   if (!req.session.user) {
@@ -12,7 +13,7 @@ router.get('/api/legosets', async (req, res) => {
 
   let userId = req.session.user.uid;
   console.log('userId from session in get legosets', userId);
- 
+
   if (userId) {
     const query = `SELECT * FROM lego_sets WHERE user_id = "${userId}"`;
     console.log('Query:', query);

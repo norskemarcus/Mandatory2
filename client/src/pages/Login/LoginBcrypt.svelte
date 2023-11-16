@@ -2,6 +2,7 @@
   import { setContext } from 'svelte';
   import { writable } from 'svelte/store';
   import { createEventDispatcher } from 'svelte';
+  import { navigate } from 'svelte-navigator';
 
   // Create an event dispatcher, to pass a signal from Login to App.svelte, to inform at the user has logged out, and the message should be cleared
   const dispatch = createEventDispatcher();
@@ -16,7 +17,7 @@
   // ...and add it to the context for child components to access
   setContext('user', user);
 
-  async function handleSubmit() {
+  async function login() {
     try {
       const response = await fetch('http://localhost:8080/auth/login', {
         method: 'POST',
@@ -25,16 +26,17 @@
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ email: email, password: password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (response.ok) {
         const data = await response.json();
         message = data.message;
-        console.log('Data user uid in handleSubmit (Login.svelte)', data.user.uid);
+        //dispatch('login', data.user);
         dispatch('logout');
-        user.set(data.user);
+        user.set(data.user); // Update the user store with the user's data
         window.location.href = '/';
+        //navigate('/');
       } else {
         message = 'Error: Something went wrong';
         user.set(null);
@@ -48,7 +50,7 @@
 </script>
 
 <main>
-  <form on:submit|preventDefault={handleSubmit}>
+  <form on:submit|preventDefault={login}>
     <label for="email">Your email</label>
     <input id="email" required type="email" name="email" placeholder="Your email" bind:value={email} />
 
@@ -103,9 +105,4 @@
   .button-container {
     align-items: center;
   }
-
-  /* .forgot-btn {
-    background-color: #34303a;
-    color: #fff;
-  } */
 </style>

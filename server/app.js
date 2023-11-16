@@ -6,9 +6,14 @@ dotenv.config();
 import helmet from 'helmet';
 import cors from 'cors';
 const app = express();
+
 // import passport from 'passport';
 
 app.use(helmet()); // This middleware adds various security-related HTTP headers to your responses, which can help protect your application against certain attacks.
+
+// SLIPPER CORS PROBLEMER!!! OBS må bygge projekt først med build
+// import path from 'path';
+// app.use(express.static(path.resolve('../client/dist')));
 
 // Enable CORS for all routes
 app.use(
@@ -46,23 +51,50 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
+    cookie: {
+      secure: false, // set to true if you're on HTTPS
+      httpOnly: true,
+    },
   }),
 );
+
+// app.use(session({
+//   secret: process.env.SESSION_SECRET,
+//   resave: false,
+//   saveUninitialized: false,
+//   cookie: {
+//     httpOnly: true, // cookie is not accessible via JavaScript in the browser
+//     secure: process.env.NODE_ENV === 'production', // Secure cookie should be set to true in production if using HTTPS
+//     maxAge: 24 * 60 * 60 * 1000 // 24 hours
+//   }
+// }));
 
 // app.use(passport.initialize());
 // app.use(passport.session());
 
-import authRouter from './routes/authRouter.js';
-app.use(authRouter);
-
-// import googleAuthRouter from './routes/googleAuthRouter.js';
-// app.use(googleAuthRouter);
+// OBS IKKE SLETTE FØR BCRYPT VIRKER!!!
+//import authRouter from './routes/authRouter.js';
+//app.use(authRouter);
 
 import contactRoute from './routes/contactRouter.js';
 app.use(contactRoute);
 
+import { initializeDatabase } from './database/databaseInit.js';
+import authBryptRouter from './routes/authBcryptRouter.js';
 import legoRouter from './routes/legoRouter.js';
-app.use(legoRouter);
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log('Server is running on PORT', PORT));
+// app.get('*', (req, res) => {
+//   res.sendFile(path.resolve('../client/dist/index.html'));
+// });
+
+initializeDatabase()
+  .then(() => {
+    app.use(authBryptRouter);
+    app.use(legoRouter);
+
+    const PORT = process.env.PORT || 8080;
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  })
+  .catch(err => {
+    console.error('Error during database initialization:', err);
+  });

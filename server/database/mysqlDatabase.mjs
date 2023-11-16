@@ -17,7 +17,7 @@ connection.connect(err => {
   console.log('Connected to the MySQL server');
 
   // Create the database if it doesn't exist
-  const createDatabaseSQL = 'CREATE DATABASE IF NOT EXISTS lego';
+  const createDatabaseSQL = 'CREATE DATABASE IF NOT EXISTS node_exam';
 
   connection.query(createDatabaseSQL, (err, results) => {
     if (err) {
@@ -28,7 +28,7 @@ connection.connect(err => {
       }
     }
     // Switch to the lego database
-    connection.changeUser({ database: 'lego' }, err => {
+    connection.changeUser({ database: 'node_exam' }, err => {
       if (err) {
         console.error('Error switching to the lego database:', err);
         return;

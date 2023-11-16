@@ -123,12 +123,4 @@
     color: rgb(31, 13, 13);
     font-size: 24px;
   }
-
-  .navbar .form-check .form-check-input {
-    background-color: #eee !important; /* Default background for the unchecked state */
-  }
-
-  .navbar .form-check .form-check-input:checked {
-    background-color: #4caf50 !important; /* Background for the checked state */
-  }
 </style>
