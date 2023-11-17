@@ -36,12 +36,6 @@ This component represents the card layout of an individual wish. It defines the 
       {/if}
     </slot>
   </div>
-
-  <!-- {#if wish.image_url}
-    <img src={wish.image_url} alt={wish.title} class="wish-image" />
-  {:else}
-    <div class="placeholder-image">No Image Available</div>
-  {/if} -->
 </article>
 
 <style>

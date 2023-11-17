@@ -9,7 +9,7 @@
 
   <span slot="description">{wish.description}</span>
 
-  <span slot="price">{wish.price}</span>
+  <span slot="price">Price: {wish.currency} {wish.price}</span>
 </WishCard>
 
 <!-- 
