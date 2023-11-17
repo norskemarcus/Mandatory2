@@ -231,4 +231,8 @@
   .save-button i.fas.fa-heart {
     margin-right: 8px;
   }
+
+  :global(body.dark-mode) .search-result-image-container {
+    background-color: #000;
+  }
 </style>

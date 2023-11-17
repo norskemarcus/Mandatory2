@@ -104,7 +104,7 @@
           </DropdownMenu>
         </Dropdown>
         <FormGroup>
-          <Input id="c3" type="switch" label="Dark mode" on:change={toggleTheme} />
+          <Input id="c3" type="switch" label="Dark mode" on:change={toggleTheme} bind:checked={$isDarkMode} />
         </FormGroup>
       {:else}
         <NavItem>
