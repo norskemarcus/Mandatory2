@@ -16,7 +16,7 @@
 </main>
 
 <svelte:head>
-  <title>Welcome to Wishes & hopes</title>
+  <title>Welcome to the Wishing Wand</title>
 </svelte:head>
 
 <style>

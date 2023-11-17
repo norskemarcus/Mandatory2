@@ -1,6 +1,8 @@
 import Router from 'express';
 const router = Router();
 import connection from '../database/connection.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 router.get('/api/wishes', async (req, res) => {
   if (!req.session.user) {
@@ -59,13 +61,11 @@ router.post('/api/wishes', (req, res) => {
   });
 });
 
-// http://localhost:5173/api/search?query=test
 // Backend endpoint to perform a search and return results
 router.get('/api/search', async (req, res) => {
   try {
     const { query } = req.query;
-    const response = await fetch(`https://www.googleapis.com/customsearch/v1?key=AIzaSyB6mYV7t8Q7PencT7bkBCO0gFObG3D-xrU
-    &cx=433462c853ba94cc2&q=${query}`);
+    const response = await fetch(`https://www.googleapis.com/customsearch/v1?key=${process.env.GOOGLE_API_KEY}&cx=${process.env.GOOGLE_CUSTOM_SEARCH_CX}&q=${query}`);
     const data = await response.json();
     res.json(data);
   } catch (error) {

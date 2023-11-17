@@ -25,34 +25,9 @@ body {
   margin: 0;
   background-color: var(--background-color);
   color: var(--text-color);
+  cursor: url('../public/images/wand.png'), auto;
 }
 
-
-:global(body.dark-mode) .navbar {
-  background-color: var(--bs-navbar-bg) !important;
-  color: var(--bs-navbar-color) !important;
-}
-
-:global(body.dark-mode) .navbar-dark .navbar-nav .nav-link {
-  color: var(--bs-navbar-dark-color) !important;
-}
-:global(body.dark-mode) .navbar-dark .navbar-nav .nav-link:hover {
-  color: var(--bs-navbar-dark-hover-color) !important;
-}
-
-
-:global(body.dark-mode) .form-check-input:checked {
-  background-color: #ccc !important; 
-}
-
-
-/* :global(.navbar .form-check .form-check-input) {
-  background-color: #eee !important; 
-}
-
-:global(.navbar .form-check .form-check-input:checked) {
-  background-color: #4caf50 !important; 
-} */
 
 .form-check-input {
   background-color: #eee !important; 
@@ -73,7 +48,6 @@ h1 {
 }
 
 
-
 nav a {
   margin-right: 20px; 
 }
@@ -92,8 +66,6 @@ nav a.login {
   padding: 1em;
 }
 
-
-
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -102,15 +74,35 @@ button {
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
-  cursor: pointer;
+  /* cursor: pointer; */
+  cursor: url('/images/wand.png'), auto;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: black;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+
+:global(body.dark-mode) .navbar {
+  background-color: var(--bs-navbar-bg) !important;
+  color: var(--bs-navbar-color) !important;
+}
+
+:global(body.dark-mode) .navbar-dark .navbar-nav .nav-link {
+  color: var(--bs-navbar-dark-color) !important;
+}
+:global(body.dark-mode) .navbar-dark .navbar-nav .nav-link:hover {
+  color: var(--bs-navbar-dark-hover-color) !important;
+}
+
+:global(body.dark-mode) .form-check-input:checked {
+  background-color: #ccc !important; 
 }
 
 
