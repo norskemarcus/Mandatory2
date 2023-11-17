@@ -1,5 +1,11 @@
 import connection from './connection.js';
 
+// A children wishlist
+
+// And maybe a parent wishlist, that they can send to other relatives or friends?
+
+// Should add the boolean selected
+
 export const createWishTable = () => {
   const createTableSQL = `
   CREATE TABLE IF NOT EXISTS wishes (

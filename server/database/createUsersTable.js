@@ -3,6 +3,8 @@ import connection from './connection.js';
 
 const saltRounds = 13; // cost factor for hashing
 
+
+
 export const createUsersTable = () => {
   const createUserTableSQL = `
     CREATE TABLE IF NOT EXISTS users (

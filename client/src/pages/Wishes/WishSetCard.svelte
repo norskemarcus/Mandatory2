@@ -1,20 +1,21 @@
+<!-- 
+  This component seems to be a wrapper for WishCard. It uses the wish prop and passes it down to WishCard. -->
+
 <script>
   import WishCard from './WishCard.svelte';
   export let wish;
+  export let userRole;
+  export let onSelect;
   // is how the wish prop is declared, making it possible for the parent component to pass the wish data to WishSetCard.
+
+  function handleSelection(event) {
+    const selected = event.target.checked;
+    onSelect(wish.id, selected);
+  }
 </script>
 
-<WishCard {wish}>
+<!-- WishSetCard then passes the selectWish function down to WishCard. -->
+<WishCard {wish} {userRole} {onSelect}>
   <span slot="title">{wish.title}</span>
-
-  <!-- <span slot="description">{wish.description}</span> -->
-
   <span slot="price">Price: {wish.currency} {wish.price}</span>
 </WishCard>
-
-<!-- 
-The WishSetCard.svelte and WishCard.svelte components are designed to work together using Svelte's slot functionality, which allows you to create a placeholder within a component (WishCard) that you can fill with custom content from a parent or wrapping component (WishSetCard).
-
-WishSetCard.svelte is a wrapper component for WishCard. It receives a wish object as a prop and passes different properties of this wish object to the slots in the WishCard. The slots are named according to the properties of a wish item like name, itemNumber, and price.
-
- -->

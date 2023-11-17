@@ -1,3 +1,6 @@
+<!-- 
+  This is the top-level component that fetches and lists all wishes, passing down the necessary props to WishSetCard. -->
+
 <script>
   import { onMount } from 'svelte';
   import WishSetCard from './WishSetCard.svelte';
@@ -8,6 +11,27 @@
   let editMode = false;
   let toBeDeleted = null;
   let dialogRef;
+  let selectedWishes = new Set();
+  let loggedIn = false; // You'll want to update this based on your user's login status
+  //let userRole = ''; //
+  // OBS OBS Hardcoded userrole ***************************** !!
+  let userRole = 'Parent';
+
+  // Real-Time Updates: Use WebSockets to push updates to the parent's dashboard as soon as a new wish is added by a child or a wish status changes.
+
+  onMount(async () => {
+    const fetchedUser = await fetchUser();
+    if (fetchedUser) {
+      user.set(fetchedUser);
+      // userRole = fetchUser.role;
+      loggedIn = true;
+      fetchWishes();
+    }
+  });
+
+  function toggleEditMode() {
+    editMode = !editMode;
+  }
 
   function handleEdit(wish) {
     editMode = wish;
@@ -39,10 +63,6 @@
     dialogRef.close();
   }
 
-  function toggleEditMode() {
-    editMode = !editMode;
-  }
-
   async function fetchWishes() {
     try {
       const response = await fetch('http://localhost:8080/api/wishes', {
@@ -59,13 +79,41 @@
     }
   }
 
-  onMount(async () => {
-    const fetchedUser = await fetchUser();
-    if (fetchedUser) {
-      user.set(fetchedUser);
-      fetchWishes();
+  // update selectedWishes when a wish is selected or deselected
+  function selectWish(wishId, isSelected) {
+    if (isSelected) {
+      selectedWishes.add(wishId);
+    } else {
+      selectedWishes.delete(wishId);
     }
-  });
+  }
+
+  function saveSelectedWishes() {
+    const wishesToSave = Array.from(selectedWishes);
+    fetch('/save-selected-wishes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ wishIds: wishesToSave }),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok.');
+        }
+        return response.json(); // Handle the case where there might not be any JSON to parse
+      })
+      .then(data => {
+        if (data.success) {
+          console.log('Wishes saved successfully!');
+          // Here you can clear the selected wishes or navigate the user to the updated list
+          selectedWishes.clear();
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
 </script>
 
 <h3>My Wishlist:</h3>
@@ -79,13 +127,18 @@
     {/if}
   </button>
 
+  {#if loggedIn && userRole === 'Parent'}
+    <button on:click={saveSelectedWishes} class="save-btn">Save selected wishes to my list</button>
+  {/if}
+
   <div class="wishlist">
     {#each wishes as wish (wish.id)}
       {#if !editMode}
-        <WishSetCard {wish} />
+        <WishSetCard {wish} {userRole} onSelect={selectWish} />
       {:else}
         <div class="wish-item">
-          <WishSetCard {wish} />
+          <!-- Pass the selectWish function as a prop to WishSetCard. -->
+          <WishSetCard {wish} {userRole} onSelect={selectWish} />
           <div class="buttons">
             <button on:click={() => handleEdit(wish)} id="edit-btn">Edit</button>
             <button on:click={() => handleDelete(wish)} class="del-btn">Delete</button>
@@ -145,6 +198,16 @@
     padding: 5px 10px;
     margin-bottom: 20px;
     background-color: #5f26a8;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  .save-btn {
+    padding: 5px 10px;
+    margin-bottom: 20px;
+    background-color: #28a745;
     color: white;
     border: none;
     cursor: pointer;

@@ -1,23 +1,41 @@
 <!-- 
-Inside the WishCard, the <span slot="name"> is where the wish's name is inserted into the WishCard's slot for the name. 
- 
-WishCard.svelte
-This component represents the card layout of an individual wish. It defines the slots where the content provided by WishSetCard will be displayed.
+This component should only be responsible for displaying an individual wish. Since you are using slots, the parent component will determine the content of each slot.
 -->
 <script>
   export let wish;
+
+  // *****************OBS HARDCODED PARENT AS ROLE**********************
+  export let userRole = 'Parent';
+  export let onSelect; // This is the function passed from WishList.svelte
+
+  // This function will be called when a checkbox changes state
+  function handleSelection(event) {
+    const selected = event.target.checked;
+    onSelect(wish.id, selected); // Call the onSelect function with the wish ID and the selected state
+  }
 </script>
 
 <article class="wish-set-card">
   <h2>
     <slot name="title">
-      <span class="missing-title" />
+      <span class="missing-title">{wish.title}</span>
     </slot>
   </h2>
-
   <div class="wish-description">
     <slot name="description">
       <span class="missing-description" />
+    </slot>
+  </div>
+
+  <div class="wish-image">
+    <slot name="image">
+      {#if wish.image_url}
+        <a href={wish.url} target="_blank" rel="noopener noreferrer">
+          <img src={wish.image_url} alt={wish.title} class="wish-image" />
+        </a>
+      {:else}
+        <span class="placeholder-image">No Image Available</span>
+      {/if}
     </slot>
   </div>
 
@@ -27,15 +45,14 @@ This component represents the card layout of an individual wish. It defines the 
     </slot>
   </div>
 
-  <div class="wish-image">
-    <slot name="image">
-      {#if wish.image_url}
-        <img src={wish.image_url} alt={wish.title} class="wish-image" />
-      {:else}
-        <span class="placeholder-image">No Image Available</span>
-      {/if}
-    </slot>
-  </div>
+  {#if userRole === 'Parent'}
+    <label>
+      <!--
+      you use the on:change event on the checkbox to call the handleSelection function, which in turn calls the passed-in selectWish function with the wish ID and whether the wish is selected or not. -->
+      <input type="checkbox" on:change={handleSelection} />
+      Select for parent's list
+    </label>
+  {/if}
 </article>
 
 <style>
@@ -60,25 +77,6 @@ This component represents the card layout of an individual wish. It defines the 
   .wish-image {
     max-width: 100%;
   }
-  /* .lego-item-number::before {
-    content: '#';
-    color: black;
-    font-weight: bold;
-    margin-right: 5px;
-  }
-
-  .lego-age::before {
-    content: 'Years:';
-    color: black;
-    font-size: 1em;
-    margin-right: 5px;
-  } */
-
-  /* .missing-name,
-  .missing-item-number,
-  .missing-age {
-    color: #999;
-  } */
 
   .wish-description,
   .wish-price {
@@ -90,12 +88,6 @@ This component represents the card layout of an individual wish. It defines the 
   .missing-price {
     color: #999;
   }
-
-  /* :global(body.dark-mode) .wish-card {
-    background-color: #333;
-    border-color: #444;
-    color: #ddd;
-  } */
 
   :global(body.dark-mode) h2 {
     border-color: #555;

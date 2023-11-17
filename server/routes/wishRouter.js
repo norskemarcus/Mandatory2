@@ -61,7 +61,8 @@ router.post('/api/wishes', (req, res) => {
   });
 });
 
-// Backend endpoint to perform a search and return results
+/// save-selected-wishes
+
 router.get('/api/search', async (req, res) => {
   try {
     const { query } = req.query;
@@ -73,21 +74,6 @@ router.get('/api/search', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
-
-// CHANGE THE ROUTE???????
-// router.post('/api/wishlist', (req, res) => {
-//   const { title, link } = req.body;
-//   const userId = req.session.user?.id;
-
-//   if (!userId) {
-//     return res.status(401).send({ error: 'Not authorized' });
-//   }
-
-//   // Add logic to save the title and link to your database
-//   // ...
-//   console.log('It got all the way to the router.post!');
-//   res.status(201).send({ message: 'Item saved to wishlist' });
-// });
 
 router.delete('/api/wishes/:wishId', (req, res) => {
   if (!req.session.user) {
