@@ -26,12 +26,15 @@ router.post('/auth/login', async (req, res) => {
     const { email, password } = req.body;
     const user = await logIn(email, password);
     req.session.user = { id: user.id };
-
-    console.log('session user in login', req.session.user);
-
     res.status(200).send({ message: 'Login successful', user });
   } catch (error) {
-    res.status(401).send({ message: 'Login failed', error: error.message });
+    let message = 'Login failed. The email or password provided is incorrect.';
+
+    if (error.message === 'User not found' || error.message === 'Password is incorrect') {
+      res.status(401).send({ message });
+    } else {
+      res.status(500).send({ message: 'An error occurred while processing your login request.', error: error.message });
+    }
   }
 });
 

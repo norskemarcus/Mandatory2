@@ -29,21 +29,20 @@
         body: JSON.stringify({ email, password }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        const data = await response.json();
         message = data.message;
-        //dispatch('login', data.user);
         dispatch('logout');
-        user.set(data.user); // Update the user store with the user's data
+        user.set(data.user);
         window.location.href = '/';
-        //navigate('/');
       } else {
-        message = 'Error: Something went wrong';
+        message = data.message || 'Error: Something went wrong';
         user.set(null);
       }
     } catch (error) {
       console.error(error);
-      message = 'Error: Something went wrong';
+      message = error.message || 'Error: Something went wrong';
       user.set(null);
     }
   }

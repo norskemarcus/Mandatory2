@@ -78,13 +78,16 @@
         </NavItem>
 
         <Dropdown nav inNavbar>
-          <DropdownToggle nav caret>Lego</DropdownToggle>
+          <DropdownToggle nav caret>Wishlist (child)</DropdownToggle>
           <DropdownMenu end>
             <DropdownItem as="div">
-              <Link to="/legoSetList" class="dropdown-item">My lego list</Link>
+              <Link to="/wishlist" class="dropdown-item">My wishlist</Link>
             </DropdownItem>
             <DropdownItem as="div">
-              <Link to="/addLego" class="dropdown-item">Add a new lego set</Link>
+              <Link to="/addwish" class="dropdown-item">Add a new wish</Link>
+            </DropdownItem>
+            <DropdownItem as="div">
+              <Link to="/search" class="dropdown-item">Search and save</Link>
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>

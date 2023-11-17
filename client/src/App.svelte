@@ -5,8 +5,9 @@
   import Login from './pages/Login/LoginBcrypt.svelte';
   import Signup from './pages/Signup/Signup.svelte';
   import PrivateRoute from './PrivateRoute.svelte';
-  import AddLegoSet from './pages/Lego/AddLegoSet.svelte';
-  import LegoSetList from './pages/Lego/LegoSetList.svelte';
+  import AddWish from './pages/Wishes/AddWish.svelte';
+  import WishList from './pages/Wishes/WishList.svelte';
+  import Search from './pages/Wishes/Search.svelte';
   import 'iconify-icon';
   import Footer from './components/Footer.svelte';
   import Navbar from './components/Navbar.svelte';
@@ -38,12 +39,16 @@
     <Route path="/" component={Home} />
     <Route path="/contact" primary={false} component={Contact} />
 
-    <PrivateRoute path="/addLego">
-      <AddLegoSet />
+    <PrivateRoute path="/addWish">
+      <AddWish />
     </PrivateRoute>
 
-    <PrivateRoute path="/legoSetList">
-      <LegoSetList />
+    <PrivateRoute path="/wishlist">
+      <WishList />
+    </PrivateRoute>
+
+    <PrivateRoute path="/search">
+      <Search />
     </PrivateRoute>
 
     <Route path="/login" on:click={clearMessage} component={Login} />

@@ -63,7 +63,7 @@ app.use(contactRoute);
 
 import { initializeDatabase } from './database/databaseInit.js';
 import authBryptRouter from './routes/authBcryptRouter.js';
-import legoRouter from './routes/legoRouter.js';
+import wishRouter from './routes/wishRouter.js';
 
 // app.get('*', (req, res) => {
 //   res.sendFile(path.resolve('../client/dist/index.html'));
@@ -72,7 +72,7 @@ import legoRouter from './routes/legoRouter.js';
 initializeDatabase()
   .then(() => {
     app.use(authBryptRouter);
-    app.use(legoRouter);
+    app.use(wishRouter);
 
     const PORT = process.env.PORT || 8080;
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

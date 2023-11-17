@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import connection from './connection.js';
 
-const saltRounds = 10; // cost factor for hashing
+const saltRounds = 13; // cost factor for hashing
 
 export const createUsersTable = () => {
   const createUserTableSQL = `
@@ -9,6 +9,7 @@ export const createUsersTable = () => {
       id INT PRIMARY KEY AUTO_INCREMENT,
       email VARCHAR(255) UNIQUE NOT NULL,
       password VARCHAR(255) NOT NULL,
+      role VARCHAR(20) NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `;
@@ -32,14 +33,17 @@ export async function signUp(email, password) {
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const insertSql = 'INSERT INTO users (email, password) VALUES (?, ?)';
+    const insertSql = 'INSERT INTO users (email, password, role) VALUES (?, ?, ?)';
+    const role = 'Parent';
 
-    const [results] = await connection.promise().query(insertSql, [email, hashedPassword]);
+    const [results] = await connection.promise().query(insertSql, [email, hashedPassword, role]);
     return results.insertId;
   } catch (error) {
     throw error;
   }
 }
+
+//TODO: implement additional functionality where parents can invite their children to join the platform and assign them the 'Child' role during the invitation acceptance process
 
 export async function logIn(email, password) {
   try {
@@ -60,31 +64,6 @@ export async function logIn(email, password) {
     delete user.password;
     return user;
   } catch (error) {
-    throw error; // You might want to handle it differently depending on your error handling strategy
+    throw error; // TODO: Lave en toast med fejlmelding
   }
 }
-
-// export const logIn = async (email, password) => {
-//   try {
-//     const query = 'SELECT * FROM users WHERE email = ?';
-
-//     return new Promise((resolve, reject) => {
-//       connection.query(query, [email], async (error, results) => {
-//         if (error) {
-//           reject(error);
-//         } else if (results.length === 0) {
-//           reject(new Error('User not found'));
-//         } else {
-//           const isMatch = await bcrypt.compare(password, results[0].password);
-//           if (isMatch) {
-//             resolve(results[0]);
-//           } else {
-//             reject(new Error('Password is incorrect'));
-//           }
-//         }
-//       });
-//     });
-//   } catch (error) {
-//     throw error;
-//   }
-// };
