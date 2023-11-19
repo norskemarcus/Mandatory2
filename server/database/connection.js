@@ -18,4 +18,14 @@ connection.connect(err => {
   console.log('Connected to the MySQL server');
 });
 
-export default connection;
+// Promise-based query function = wraps the traditional callback-style connection.query in a promise, which you can then await in an async function to ensure operations complete in sequence.
+const query = (sql, args) => {
+  return new Promise((resolve, reject) => {
+    connection.query(sql, args, (err, rows) => {
+      if (err) return reject(err);
+      resolve(rows);
+    });
+  });
+};
+
+export { query };

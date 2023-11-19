@@ -69,14 +69,40 @@ import wishRouter from './routes/wishRouter.js';
 //   res.sendFile(path.resolve('../client/dist/index.html'));
 // });
 
-initializeDatabase()
-  .then(() => {
-    app.use(authBryptRouter);
-    app.use(wishRouter);
+// The application start listening for requests on the designated port after the database has been successfully initialized.
 
-    const PORT = process.env.PORT || 8080;
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  })
-  .catch(err => {
-    console.error('Error during database initialization:', err);
-  });
+let initializationAttempts = 0;
+
+function startServer() {
+  app.use(authBryptRouter);
+  app.use(wishRouter);
+
+  const PORT = process.env.PORT || 8080;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+function handleInitializationError(err) {
+  console.error('Error during database initialization:', err);
+  initializationAttempts++;
+  if (initializationAttempts < 3) {
+    console.log(`Attempt ${initializationAttempts}: Retrying database initialization...`);
+    setTimeout(initializeDatabase, 5000);
+  } else {
+    console.error('Database initialization failed after 3 attempts, exiting...');
+    process.exit(1); // 1 indicate error
+  }
+}
+
+initializeDatabase().then(startServer).catch(handleInitializationError);
+
+// initializeDatabase()
+//   .then(() => {
+//     app.use(authBryptRouter);
+//     app.use(wishRouter);
+
+//     const PORT = process.env.PORT || 8080;
+//     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+//   })
+//   .catch(err => {
+//     console.error('Error during database initialization:', err);
+//   });

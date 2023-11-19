@@ -1,8 +1,16 @@
-import connection from './connection.js';
 import { createUsersTable } from './createUsersTable.js';
 import { createWishTable } from './createWishTable.js';
+import { createInvitationsTable } from './createInvitationsTable.js';
+import { createSavedWishesTable } from './createSavedWishes.js';
 
 export const initializeDatabase = async () => {
-  await createUsersTable(connection);
-  await createWishTable(connection);
+  try {
+    await createUsersTable();
+    await createWishTable();
+    await createInvitationsTable();
+    await createSavedWishesTable();
+    console.log('All tables created successfully');
+  } catch (err) {
+    console.error('Error creating tables:', err);
+  }
 };

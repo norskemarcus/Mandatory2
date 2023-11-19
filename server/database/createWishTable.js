@@ -1,4 +1,4 @@
-import connection from './connection.js';
+import { query } from './connection.js';
 
 // A children wishlist
 
@@ -6,8 +6,8 @@ import connection from './connection.js';
 
 // Should add the boolean selected
 
-export const createWishTable = () => {
-  const createTableSQL = `
+export const createWishTable = async () => {
+  const createWishesSQL = `
   CREATE TABLE IF NOT EXISTS wishes (
     id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(255),
@@ -24,11 +24,20 @@ export const createWishTable = () => {
 
   // The FOREIGN KEY allows actions such as CASCADE on delete or update, which can automatically delete or update rows in the lego_sets table when the related user is deleted or updated in the users table.
 
-  connection.query(createTableSQL, err => {
-    if (err) {
-      console.error('Error creating the wish table:', err);
-    } else {
-      console.log('Table wishes created successfully');
-    }
-  });
+  try {
+    await query(createWishesSQL);
+    console.log('Wishes table created successfully');
+  } catch (err) {
+    console.error('Error creating the wishes table:', err);
+    throw err;
+  }
 };
+
+//   connection.query(createTableSQL, err => {
+//     if (err) {
+//       console.error('Error creating the wish table:', err);
+//     } else {
+//       console.log('Table wishes created successfully');
+//     }
+//   });
+// };

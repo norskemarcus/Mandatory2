@@ -1,6 +1,6 @@
 import Router from 'express';
 const router = Router();
-import connection from '../database/connection.js';
+import { query } from '../database/connection.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -9,26 +9,23 @@ router.get('/api/wishes', async (req, res) => {
     console.log('User is not logged in');
     return res.status(401).send({ error: 'User is not logged in' });
   }
-
   let userId = req.session.user.id;
-
   if (userId) {
-    const query = `SELECT * FROM wishes WHERE user_id = "${userId}"`;
-    console.log('Query:', query);
+    const selectSql = `SELECT * FROM wishes WHERE user_id = ?`;
 
-    connection.query(query, (err, results) => {
-      if (err) {
-        return res.status(500).send({ error: err.message });
-      }
+    try {
+      const results = await query(selectSql, [userId]);
       res.send({ wishlist: results });
       console.log('Query results:', results);
-    });
+    } catch (err) {
+      return res.status(500).send({ error: err.message });
+    }
   } else {
     return res.status(401).send({ error: 'User session data not found' });
   }
 });
 
-router.post('/api/wishes', (req, res) => {
+router.post('/api/wishes', async (req, res) => {
   if (!req.session.user) {
     console.log('User is not logged in');
     return res.status(401).send({ error: 'User is not logged in' });
@@ -39,26 +36,20 @@ router.post('/api/wishes', (req, res) => {
 
   const checkExistingSQL = 'SELECT id FROM wishes WHERE title = ? AND user_id = ?';
 
-  connection.query(checkExistingSQL, [title, userId], (checkErr, results) => {
-    if (checkErr) {
-      console.error('Error checking for existing wish:', checkErr);
-      return res.status(500).send({ error: 'Failed to check for existing wish' });
-    }
-
-    if (results.length > 0) {
+  try {
+    const existingWishes = await query(checkExistingSQL, [title, userId]);
+    if (existingWishes.length > 0) {
       return res.status(400).send({ error: 'A wish with this title already exists' });
-    } else {
-      const insertSQL = 'INSERT INTO wishes (title, description, price, url, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)';
-
-      connection.query(insertSQL, [title, description, price, url, imageUrl, userId], (insertErr, result) => {
-        if (insertErr) {
-          console.error('Error inserting wish:', insertErr);
-          return res.status(500).send({ error: 'Failed to insert wish' });
-        }
-        res.status(201).send({ message: 'Wish created successfully', wishId: result.insertId });
-      });
     }
-  });
+
+    const insertSQL = 'INSERT INTO wishes (title, description, price, url, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)';
+    const insertResults = await query(insertSQL, [title, description, price, url, imageUrl, userId]);
+
+    res.status(201).send({ message: 'Wish created successfully', wishId: insertResults.insertId });
+  } catch (error) {
+    console.error('Error processing your request:', error);
+    res.status(500).send({ error: 'Failed to process your request' });
+  }
 });
 
 /// save-selected-wishes
@@ -109,4 +100,5 @@ router.delete('/api/wishes/:wishId', (req, res) => {
     });
   });
 });
+
 export default router;
