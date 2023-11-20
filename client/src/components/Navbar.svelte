@@ -72,9 +72,10 @@
   <NavbarToggler on:click={() => (isOpen = !isOpen)} />
   <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
     <Nav class="ms-auto" navbar>
+      <!-- {#if $user && $user.role === 'Parent'} -->
       {#if $user}
         <NavItem>
-          <Link to="/secret" class="nav-link">Secret page</Link>
+          <Link to="/parentDashboard" class="nav-link">Parent</Link>
         </NavItem>
 
         <Dropdown nav inNavbar>

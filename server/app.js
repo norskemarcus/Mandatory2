@@ -15,7 +15,6 @@ app.use(helmet()); // This middleware adds various security-related HTTP headers
 // import path from 'path';
 // app.use(express.static(path.resolve('../client/dist')));
 
-// Enable CORS for all routes
 app.use(
   cors({
     credentials: true,
@@ -61,6 +60,9 @@ app.use(
 import contactRoute from './routes/contactRouter.js';
 app.use(contactRoute);
 
+import invitationRouter from './routes/invitationRouter.js';
+app.use(invitationRouter);
+
 import { initializeDatabase } from './database/databaseInit.js';
 import authBryptRouter from './routes/authBcryptRouter.js';
 import wishRouter from './routes/wishRouter.js';
@@ -68,8 +70,6 @@ import wishRouter from './routes/wishRouter.js';
 // app.get('*', (req, res) => {
 //   res.sendFile(path.resolve('../client/dist/index.html'));
 // });
-
-// The application start listening for requests on the designated port after the database has been successfully initialized.
 
 let initializationAttempts = 0;
 

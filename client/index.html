@@ -4,9 +4,50 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/star.png" />
     <link rel="stylesheet" href="./src/app.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
+    <script src="https://cdn.websitepolicies.io/lib/cconsent/cconsent.min.js" defer></script>
+
+    <script>
+      window.addEventListener('load', function () {
+        const consentGiven = localStorage.getItem('cookieConsent');
+        if (consentGiven) {
+          const banner = document.querySelector('.wpcb-banner');
+          if (banner) {
+            banner.style.display = 'none';
+          }
+        } else {
+          window.wpcb.init({
+            border: 'thin',
+            corners: 'large',
+            colors: { popup: { background: '#f6f6f6', text: '#000000', border: '#555555' }, button: { background: '#555555', text: '#ffffff' } },
+            position: 'bottom-right',
+            padding: 'small',
+            transparency: '15',
+            fontsize: 'large',
+            content: { href: '/cookie-policy' },
+          });
+        }
+      });
+
+      // window.addEventListener('load', function () {
+      //   const consentGiven = localStorage.getItem('cookieConsent');
+      //   if (!consentGiven) {
+      //     window.wpcb.init({
+      //       border: 'thin',
+      //       corners: 'large',
+      //       colors: { popup: { background: '#f6f6f6', text: '#000000', border: '#555555' }, button: { background: '#555555', text: '#ffffff' } },
+      //       position: 'bottom-right',
+      //       padding: 'small',
+      //       transparency: '15',
+      //       fontsize: 'large',
+      //       content: { href: '/cookie-policy' },
+      //     });
+      //   }
+      // });
+    </script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mandatory 2</title>
+    <title>The Wishing Wand</title>
   </head>
   <body>
     <div id="app"></div>

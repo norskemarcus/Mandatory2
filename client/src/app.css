@@ -14,13 +14,13 @@
   -webkit-text-size-adjust: 100%;
 }
 
-@font-face {
+/* @font-face {
   font-family: 'MagicSchool';
-  src: url('../fonts/MagicSchoolOne.ttf') format('truetype'),
+  src: url('../dist/') format('truetype'),
        url('../fonts/MagicSchoolTwo.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-}
+} */
 
 body.dark-mode {
   --bs-body-bg: #212529;
@@ -34,7 +34,7 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
   /* cursor: url('/images/wand_cursor.png'), auto; */
-  font-family: 'MagicSchool', Helvetica;
+  /* font-family: 'MagicSchool', Helvetica, sans-serif; */
 }
 
 

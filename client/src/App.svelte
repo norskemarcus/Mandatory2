@@ -13,6 +13,8 @@
   import Navbar from './components/Navbar.svelte';
   import { isDarkMode } from './store/stores.js';
   import { onMount } from 'svelte';
+  import ParentDashboard from './pages/Parent/ParentDashboard.svelte';
+  import CookiePolicy from './pages/Home/CookiePolicy.svelte';
 
   let message = '';
 
@@ -37,6 +39,7 @@
 
   <div class="mainRouter">
     <Route path="/" component={Home} />
+    <Route path="/parentDashboard" component={ParentDashboard} />
     <Route path="/contact" primary={false} component={Contact} />
 
     <PrivateRoute path="/addWish">
@@ -53,6 +56,7 @@
 
     <Route path="/login" on:click={clearMessage} component={Login} />
     <Route path="/signup" component={Signup} />
+    <Route path="/cookie-policy" component={CookiePolicy} />
   </div>
 
   <Footer />

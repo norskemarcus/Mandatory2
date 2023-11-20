@@ -1,5 +1,5 @@
 import Router from 'express';
-import nodemailer from 'nodemailer';
+import { sendEmail } from '../services/mailer.js';
 import dotenv from 'dotenv';
 const router = Router();
 import sqlite3 from 'sqlite3'; // npm install sqlite3. NB! Its connected a database to this contact-page just to try out sqlite3
@@ -9,19 +9,19 @@ import { open } from 'sqlite';
 
 dotenv.config();
 
-const emailHost = process.env.EMAIL_HOST;
-const emailPort = process.env.EMAIL_PORT;
-const emailAdmin = process.env.EMAIL_ADMIN;
-const emailPassword = process.env.EMAIL_PASSWORD;
+// const emailHost = process.env.EMAIL_HOST;
+// const emailPort = process.env.EMAIL_PORT;
+// const emailAdmin = process.env.EMAIL_ADMIN;
+// const emailPassword = process.env.EMAIL_PASSWORD;
 
-const transporter = nodemailer.createTransport({
-  host: emailHost,
-  port: emailPort,
-  auth: {
-    user: emailAdmin,
-    pass: emailPassword,
-  },
-});
+// const transporter = nodemailer.createTransport({
+//   host: emailHost,
+//   port: emailPort,
+//   auth: {
+//     user: emailAdmin,
+//     pass: emailPassword,
+//   },
+// });
 
 // Convert import.meta.url to a file path using fileURLToPath
 // const __filename = fileURLToPath(import.meta.url);
@@ -56,10 +56,17 @@ router.post('/api/contact', async (req, res) => {
 
     await db.run('INSERT INTO contacts (name, email, subject, message) VALUES (?, ?, ?, ?)', [name, email, subject, message]);
 
-    const info = await transporter.sendMail({
-      from: `${name} <${email}>`, // sender address from contact formula
-      to: emailAdmin, // receiver = "admin"
-      subject: subject,
+    // const info = await transporter.sendMail({
+    //   from: `${name} <${email}>`, // sender address from contact formula
+    //   to: emailAdmin, // receiver = "admin"
+    //   subject: subject,
+    //   html: message,
+    // });
+
+    await sendEmail({
+      from: `${name} <${email}>`,
+      to: process.env.EMAIL_ADMIN,
+      subject,
       html: message,
     });
 

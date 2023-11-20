@@ -21,15 +21,6 @@ export const createInvitationsTable = async () => {
   }
 };
 
-//   connection.query(createInvitationsTableSQL, err => {
-//     if (err) {
-//       console.error('Error creating the invitations table:', err);
-//     } else {
-//       console.log('Invitations table created successfully');
-//     }
-//   });
-// };
-
 // Develop logic to create an invitation record in the database when a parent invites a child.
 
 // Send an email to the child with the invitation link (which includes the invitation identifier).

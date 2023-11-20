@@ -24,17 +24,6 @@ export const createSavedWishesTable = async () => {
 
 // import connection from './connection';
 
-// export const createSavedWishesTable = () => {
-//   const createSavedWishesTableSQL = `
-//   CREATE TABLE saved_wishes (
-//     id INT AUTO_INCREMENT PRIMARY KEY,
-//     wish_id INT NOT NULL,
-//     parent_user_id INT NOT NULL,
-//     FOREIGN KEY (wish_id) REFERENCES wishes(id),
-//     FOREIGN KEY (parent_user_id) REFERENCES users(id)
-//   );
-//   `;
-
 //   connection.query(createSavedWishesTableSQL, err => {
 //     if (err) {
 //       console.error('Error creating the saved_wishes table:', err);
