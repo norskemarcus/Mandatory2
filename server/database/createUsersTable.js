@@ -6,11 +6,12 @@ const saltRounds = 13; // cost factor for hashing
 export const createUsersTable = async () => {
   const createUserTableSQL = `
     CREATE TABLE IF NOT EXISTS users (
-      id INT PRIMARY KEY AUTO_INCREMENT,
-      email VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      role VARCHAR(20) NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        username VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        role ENUM('Parent', 'Child') NOT NULL,
+        parent_id INT, 
+        FOREIGN KEY (parent_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `;
 
@@ -23,32 +24,39 @@ export const createUsersTable = async () => {
   }
 };
 
-export async function signUp(email, password) {
+export async function signUp(username, password) {
   try {
-    const selectSql = 'SELECT id FROM users WHERE email = ?';
-    const existingUsers = await query(selectSql, [email]);
-    if (existingUsers && existingUsers.length > 0) {
+    const selectSql = 'SELECT id FROM users WHERE username = ?';
+    const existingUsers = await query(selectSql, [username]);
+    if (existingUsers.length > 0) {
       throw new Error('User already exists');
     }
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const insertSql = 'INSERT INTO users (email, password, role) VALUES (?, ?, ?)';
+    const insertSql = 'INSERT INTO users (username, password, role) VALUES (?, ?, ?)';
     const role = 'Parent';
 
-    const [results] = await query(insertSql, [email, hashedPassword, role]);
-    return results.insertId;
+    const result = await query(insertSql, [username, hashedPassword, role]);
+    console.log(result);
+
+    if (result.affectedRows && result.insertId) {
+      return { id: result.insertId };
+    } else {
+      throw new Error('Insert failed');
+    }
   } catch (error) {
-    throw error;
+    console.error('Error signing up user:', error);
+    throw error; // It's better to return a generic error message to the client
   }
 }
 
 //TODO: implement additional functionality where parents can invite their children to join the platform and assign them the 'Child' role during the invitation acceptance process
 
-export async function logIn(email, password) {
+export async function logIn(username, password) {
   try {
-    const sqlQuery = 'SELECT * FROM users WHERE email = ?';
-    const results = await query(sqlQuery, [email]);
+    const sqlQuery = 'SELECT * FROM users WHERE username = ?';
+    const results = await query(sqlQuery, [username]);
 
     if (results && results.length === 0) {
       throw new Error('User not found');

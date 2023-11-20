@@ -1,5 +1,5 @@
 <script>
-  let email = 'test1@test.com';
+  let username = 'test1@test.com';
   let password = 'test1234';
   let message = '';
   let newUser = null;
@@ -12,22 +12,16 @@
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: email, password: password }),
+        body: JSON.stringify({ username: username, password: password }),
       });
 
+      const data = await response.json();
       if (response.ok) {
-        const data = await response.json();
         message = data.message;
-        newUser = data.newUser;
+        newUser = data.user;
       } else {
-        const errorData = await response.json();
-        console.error('Server error response:', errorData);
-
-        if (errorData.errorMessage == 'auth/email-already-in-use') {
-          message = 'A user with this email already exists';
-        } else {
-          message = 'Error: Something went wrong';
-        }
+        console.error('Server error response:', data);
+        message = 'Error: ' + data.message;
         newUser = null;
       }
     } catch (error) {
@@ -42,8 +36,8 @@
 <main>
   <div class="form-container">
     <form on:submit|preventDefault={handleSubmit}>
-      <label for="email">Email</label>
-      <input required type="email" id="email" name="email" bind:value={email} />
+      <label for="username">Username</label>
+      <input required type="text" id="username" name="username" bind:value={username} />
 
       <label for="password">Password</label>
       <input required type="password" name="password" id="password" placeholder="Password" bind:value={password} />
@@ -88,12 +82,12 @@
   }
 
   .form-container {
-    text-align: center; 
+    text-align: center;
   }
 
   .message {
-    text-align: center; 
-    margin-top: 1em; 
+    text-align: center;
+    margin-top: 1em;
   }
 
   form {

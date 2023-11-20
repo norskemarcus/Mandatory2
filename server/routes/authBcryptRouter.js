@@ -5,26 +5,21 @@ const router = Router();
 
 router.post('/auth/signup', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
     const role = 'Parent';
 
-    const user = await signUp(email, password, role);
+    const user = await signUp(username, password, role);
     req.session.user = { id: user.id, role: user.role };
     req.session.save();
 
     res.status(201).send({ message: 'User created successfully' });
   } catch (error) {
     if (error.message === 'User already exists') {
-      res.status(409).send({ message: 'A user with this email already exists' });
+      res.status(409).send({ message: 'A user with this username already exists' });
     } else {
       res.status(500).send({ message: 'Error signing up user', error: error.message });
     }
   }
-});
-
-// Endpoint for parent to invite a child
-router.post('/auth/invite', async (req, res) => {
-  // ... your logic to handle invitation creation ...
 });
 
 // Endpoint for child to sign up with an invitation
@@ -34,12 +29,12 @@ router.post('/auth/signup/child', async (req, res) => {
 
 router.post('/auth/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const user = await logIn(email, password);
+    const { username, password } = req.body;
+    const user = await logIn(username, password);
     req.session.user = { id: user.id };
     res.status(200).send({ message: 'Login successful', user });
   } catch (error) {
-    let message = 'Login failed. The email or password provided is incorrect.';
+    let message = 'Login failed. The username or password provided is incorrect.';
 
     if (error.message === 'User not found' || error.message === 'Password is incorrect') {
       res.status(401).send({ message });

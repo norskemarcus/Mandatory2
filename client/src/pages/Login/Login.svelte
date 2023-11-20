@@ -48,7 +48,7 @@
 </script>
 
 <main>
-  <form on:submit|preventDefault={handleSubmit}>
+  <!-- <form on:submit|preventDefault={handleSubmit}>
     <label for="email">Your email</label>
     <input id="email" required type="email" name="email" placeholder="Your email" bind:value={email} />
 
@@ -61,7 +61,7 @@
     {#if message}
       <div>{message}</div>
     {/if}
-  </form>
+  </form> -->
   <!-- <button on:click={handlePasswordReset} class="forgot-btn">Forgot password</button> -->
 </main>
 

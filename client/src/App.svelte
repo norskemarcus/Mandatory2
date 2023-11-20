@@ -15,6 +15,7 @@
   import { onMount } from 'svelte';
   import ParentDashboard from './pages/Parent/ParentDashboard.svelte';
   import CookiePolicy from './pages/Home/CookiePolicy.svelte';
+  import ChildAccounts from './pages/Parent/ChildAccounts.svelte';
 
   let message = '';
 
@@ -41,6 +42,14 @@
     <Route path="/" component={Home} />
     <Route path="/parentDashboard" component={ParentDashboard} />
     <Route path="/contact" primary={false} component={Contact} />
+
+    <PrivateRoute path="/parentDashboard">
+      <ParentDashboard />
+    </PrivateRoute>
+
+    <PrivateRoute path="/childAccounts">
+      <ChildAccounts />
+    </PrivateRoute>
 
     <PrivateRoute path="/addWish">
       <AddWish />

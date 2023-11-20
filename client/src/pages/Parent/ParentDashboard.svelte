@@ -19,7 +19,6 @@ Invitation accepted by a child (parent to child update). -->
   import { onMount } from 'svelte';
   let savedWishes = [];
 
-  // Fetch saved wishes on mount
   onMount(async () => {
     try {
       const response = await fetch('/api/parent/saved-wishes');

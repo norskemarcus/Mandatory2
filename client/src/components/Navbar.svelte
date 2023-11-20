@@ -74,9 +74,22 @@
     <Nav class="ms-auto" navbar>
       <!-- {#if $user && $user.role === 'Parent'} -->
       {#if $user}
-        <NavItem>
-          <Link to="/parentDashboard" class="nav-link">Parent</Link>
-        </NavItem>
+        <Dropdown nav inNavbar>
+          <DropdownToggle nav caret>Parent</DropdownToggle>
+          <DropdownMenu end>
+            <DropdownItem as="div">
+              <Link to="/parentDashboard" class="dropdown-item">Saved wishes</Link>
+            </DropdownItem>
+
+            <DropdownItem as="div">
+              <Link to="/childAccounts" class="dropdown-item">Child Accounts</Link>
+            </DropdownItem>
+
+            <DropdownItem as="div">
+              <Link to="/search" class="dropdown-item">Search & suggest</Link>
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
 
         <Dropdown nav inNavbar>
           <DropdownToggle nav caret>Wishlist (child)</DropdownToggle>
@@ -88,7 +101,7 @@
               <Link to="/addwish" class="dropdown-item">Add a new wish</Link>
             </DropdownItem>
             <DropdownItem as="div">
-              <Link to="/search" class="dropdown-item">Search and save</Link>
+              <Link to="/search" class="dropdown-item">Search & save</Link>
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
