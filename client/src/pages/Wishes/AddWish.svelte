@@ -50,7 +50,7 @@
 </script>
 
 <div class="wish-set-form">
-  <form on:submit={addWishForm}>
+  <form on:submit|preventDefault={addWishForm}>
     <label for="title">Title:</label>
     <input type="text" id="title" bind:value={title} class="small-input" />
 
