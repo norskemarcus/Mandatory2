@@ -1,7 +1,8 @@
 <script>
   import { setContext } from 'svelte';
-  import { writable } from 'svelte/store';
+  // import { writable } from 'svelte/store';
   import { createEventDispatcher } from 'svelte';
+  import { user } from '../../store/stores.js';
 
   // Create an event dispatcher, to pass a signal from Login to App.svelte, to inform at the user has logged out, and the message should be cleared
   const dispatch = createEventDispatcher();
@@ -9,8 +10,11 @@
   export let username = 'test1@test.com';
   export let password = 'test1234';
   export let message = '';
-  const user = writable();
-  setContext('user', user);
+
+  //const user = writable();
+  // setContext('user', user);
+
+  //setContext('currentUser', currentUser);
 
   async function login() {
     try {
@@ -30,6 +34,7 @@
         message = data.message;
         dispatch('logout');
         user.set(data.user);
+
         window.location.href = '/';
       } else {
         message = data.message || 'Error: Something went wrong';
@@ -78,7 +83,7 @@
   }
 
   button {
-    background-color: #5f26a8;
+    background-color: green;
     color: #fff;
     padding: 7px 20px;
     margin-top: 1em;

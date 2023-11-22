@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { signUp, logIn } from '../database/createUsersTable.js';
+import { signUp, logIn, signUpChild } from '../database/createUsersTable.js';
 
 const router = Router();
 
@@ -9,7 +9,7 @@ router.post('/auth/signup', async (req, res) => {
     const role = 'Parent';
 
     const user = await signUp(username, password, role);
-    req.session.user = { id: user.id, role: user.role };
+    req.session.user = { id: user.id, role: role };
     req.session.save();
 
     res.status(201).send({ message: 'User created successfully' });
@@ -22,16 +22,29 @@ router.post('/auth/signup', async (req, res) => {
   }
 });
 
-// Endpoint for child to sign up with an invitation
 router.post('/auth/signup/child', async (req, res) => {
-  // ... your logic to handle child sign-up with an invitation ...
+  if (!req.session.user || req.session.user.role !== 'Parent') {
+    return res.status(403).send({ message: 'Unauthorized' });
+  }
+
+  try {
+    const { username, password } = req.body;
+    const parent_id = req.session.user.id;
+    const user = await signUpChild(username, password, parent_id);
+
+    res.status(201).send({ message: 'Child account created successfully', user });
+  } catch (error) {
+    res.status(500).send({ message: 'Error creating child account', error: error.message });
+  }
 });
 
 router.post('/auth/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await logIn(username, password);
-    req.session.user = { id: user.id };
+    //req.session.user = { id: user.id };
+    req.session.user = { id: user.id, username: user.username, role: user.role };
+
     res.status(200).send({ message: 'Login successful', user });
   } catch (error) {
     let message = 'Login failed. The username or password provided is incorrect.';

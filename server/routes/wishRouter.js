@@ -16,7 +16,7 @@ router.get('/api/wishes', async (req, res) => {
     try {
       const results = await query(selectSql, [userId]);
       res.send({ wishlist: results });
-      console.log('Query results:', results);
+      console.log('Query results from get wishes (child):', results);
     } catch (err) {
       return res.status(500).send({ error: err.message });
     }
@@ -25,34 +25,80 @@ router.get('/api/wishes', async (req, res) => {
   }
 });
 
-router.post('/api/wishes', async (req, res) => {
-  if (!req.session.user) {
-    console.log('User is not logged in');
-    return res.status(401).send({ error: 'User is not logged in' });
-  }
-
-  const userId = req.session.user.id;
-  const { title, description, price, url, imageUrl } = req.body;
-
+// General function to reuse code in 2 post
+async function createWish(userId, title, description, price, url, imageUrl) {
   const checkExistingSQL = 'SELECT id FROM wishes WHERE title = ? AND user_id = ?';
 
   try {
     const existingWishes = await query(checkExistingSQL, [title, userId]);
     if (existingWishes.length > 0) {
-      return res.status(400).send({ error: 'A wish with this title already exists' });
+      throw new Error('A wish with this title already exists');
     }
 
     const insertSQL = 'INSERT INTO wishes (title, description, price, url, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)';
-    const insertResults = await query(insertSQL, [title, description, price, url, imageUrl, userId]);
 
-    res.status(201).send({ message: 'Wish created successfully', wishId: insertResults.insertId });
+    const priceValue = price ? parseFloat(price) : null;
+    const insertResults = await query(insertSQL, [title, description, priceValue, url, imageUrl, userId]);
+
+    return { message: 'Wish created successfully', wishId: insertResults.insertId };
   } catch (error) {
-    console.error('Error processing your request:', error);
-    res.status(500).send({ error: 'Failed to process your request' });
+    console.error('Error creating wish:', error);
+    throw new Error('Failed to create wish');
+  }
+}
+
+router.post('/api/form/wishes', async (req, res) => {
+  try {
+    const { title, description, price, url } = req.body;
+    const userId = req.session.user.id;
+
+    const result = await createWish(userId, title, description, price, url, null, userId);
+    res.status(201).send(result);
+  } catch (error) {
+    console.error('Error creating wish:', error);
+    res.status(500).send({ error: 'Failed to create wish' });
   }
 });
 
-/// save-selected-wishes
+router.post('/api/wishes', async (req, res) => {
+  try {
+    const { title, description, price, url, imageUrl } = req.body;
+    const userId = req.session.user.id;
+
+    const result = await createWish(userId, title, description, price, url, imageUrl, userId);
+    res.status(201).send(result);
+  } catch (error) {
+    console.error('Error creating wish:', error);
+    res.status(500).send({ error: 'Failed to create wish' });
+  }
+});
+
+// router.post('/api/wishes', async (req, res) => {
+//   if (!req.session.user) {
+//     console.log('User is not logged in');
+//     return res.status(401).send({ error: 'User is not logged in' });
+//   }
+
+//   const userId = req.session.user.id;
+//   const { title, description, price, url, imageUrl } = req.body;
+
+//   const checkExistingSQL = 'SELECT id FROM wishes WHERE title = ? AND user_id = ?';
+
+//   try {
+//     const existingWishes = await query(checkExistingSQL, [title, userId]);
+//     if (existingWishes.length > 0) {
+//       return res.status(400).send({ error: 'A wish with this title already exists' });
+//     }
+
+//     const insertSQL = 'INSERT INTO wishes (title, description, price, url, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)';
+//     const insertResults = await query(insertSQL, [title, description, price, url, imageUrl, userId]);
+
+//     res.status(201).send({ message: 'Wish created successfully', wishId: insertResults.insertId });
+//   } catch (error) {
+//     console.error('Error processing your request:', error);
+//     res.status(500).send({ error: 'Failed to process your request' });
+//   }
+// });
 
 router.get('/api/search', async (req, res) => {
   try {

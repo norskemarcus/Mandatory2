@@ -13,9 +13,8 @@
   let dialogRef;
   let selectedWishes = new Set();
   let loggedIn = false; // You'll want to update this based on your user's login status
-  //let userRole = ''; //
-  // OBS OBS Hardcoded userrole ***************************** !!
-  let userRole = 'Parent';
+
+  let userRole = '';
 
   // Real-Time Updates: Use WebSockets to push updates to the parent's dashboard as soon as a new wish is added by a child or a wish status changes.
 
@@ -23,7 +22,7 @@
     const fetchedUser = await fetchUser();
     if (fetchedUser) {
       user.set(fetchedUser);
-      // userRole = fetchUser.role;
+      userRole = fetchedUser.role;
       loggedIn = true;
       fetchWishes();
     }
@@ -65,13 +64,16 @@
 
   async function fetchWishes() {
     try {
-      const response = await fetch('http://localhost:8080/api/wishes', {
+      const endpoint = 'http://localhost:8080/api/wishes';
+
+      const response = await fetch(endpoint, {
         credentials: 'include',
       });
 
       if (!response.ok) {
         throw new Error('Error fetching wishes: ' + response.status);
       }
+
       const data = await response.json();
       wishes = data.wishlist;
     } catch (error) {
@@ -79,7 +81,6 @@
     }
   }
 
-  // update selectedWishes when a wish is selected or deselected
   function selectWish(wishId, isSelected) {
     if (isSelected) {
       selectedWishes.add(wishId);
@@ -90,12 +91,14 @@
 
   function saveSelectedWishes() {
     const wishesToSave = Array.from(selectedWishes);
-    fetch('/save-selected-wishes', {
+
+    fetch('http://localhost:8080/api/parent/saved-wishes', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ wishIds: wishesToSave }),
+      credentials: 'include',
     })
       .then(response => {
         if (!response.ok) {

@@ -72,25 +72,8 @@
   <NavbarToggler on:click={() => (isOpen = !isOpen)} />
   <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
     <Nav class="ms-auto" navbar>
-      <!-- {#if $user && $user.role === 'Parent'} -->
-      {#if $user}
-        <Dropdown nav inNavbar>
-          <DropdownToggle nav caret>Parent</DropdownToggle>
-          <DropdownMenu end>
-            <DropdownItem as="div">
-              <Link to="/parentDashboard" class="dropdown-item">Saved wishes</Link>
-            </DropdownItem>
-
-            <DropdownItem as="div">
-              <Link to="/childAccounts" class="dropdown-item">Child Accounts</Link>
-            </DropdownItem>
-
-            <DropdownItem as="div">
-              <Link to="/search" class="dropdown-item">Search & suggest</Link>
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-
+      <!-- Both parent and child can see this -->
+      {#if $user && ($user.role === 'Parent' || $user.role === 'Child')}
         <Dropdown nav inNavbar>
           <DropdownToggle nav caret>Wishlist (child)</DropdownToggle>
           <DropdownMenu end>
@@ -98,7 +81,7 @@
               <Link to="/wishlist" class="dropdown-item">My wishlist</Link>
             </DropdownItem>
             <DropdownItem as="div">
-              <Link to="/addwish" class="dropdown-item">Add a new wish</Link>
+              <Link to="/addWish" class="dropdown-item">Add a new wish</Link>
             </DropdownItem>
             <DropdownItem as="div">
               <Link to="/search" class="dropdown-item">Search & save</Link>
@@ -120,6 +103,26 @@
         <FormGroup>
           <Input id="c3" type="switch" label="Dark mode" on:change={toggleTheme} bind:checked={$isDarkMode} />
         </FormGroup>
+
+        <!-- Only parents can see this -->
+      {:else if $user && $user.role === 'Parent'}
+        <Dropdown nav inNavbar>
+          <DropdownToggle nav caret>Parent</DropdownToggle>
+          <DropdownMenu end>
+            <DropdownItem as="div">
+              <Link to="/parentDashboard" class="dropdown-item">Saved wishes</Link>
+            </DropdownItem>
+
+            <DropdownItem as="div">
+              <Link to="/childAccounts" class="dropdown-item">Child Accounts</Link>
+            </DropdownItem>
+
+            <DropdownItem as="div">
+              <Link to="/search" class="dropdown-item">Search & suggest</Link>
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+        <!-- If you are not logged in -->
       {:else}
         <NavItem>
           <Link to="/login" class="nav-link">Log in</Link>

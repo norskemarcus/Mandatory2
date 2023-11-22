@@ -1,32 +1,50 @@
 <script>
   import { navigate } from 'svelte-navigator';
 
-  let childData = {
-    username: '',
-    password: '',
-  };
+  import { isDarkMode } from '../../store/stores.js';
 
+  let childUsername = '';
+  let childPassword = '';
   let consentGiven = false;
 
-  function addChild() {
+  async function addChild() {
     if (!consentGiven) {
       alert('You must provide consent to create an account for your child.');
       return;
     }
-    // Add logic to create the child account here
-    // ...
+    try {
+      const response = await fetch('http://localhost:8080/auth/signup/child', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: childUsername,
+          password: childPassword,
+        }),
+        credentials: 'include',
+      });
 
-    navigate('/parent-dashboard');
+      if (response.ok) {
+        navigate('/parent-dashboard');
+      } else {
+        throw new Error('Server responded with an error');
+      }
+    } catch (error) {
+      console.error(error.message);
+      // const errorResult = await response.json();
+      // throw new Error(errorResult.message || 'Server responded with an error');
+    }
   }
 </script>
 
 <main>
   <h1>Add a child account</h1>
   <form on:submit|preventDefault={addChild}>
-    <input type="text" bind:value={childData.username} placeholder="Username for the child" required />
-    <input type="password" bind:value={childData.password} placeholder="Password" required />
+    <input type="text" bind:value={childUsername} placeholder="Username for the child" required />
+    <input type="password" bind:value={childPassword} placeholder="Password" required />
 
-    <label>
+    <label class:dark-text={$isDarkMode}>
       <input type="checkbox" bind:checked={consentGiven} />
       I am the parent or legal guardian of the child and I give consent to create an account for them, in compliance with GDPR requirements.
     </label>
@@ -110,5 +128,9 @@
 
   a:hover {
     text-decoration: underline;
+  }
+
+  .dark-text {
+    color: #fff;
   }
 </style>

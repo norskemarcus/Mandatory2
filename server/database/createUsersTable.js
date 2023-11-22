@@ -33,11 +33,11 @@ export async function signUp(username, password) {
     }
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    const insertSql = 'INSERT INTO users (username, password, role) VALUES (?, ?, ?)';
     const role = 'Parent';
 
-    const result = await query(insertSql, [username, hashedPassword, role]);
+    const insertSql = 'INSERT INTO users (username, password, role) VALUES (?, ?, ?)';
+    const params = [username, hashedPassword, role];
+    const result = await query(insertSql, params);
     console.log(result);
 
     if (result.affectedRows && result.insertId) {
@@ -47,11 +47,30 @@ export async function signUp(username, password) {
     }
   } catch (error) {
     console.error('Error signing up user:', error);
-    throw error; // It's better to return a generic error message to the client
+    throw new Error('Error signing up user:', error);
   }
 }
 
-//TODO: implement additional functionality where parents can invite their children to join the platform and assign them the 'Child' role during the invitation acceptance process
+export async function signUpChild(username, password, parent_id) {
+  // const selectSql = 'SELECT id FROM users WHERE username = ?';
+  // const existingUsers = await query(selectSql, [username]);
+  // if (existingUsers.length > 0) {
+  //   throw new Error('User already exists');
+  // }
+
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  const role = 'Child';
+  const insertSql = 'INSERT INTO users (username, password, role, parent_id) VALUES (?, ?, ?, ?)';
+  const params = [username, hashedPassword, role, parent_id];
+
+  const result = await query(insertSql, params);
+
+  if (result.affectedRows && result.insertId) {
+    return { id: result.insertId };
+  } else {
+    throw new Error('Insert failed');
+  }
+}
 
 export async function logIn(username, password) {
   try {

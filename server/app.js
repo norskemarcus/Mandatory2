@@ -1,13 +1,10 @@
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
 import session from 'express-session';
-import dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config';
 import helmet from 'helmet';
-import cors from 'cors';
-const app = express();
 
-// import passport from 'passport';
+const app = express();
 
 app.use(helmet()); // This middleware adds various security-related HTTP headers to your responses, which can help protect your application against certain attacks.
 
@@ -15,6 +12,7 @@ app.use(helmet()); // This middleware adds various security-related HTTP headers
 // import path from 'path';
 // app.use(express.static(path.resolve('../client/dist')));
 
+import cors from 'cors';
 app.use(
   cors({
     credentials: true,
@@ -23,6 +21,7 @@ app.use(
 );
 
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: false })); // parsing incoming HTTP request bodies when the data is submitted as form data in the x-www-form-urlencoded format.
 
 // npm i express-rate-limit
@@ -51,21 +50,44 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: false, // set to true if you're on HTTPS
+      secure: false,
       httpOnly: true,
     },
   }),
 );
 
+import http from 'http';
+const server = http.createServer(app);
+
+import { Server } from 'socket.io';
+
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['*'],
+  },
+});
+
+// an event handler for io.on('connection', ...), which is executed whenever a client (browser) establishes a WebSocket connection with your server.
+io.on('connection', socket => {
+  console.log('A socket connected');
+
+  // event handlers for specific events related to wishes
+  socket.on('child-add-wish', data => {
+    // Broadcast the new wish to all connected clients (including the parent dashboard)
+    io.emit('parent-wish-added', data);
+  });
+});
+
 import contactRoute from './routes/contactRouter.js';
 app.use(contactRoute);
-
-import invitationRouter from './routes/invitationRouter.js';
-app.use(invitationRouter);
 
 import { initializeDatabase } from './database/databaseInit.js';
 import authBryptRouter from './routes/authBcryptRouter.js';
 import wishRouter from './routes/wishRouter.js';
+
+import savedWishesRouter from './routes/savedWishesRouter.js';
+app.use(savedWishesRouter);
 
 // app.get('*', (req, res) => {
 //   res.sendFile(path.resolve('../client/dist/index.html'));
@@ -78,7 +100,7 @@ function startServer() {
   app.use(wishRouter);
 
   const PORT = process.env.PORT || 8080;
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 
 function handleInitializationError(err) {
@@ -94,15 +116,3 @@ function handleInitializationError(err) {
 }
 
 initializeDatabase().then(startServer).catch(handleInitializationError);
-
-// initializeDatabase()
-//   .then(() => {
-//     app.use(authBryptRouter);
-//     app.use(wishRouter);
-
-//     const PORT = process.env.PORT || 8080;
-//     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-//   })
-//   .catch(err => {
-//     console.error('Error during database initialization:', err);
-//   });

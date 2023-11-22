@@ -2,69 +2,80 @@
   import { onMount } from 'svelte';
   import { toast, Toaster } from 'svelte-french-toast';
 
-  let itemNumber = '';
-  let name = '';
-  let age = '';
+  let title = '';
+  let description = '';
+  let price = '';
+  let url = '';
 
-  async function addLegoSet() {
-    if (!itemNumber || !name || !age) {
-      toast.error('Please fill in item number, name, and age');
+  async function addWishForm() {
+    if (!title) {
+      // toast.error('Please fill in at least a title.');
+      toast.error('Please fill in at least a title.');
+      setTimeout(() => {
+        console.log('Please fill in at least a title.');
+        toast.dismiss();
+      }, 5000);
     } else {
       try {
-        const response = await fetch('http://localhost:8080/api/legosets', {
+        const response = await fetch('http://localhost:8080/api/form/wishes', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ itemNumber, name, age }),
+          body: JSON.stringify({ title, description, price, url }),
           credentials: 'include',
         });
 
         if (response.ok) {
-          toast.success('Lego set added successfully');
-          console.log('Lego set added successfully');
+          // toast.success('Wish added successfully');
+          toast.success('Wish added successfully');
+          setTimeout(() => {
+            toast.dismiss();
+          }, 5000);
         } else {
-          toast.error('Failed to add Lego set');
-          console.log('Failed to add Lego set');
+          toast.error('Failed to add a wish');
         }
       } catch (error) {
-        console.error('Error adding Lego set:', error);
-        toast.error('An error occurred while adding the Lego set');
+        toast.error('An error occurred while adding a wish');
       }
     }
   }
 
   onMount(() => {
-    itemNumber = '';
-    name = '';
-    age = '';
+    title = '';
+    description = '';
+    price = '';
+    url = '';
   });
 </script>
 
-<div class="lego-set-form">
-  <form on:submit={addLegoSet}>
-    <label for="name">Name:</label>
-    <input type="text" id="name" bind:value={name} class="small-input" />
+<div class="wish-set-form">
+  <form on:submit={addWishForm}>
+    <label for="title">Title:</label>
+    <input type="text" id="title" bind:value={title} class="small-input" />
 
-    <label for="itemNumber">Item Number:</label>
-    <input type="number" id="itemNumber" bind:value={itemNumber} class="small-input" />
+    <label for="description">Description:</label>
+    <input type="text" id="description" bind:value={description} />
 
-    <label for="age">Age Limit:</label>
-    <input type="number" id="age" bind:value={age} class="small-input" />
+    <label for="price">Price</label>
+    <input type="number" id="price" bind:value={price} class="small-input" />
+
+    <label for="url">URL</label>
+    <input type="link" id="url" bind:value={url} class="link" />
 
     <div class="button-container">
-      <button type="submit">Add Lego Set</button>
+      <button type="submit">Add a wish</button>
     </div>
   </form>
   <Toaster />
 </div>
 
 <svelte:head>
-  <title>Add a lego set</title>
+  <title>Add a wish</title>
 </svelte:head>
 
 <style>
-  .lego-set-form {
+  .wish-set-form {
     min-width: 50%;
     max-width: 80%;
     margin: 0 auto;
@@ -110,6 +121,7 @@
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin-top: 2rem;
   }
 
   button:hover {
@@ -120,7 +132,7 @@
     text-align: start;
   }
 
-  :global(body.dark-mode) .lego-set-form {
+  :global(body.dark-mode) .wish-set-form {
     background-color: #333;
     border-color: #444;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
@@ -139,10 +151,10 @@
   }
 
   :global(body.dark-mode) button {
-    background-color: #6c757d; /* Bootstrap's gray */
+    background-color: #6c757d;
   }
 
   :global(body.dark-mode) button:hover {
-    background-color: #5a6268; /* A darker shade of bootstrap's gray for hover */
+    background-color: #5a6268;
   }
 </style>

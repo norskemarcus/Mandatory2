@@ -12,9 +12,13 @@
         const consentGiven = localStorage.getItem('cookieConsent');
         if (consentGiven) {
           const banner = document.querySelector('.wpcb-banner');
+
           if (banner) {
-            banner.style.display = 'none';
+            banner.classList.add('hide-banner'); // Add the 'hide-banner' class
           }
+          // if (banner) {
+          //   banner.style.display = 'none';
+          // }
         } else {
           window.wpcb.init({
             border: 'thin',
@@ -54,3 +58,20 @@
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
+
+<style>
+  .hide-banner {
+    display: none;
+  }
+
+  .popup {
+    background: #f6f6f6;
+    color: #000000;
+    border: #555555;
+  }
+
+  .button {
+    background: #555555;
+    color: #ffffff;
+  }
+</style>
