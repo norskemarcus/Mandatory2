@@ -42,7 +42,6 @@ router.post('/auth/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await logIn(username, password);
-    //req.session.user = { id: user.id };
     req.session.user = { id: user.id, username: user.username, role: user.role };
 
     res.status(200).send({ message: 'Login successful', user });

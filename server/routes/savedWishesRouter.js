@@ -26,7 +26,8 @@ router.get('/api/parent/saved-wishes', async (req, res) => {
 });
 
 // get the selected child wishlist
-router.get('/api/parent/child-wishlist/:childId', async (req, res) => {
+// http://localhost:8080/api/parent/saved-wishes/${selectedChild.id}`,
+router.get('/api/parent/saved-wishes/:childId', async (req, res) => {
   try {
     if (!req.session.user || req.session.user.role !== 'Parent') {
       return res.status(403).json({ message: 'Unauthorized' });
@@ -41,7 +42,7 @@ router.get('/api/parent/child-wishlist/:childId', async (req, res) => {
       return res.status(403).json({ message: 'Child does not belong to the parent' });
     }
 
-    const childWishlist = await query('SELECT * FROM saved_wishes WHERE user_id = ?', [childId]);
+    const childWishlist = await query('SELECT * FROM saved_wishes WHERE child_id = ?', [childId]);
 
     return res.status(200).send({ wishlist: childWishlist });
   } catch (error) {
@@ -51,13 +52,13 @@ router.get('/api/parent/child-wishlist/:childId', async (req, res) => {
 });
 
 async function checkIfChildBelongsToParent(parentId, childId) {
-  const result = await query('SELECT COUNT(*) as count FROM children WHERE parent_id = ? AND id = ?', [parentId, childId]);
+  const result = await query('SELECT COUNT(*) as count FROM users WHERE id = ? AND role = "Child" AND parent_id = ?', [childId, parentId]);
   return result[0].count > 0;
 }
 
 router.post('/api/parent/saved-wishes', async (req, res) => {
   try {
-    const { wishId, childUsername } = req.body;
+    const { wishId } = req.body;
 
     if (!req.session.user || req.session.user.role !== 'Parent') {
       return res.status(403).send({ message: 'Unauthorized' });

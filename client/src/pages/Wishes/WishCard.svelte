@@ -3,10 +3,9 @@ This component should only be responsible for displaying an individual wish. Sin
 -->
 <script>
   export let wish;
-
-  // *****************OBS HARDCODED PARENT AS ROLE**********************
-  export let userRole = 'Parent';
-  export let onSelect; // This is the function passed from WishList.svelte
+  export let userRole;
+  export let isSelected;
+  export let onSelect; // Prop for the function to call when the checkbox is changed
 
   // This function will be called when a checkbox changes state
   function handleSelection(event) {
@@ -49,7 +48,9 @@ This component should only be responsible for displaying an individual wish. Sin
     <label>
       <!--
       you use the on:change event on the checkbox to call the handleSelection function, which in turn calls the passed-in selectWish function with the wish ID and whether the wish is selected or not. -->
-      <input type="checkbox" on:change={handleSelection} />
+      <!-- <input type="checkbox" on:change={handleSelection} /> -->
+
+      <input type="checkbox" bind:checked={isSelected} on:change={handleSelection} />
       Select for parent's list
     </label>
   {/if}
@@ -72,10 +73,6 @@ This component should only be responsible for displaying an individual wish. Sin
     border-bottom: 1px solid black;
     font-size: 1rem;
     transition: border-color 0.3s;
-  }
-
-  .wish-image {
-    max-width: 100%;
   }
 
   .wish-description,

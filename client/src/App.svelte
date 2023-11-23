@@ -16,6 +16,7 @@
   import ParentDashboard from './pages/Parent/ParentDashboard.svelte';
   import CookiePolicy from './pages/Home/CookiePolicy.svelte';
   import ChildAccounts from './pages/Parent/ChildAccounts.svelte';
+  import ChildWishList from './pages/Child/ChildWishList.svelte';
 
   let message = '';
 
@@ -40,7 +41,6 @@
 
   <div class="mainRouter">
     <Route path="/" component={Home} />
-    <Route path="/parentDashboard" component={ParentDashboard} />
     <Route path="/contact" primary={false} component={Contact} />
 
     <PrivateRoute path="/parentDashboard">
@@ -54,6 +54,11 @@
     <PrivateRoute path="/addWish">
       <AddWish />
     </PrivateRoute>
+
+    <PrivateRoute path="/childsWishlist">
+      <ChildWishList />
+    </PrivateRoute>
+
 
     <PrivateRoute path="/wishlist">
       <WishList />

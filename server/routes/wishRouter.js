@@ -4,9 +4,9 @@ import { query } from '../database/connection.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
+// This is for the logged in child, who wants to see his or hers list and edit/delete button
 router.get('/api/wishes', async (req, res) => {
   if (!req.session.user) {
-    console.log('User is not logged in');
     return res.status(401).send({ error: 'User is not logged in' });
   }
   let userId = req.session.user.id;
@@ -16,7 +16,6 @@ router.get('/api/wishes', async (req, res) => {
     try {
       const results = await query(selectSql, [userId]);
       res.send({ wishlist: results });
-      console.log('Query results from get wishes (child):', results);
     } catch (err) {
       return res.status(500).send({ error: err.message });
     }
@@ -25,7 +24,24 @@ router.get('/api/wishes', async (req, res) => {
   }
 });
 
-// General function to reuse code in 2 post
+// /api/parent/child-wishlist/${selectedChild.id}`,
+// Define the route for fetching a child's wishlist
+router.get('/api/parent/child-wishlist/:childId', async (req, res) => {
+  try {
+    const childId = req.params.childId;
+
+    const selectSql = `SELECT * FROM wishes WHERE user_id = ?`;
+
+    const results = await query(selectSql, [childId]);
+    console.log(results);
+
+    res.send({ wishlist: results });
+  } catch (error) {
+    console.error('Error fetching child wishlist:', error);
+    res.status(500).send({ error: 'Internal Server Error' });
+  }
+});
+
 async function createWish(userId, title, description, price, url, imageUrl) {
   const checkExistingSQL = 'SELECT id FROM wishes WHERE title = ? AND user_id = ?';
 
@@ -55,7 +71,6 @@ router.post('/api/form/wishes', async (req, res) => {
     const result = await createWish(userId, title, description, price, url, null, userId);
     res.status(201).send(result);
   } catch (error) {
-    console.error('Error creating wish:', error);
     res.status(500).send({ error: 'Failed to create wish' });
   }
 });

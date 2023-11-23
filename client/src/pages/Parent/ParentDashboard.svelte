@@ -4,50 +4,56 @@
   import { fetchUser } from '../../user/userApi.js';
   import { user } from '../../store/stores.js';
   import io from 'socket.io-client/dist/socket.io.js';
+  import WishSetCard from '../Wishes/WishSetCard.svelte';
 
   let savedWishes = [];
-  let wishes = [];
-  let editMode = false;
-  let toBeDeleted = null;
-  let dialogRef;
-  let selectedWishes = new Set();
   let loggedIn = false;
   let userRole = '';
-  let children = []; // skal findes begge steder, forklare dette
   let selectedChild = null;
+  let authenticationChecked = false;
 
   const socket = io('http://localhost:8080');
 
-  // socket.on('parent-wish-added', data => {
-  //   savedWishes = [...savedWishes, data];
-  // });
+  socket.on('parent-wish-added', data => {
+    savedWishes = [...savedWishes, data];
+  });
 
-  onMount(async () => {
-    const fetchedUser = await fetchUser();
-    if (fetchedUser) {
-      user.set(fetchedUser);
-      userRole = fetchedUser.role;
-      loggedIn = true;
-      //children = fetchedUser.children;
-      fetchSavedWishes();
+  async function checkAuthentication() {
+    if (!authenticationChecked) {
+      const fetchedUser = await fetchUser();
+      if (fetchedUser) {
+        user.set(fetchedUser);
+        userRole = fetchedUser.role;
+        loggedIn = true;
+      }
+      authenticationChecked = true;
     }
+  }
+
+  onMount(() => {
+    checkAuthentication();
   });
 
   afterUpdate(() => {
-    // Fetch saved wishes whenever the selected child changes
-    fetchSavedWishes();
+    if (selectedChild) {
+      fetchSavedWishes(selectedChild.id);
+      console.log(selectedChild.id);
+      console.log(selectedChild.username);
+    }
   });
 
-  async function fetchSavedWishes() {
-    if (selectedChild) {
+  async function fetchSavedWishes(childId) {
+    if (childId) {
       try {
-        const response = await fetch(`http://localhost:8080/api/parent/saved-wishes/${selectedChild.id}`, {
+        const response = await fetch(`http://localhost:8080/api/parent/saved-wishes/${childId}`, {
           credentials: 'include',
         });
-        if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`);
+        if (response.ok) {
+          savedWishes = await response.json();
+          console.log(savedWishes);
+        } else {
+          console.error('Error fetching saved wishes:', response.status);
         }
-        savedWishes = await response.json();
       } catch (error) {
         console.error('Failed to fetch saved wishes:', error);
       }
@@ -58,14 +64,15 @@
 <div class="parent-dashboard">
   <h3>Your Saved Wishes</h3>
 
-  <ChildDropdown {children} {selectedChild} />
+  <ChildDropdown bind:selectedChild />
 
-  <!-- Display saved wishes for the selected child -->
   <ul>
-    {#each savedWishes as wish}
-      <li>
-        <span>{wish.childUsername}</span>
-      </li>
-    {/each}
+    {#if savedWishes.length > 0}
+      {#each savedWishes as wish}
+        <li>{wish.title}</li>
+      {/each}
+    {:else}
+      <p>No wishes are saved for this child.</p>
+    {/if}
   </ul>
 </div>

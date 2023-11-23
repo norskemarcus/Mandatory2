@@ -9,12 +9,7 @@
 
   async function addWishForm() {
     if (!title) {
-      // toast.error('Please fill in at least a title.');
       toast.error('Please fill in at least a title.');
-      setTimeout(() => {
-        console.log('Please fill in at least a title.');
-        toast.dismiss();
-      }, 5000);
     } else {
       try {
         const response = await fetch('http://localhost:8080/api/form/wishes', {
@@ -27,20 +22,20 @@
         });
 
         if (response.ok) {
-          // toast.success('Wish added successfully');
           toast.success('Wish added successfully');
-          setTimeout(() => {
-            toast.dismiss();
-          }, 5000);
         } else {
-          toast.error('Failed to add a wish');
+          const errorResponse = await response.json();
+          if (errorResponse && errorResponse.error) {
+            toast.error(`Failed to add a wish: ${errorResponse.error}`);
+          } else {
+            toast.error('Failed to add a wish');
+          }
         }
       } catch (error) {
         toast.error('An error occurred while adding a wish');
       }
     }
   }
-
   onMount(() => {
     title = '';
     description = '';
