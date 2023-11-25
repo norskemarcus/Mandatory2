@@ -20,6 +20,7 @@
     "iconify-icon": "^1.0.8",
     "socket.io-client": "^4.7.2",
     "svelte-french-toast": "^1.2.0",
+    "svelte-icons": "^2.1.0",
     "svelte-toast": "^1.0.0",
     "sveltestrap": "^5.11.2",
     "toastr": "^2.1.4"

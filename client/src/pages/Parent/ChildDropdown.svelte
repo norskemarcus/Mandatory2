@@ -5,7 +5,6 @@
   const dispatch = createEventDispatcher();
 
   let children = [];
-  //export let selectedChild;
   export let selectedChild = null;
 
   onMount(async () => {
@@ -13,7 +12,6 @@
   });
 
   function handleChange() {
-    console.log('Selected child:', selectedChild);
     dispatch('childSelected', selectedChild); // Emit the childSelected event with the selected child
   }
 

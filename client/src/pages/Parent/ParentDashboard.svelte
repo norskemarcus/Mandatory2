@@ -34,14 +34,6 @@
     checkAuthentication();
   });
 
-  afterUpdate(() => {
-    if (selectedChild) {
-      fetchSavedWishes(selectedChild.id);
-      console.log(selectedChild.id);
-      console.log(selectedChild.username);
-    }
-  });
-
   async function fetchSavedWishes(childId) {
     if (childId) {
       try {
@@ -49,7 +41,8 @@
           credentials: 'include',
         });
         if (response.ok) {
-          savedWishes = await response.json();
+          const responseData = await response.json();
+          savedWishes = responseData.wishlist;
           console.log(savedWishes);
         } else {
           console.error('Error fetching saved wishes:', response.status);
@@ -59,18 +52,31 @@
       }
     }
   }
+
+  function handleChildSelected(event) {
+    const selectedChild = event.detail;
+    console.log('Child selected:', selectedChild);
+    if (selectedChild) {
+      fetchSavedWishes(selectedChild.id);
+    }
+  }
 </script>
 
 <div class="parent-dashboard">
   <h3>Your Saved Wishes</h3>
 
-  <ChildDropdown bind:selectedChild />
-
+  <ChildDropdown bind:selectedChild on:childSelected={handleChildSelected} />
   <ul>
     {#if savedWishes.length > 0}
-      {#each savedWishes as wish}
-        <li>{wish.title}</li>
-      {/each}
+      <ul>
+        {#each savedWishes as wish}
+          <li>
+            <a href={wish.url} target="_blank" rel="noopener noreferrer">
+              {wish.title}
+            </a>
+          </li>
+        {/each}
+      </ul>
     {:else}
       <p>No wishes are saved for this child.</p>
     {/if}

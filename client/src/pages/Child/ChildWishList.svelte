@@ -9,10 +9,8 @@
   let toBeDeleted = null;
   let dialogRef;
   let selectedWishes = new Set();
-  let loggedIn = false; // You'll want to update this based on your user's login status
+  let loggedIn = false;
   let userRole = '';
-
-  // Real-Time Updates: Use WebSockets to push updates to the parent's dashboard as soon as a new wish is added by a child or a wish status changes.
 
   onMount(async () => {
     const fetchedUser = await fetchUser();
@@ -125,10 +123,6 @@
       Display Edit/Delete Buttons
     {/if}
   </button>
-
-  {#if loggedIn && userRole === 'Parent'}
-    <button on:click={saveSelectedWishes} class="save-btn">Save selected wishes to my list</button>
-  {/if}
 
   <div class="wishlist">
     {#each wishes as wish (wish.id)}

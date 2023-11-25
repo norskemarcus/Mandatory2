@@ -98,8 +98,12 @@
           <!-- Additional details like shop, stars, and shipping can go here -->
         </div>
       </a>
-      <button on:click={() => saveToWishlist(item)} class="save-button">
+      <!-- <button on:click={() => saveToWishlist(item)} class="save-button">
         <i class="fas fa-heart" /> Save to Wishlist
+      </button> -->
+      <button on:click={() => saveToWishlist(item)} class="save-button">
+        <i class="fas fa-heart" />
+        {item.isSaved ? 'Unsave' : 'Save'}
       </button>
     </div>
   {/each}

@@ -1,26 +1,23 @@
 <!-- 
-  This is the top-level component that fetches and lists all wishes, passing down the necessary props to WishSetCard.
+  This is the top-level parent component that fetches and lists all wishes, passing down the necessary props to WishSetCard.
+
+  To access selectedChild within the WishSetCard.svelte component, you should pass it as a prop from the parent component, which is WishList.svelte.
 
 WishList.svelte: This component is responsible for managing the wishlist, fetching wishes, and handling interactions like editing, deleting, and selecting wishes for a parent's list. It should pass down the necessary props to WishSetCard.svelte for displaying individual wishes.-->
 
 <script>
-  import { onMount, afterUpdate } from 'svelte';
+  import { onMount } from 'svelte';
   import WishSetCard from './WishSetCard.svelte';
   import ChildDropdown from '../Parent/ChildDropdown.svelte';
   import { fetchUser } from '../../user/userApi.js';
   import { user } from '../../store/stores.js';
 
   let wishes = [];
-  let editMode = false;
-  let toBeDeleted = null;
-  let dialogRef;
   let selectedWishes = new Set();
   let loggedIn = false;
   let userRole = '';
   let selectedChild = null;
   let authenticationChecked = false;
-
-  let childWishlist = null;
   let children = [];
 
   async function checkAuthentication() {
@@ -36,66 +33,16 @@ WishList.svelte: This component is responsible for managing the wishlist, fetchi
   }
 
   onMount(() => {
+    if (children.length > 0) {
+      fetchWishesForChild(children[0].id);
+    }
     checkAuthentication();
   });
 
-  // Listen for the child selection event in your WishList component and fetch wishes for the selected child when the event is triggered.
-
-  // afterUpdate(() => {
-  //   if (selectedChild) {
-  //     fetchWishesForChild(selectedChild.id);
-  //   }
-  // });
-
-  function toggleEditMode() {
-    editMode = !editMode;
-  }
-
-  function handleEdit(wish) {
-    editMode = wish;
-  }
-
-  function handleDelete(wish) {
-    toBeDeleted = wish;
-    dialogRef.showModal();
-  }
-
-  // OBS: MÅ LAVES OM TIL SPECIFIK USER OBS FORÆLDRE SKAL IKKE KUNNE REDIGERE I ET BØRNS LISTE!!!
-  // *****************************************************************************************
-  async function handleConfirmDelete() {
-    if (toBeDeleted) {
-      try {
-        const response = await fetch(`http://localhost:8080/api/wishes/${toBeDeleted.id}`, {
-          method: 'DELETE',
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          wishes = wishes.filter(w => w.id !== toBeDeleted.id);
-          toBeDeleted = null;
-        } else {
-          console.error('Error deleting wish:', response.status);
-        }
-      } catch (error) {
-        console.error('Delete wish error:', error);
-      }
-    }
-    dialogRef.close();
-  }
-
-  // Event listener for the 'childSelected' event
-  // function handleChildSelected() {
-  //   console.log(selectedChild);
-  //   fetchWishesForChild(selectedChild);
-  //   console.log();
-  // }
-
   function handleChildSelected(event) {
     const selectedChild = event.detail;
-    console.log('Child selected:', selectedChild);
-    if (selectedChild) {
-      fetchWishesForChild(selectedChild.id);
-    }
+
+    fetchWishesForChild(selectedChild.id);
   }
 
   async function fetchWishesForChild(childId) {
@@ -112,49 +59,48 @@ WishList.svelte: This component is responsible for managing the wishlist, fetchi
 
       const data = await response.json();
       wishes = data.wishlist;
-      console.log('Wishes', wishes);
     } catch (error) {
       console.error('Wishes fetch error:', error);
     }
   }
 
-  function selectWish(wishId, isSelected) {
+  function handleOnSave(childId, wishId, isSelected) {
     if (isSelected) {
       selectedWishes.add(wishId);
+      saveSelectedWish(childId, wishId);
     } else {
-      selectedWishes.delete(wishId);
+      //TODO: Add code to handle un-saving the wish if needed
+      console.log('Wish un-saved:', wishId);
+      // selectedWishes.delete(wishId);
+    }
+  }
+  async function saveSelectedWish(childId, wishId) {
+    try {
+      const response = await fetch(`http://localhost:8080/api/parent/saved-wishes/${childId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ wishId }),
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        console.log('Wishes saved successfully!');
+      }
+
+      const errorResponse = await response.json();
+
+      if (errorResponse && errorResponse.error) {
+        console.error(`Failed to save a wish: ${errorResponse.error}`);
+      }
+    } catch (error) {
+      console.error('An error occurred while saving a wish');
     }
   }
 
-  function saveSelectedWishes() {
-    //TODO: Also want to save the username from that child
-
-    const wishesToSave = Array.from(selectedWishes);
-
-    fetch('http://localhost:8080/api/parent/saved-wishes', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ wishIds: wishesToSave }),
-      credentials: 'include',
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok.');
-        }
-        return response.json(); // Handle the case where there might not be any JSON to parse
-      })
-      .then(data => {
-        if (data.success) {
-          console.log('Wishes saved successfully!');
-          selectedWishes.clear();
-          // navigate to the updated list in parent?
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+  function selectWish() {
+    console.log('What should be here in selectWish???');
   }
 </script>
 
@@ -162,47 +108,10 @@ WishList.svelte: This component is responsible for managing the wishlist, fetchi
   <ChildDropdown bind:selectedChild on:childSelected={handleChildSelected} />
 </div>
 
-<div class="wishlist-container">
-  {#if loggedIn && userRole === 'Child'}
-    <button on:click={toggleEditMode} class="display-btn">
-      {#if editMode}
-        Display Cards
-      {:else}
-        Display Edit/Delete Buttons
-      {/if}
-    </button>
-  {/if}
-
-  {#if loggedIn && userRole === 'Parent'}
-    <button on:click={saveSelectedWishes} class="save-btn">Save selected wishes to my list</button>
-  {/if}
-
-  <div class="wishlist">
-    {#each wishes as wish (wish.id)}
-      {#if !editMode}
-        <!-- Pass props to WishSetCard for displaying and selecting wishes -->
-        <WishSetCard {wish} {userRole} isSelected={selectedWishes.has(wish.id)} onSelect={selectWish} />
-
-        <!-- Old code: <WishSetCard {wish} {userRole} onSelect={selectWish} /> -->
-      {:else}
-        <!-- Pass props to WishSetCard for editing and deleting wishes -->
-        <div class="wish-item">
-          <WishSetCard {wish} {userRole} onSelect={selectWish} isSelected={selectedWishes.has(wish.id)} />
-
-          <div class="buttons">
-            <button on:click={() => handleEdit(wish)} id="edit-btn">Edit</button>
-            <button on:click={() => handleDelete(wish)} class="del-btn">Delete</button>
-          </div>
-        </div>
-      {/if}
-    {/each}
-  </div>
-
-  {#if editMode}
-    <dialog id="confirm-delete" bind:this={dialogRef}>
-      <button on:click={handleConfirmDelete} class="del-btn">Confirm Delete</button>
-    </dialog>
-  {/if}
+<div class="wishlist">
+  {#each wishes as wish (wish.id)}
+    <WishSetCard {wish} {userRole} isSelected={selectedWishes.has(wish.id)} onSave={handleOnSave} onSelect={selectWish} {selectedChild} />
+  {/each}
 </div>
 
 <svelte:head>
@@ -212,11 +121,6 @@ WishList.svelte: This component is responsible for managing the wishlist, fetchi
 <style>
   .dropdown {
     width: 50%;
-  }
-  .wishlist-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
   }
 
   .wishlist {

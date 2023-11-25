@@ -29,7 +29,6 @@
 
       if (response) {
         user.set(response);
-        console.log(response.role);
       } else {
         user.set(null);
       }

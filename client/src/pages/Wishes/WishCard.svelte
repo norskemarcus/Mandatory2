@@ -2,15 +2,20 @@
 This component should only be responsible for displaying an individual wish. Since you are using slots, the parent component will determine the content of each slot.
 -->
 <script>
+  import { FaHeart } from 'svelte-icons/fa';
   export let wish;
   export let userRole;
   export let isSelected;
   export let onSelect; // Prop for the function to call when the checkbox is changed
+  export let onSave;
+  export let selectedChild;
+  let buttonClass = 'save-button';
+  let heartClass = '';
 
-  // This function will be called when a checkbox changes state
-  function handleSelection(event) {
-    const selected = event.target.checked;
-    onSelect(wish.id, selected); // Call the onSelect function with the wish ID and the selected state
+  function saveWish() {
+    onSave(selectedChild.id, wish.id, !isSelected);
+    heartClass = isSelected ? '' : 'saved';
+    console.log('I clicked', wish.id);
   }
 </script>
 
@@ -44,20 +49,21 @@ This component should only be responsible for displaying an individual wish. Sin
     </slot>
   </div>
 
-  {#if userRole === 'Parent'}
-    <label>
-      <!--
-      you use the on:change event on the checkbox to call the handleSelection function, which in turn calls the passed-in selectWish function with the wish ID and whether the wish is selected or not. -->
-      <!-- <input type="checkbox" on:change={handleSelection} /> -->
-
-      <input type="checkbox" bind:checked={isSelected} on:change={handleSelection} />
-      Select for parent's list
-    </label>
-  {/if}
+  <div class="button-container">
+    {#if userRole === 'Parent'}
+      <button on:click={saveWish} class={buttonClass}>
+        <FaHeart class={'heart-icon ' + heartClass} />
+        {isSelected ? 'Unsave' : 'Save'}
+      </button>
+      
+    {/if}
+  </div>
 </article>
 
 <style>
   .wish-set-card {
+    display: flex;
+    flex-direction: column;
     width: 200px;
     border: 1px solid #aaa;
     border-radius: 2px;
@@ -84,6 +90,33 @@ This component should only be responsible for displaying an individual wish. Sin
   .missing-description,
   .missing-price {
     color: #999;
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .save-button {
+    color: red;
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    width: auto;
+    height: 20px;
+    padding: 0;
+  }
+
+  .heart-icon {
+    margin-right: 0.5em;
+  }
+
+  .saved {
+    color: rgb(184, 117, 117);
   }
 
   :global(body.dark-mode) h2 {

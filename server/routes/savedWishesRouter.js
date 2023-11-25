@@ -35,14 +35,9 @@ router.get('/api/parent/saved-wishes/:childId', async (req, res) => {
 
     const parentId = req.session.user.id;
     const childId = req.params.childId;
+    console.log(childId);
 
-    const isChildBelongsToParent = await checkIfChildBelongsToParent(parentId, childId);
-
-    if (!isChildBelongsToParent) {
-      return res.status(403).json({ message: 'Child does not belong to the parent' });
-    }
-
-    const childWishlist = await query('SELECT * FROM saved_wishes WHERE child_id = ?', [childId]);
+    const childWishlist = await query('SELECT sw.id, sw.child_id, w.title, w.url FROM saved_wishes sw JOIN wishes w ON sw.wish_id = w.id WHERE sw.child_id = ?', [childId]);
 
     return res.status(200).send({ wishlist: childWishlist });
   } catch (error) {
@@ -51,23 +46,28 @@ router.get('/api/parent/saved-wishes/:childId', async (req, res) => {
   }
 });
 
-async function checkIfChildBelongsToParent(parentId, childId) {
-  const result = await query('SELECT COUNT(*) as count FROM users WHERE id = ? AND role = "Child" AND parent_id = ?', [childId, parentId]);
-  return result[0].count > 0;
-}
-
-router.post('/api/parent/saved-wishes', async (req, res) => {
+router.post('/api/parent/saved-wishes/:childId', async (req, res) => {
   try {
     const { wishId } = req.body;
+
+    const childId = req.params.childId;
 
     if (!req.session.user || req.session.user.role !== 'Parent') {
       return res.status(403).send({ message: 'Unauthorized' });
     }
 
     const parentUserId = req.session.user.id; // Make sure to use the correct parent user ID
-    const insertSql = 'INSERT INTO saved_wishes (wish_id, parent_user_id) VALUES (?, ?)'; // Adjust the column names
 
-    const result = await query(insertSql, [wishId, parentUserId]);
+    const checkSql = 'SELECT * FROM saved_wishes WHERE child_id = ? AND parent_user_id = ? AND wish_id = ?';
+    const checkResult = await query(checkSql, [childId, parentUserId, wishId]);
+
+    if (checkResult.length > 0) {
+      return res.status(400).send({ error: 'Wish is already saved' });
+    }
+
+    const insertSql = 'INSERT INTO saved_wishes (wish_id, parent_user_id, child_id) VALUES (?, ?, ?)';
+
+    const result = await query(insertSql, [wishId, parentUserId, childId]);
 
     if (result.affectedRows > 0) {
       return res.status(201).send({ message: 'Wish saved successfully' });
@@ -80,18 +80,16 @@ router.post('/api/parent/saved-wishes', async (req, res) => {
   }
 });
 
+// TODO: Move this to another router!
 // http://localhost:8080/api/parent/family-children'
 router.get('/api/parent/family-children', async (req, res) => {
   try {
     if (!req.session.user || req.session.user.role !== 'Parent') {
       return res.status(403).json({ message: 'Unauthorized' });
     }
-
     const parentId = req.session.user.id;
-    console.log(parentId);
 
     const familyChildren = await query('SELECT * FROM users WHERE role = "Child" AND parent_id = ?', [parentId]);
-    console.log(familyChildren);
 
     return res.status(200).send({ children: familyChildren });
   } catch (error) {
