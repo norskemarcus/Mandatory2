@@ -15,6 +15,28 @@
     dispatch('childSelected', selectedChild); // Emit the childSelected event with the selected child
   }
 
+  // async function fetchWishesForSelectedChild() {
+  //   if (selectedChild) {
+  //     try {
+  //       const response = await fetch(`http://localhost:8080/api/parent/saved-wishes/${selectedChild.id}`, {
+  //         credentials: 'include',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //       });
+
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         console.log(data.wishlist);
+  //       } else {
+  //         console.error('Error fetching saved wishes:', response.status);
+  //       }
+  //     } catch (error) {
+  //       console.error('Fetch saved wishes error:', error);
+  //     }
+  //   }
+  // }
+
   async function fetchChildren() {
     try {
       const response = await fetch('http://localhost:8080/api/parent/family-children', {
@@ -27,6 +49,7 @@
 
         if (children.length > 0) {
           selectedChild = children[0];
+          handleChange();
         }
       } else {
         console.error('Error fetching family children:', response.status);

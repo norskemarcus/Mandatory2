@@ -12,11 +12,17 @@
   let selectedChild = null;
   let authenticationChecked = false;
 
-  const socket = io('http://localhost:8080');
+  // const socket = io('http://localhost:8080');
 
-  socket.on('parent-wish-added', data => {
-    savedWishes = [...savedWishes, data];
-  });
+  // socket.on('parent-wish-added', data => {
+  //   savedWishes = [...savedWishes, data];
+  // });
+
+  function toggleBoughtStatus(wish) {
+    wish.bought = !wish.bought;
+    console.log('Toggle bought status for:', wish);
+    savedWishes = [...savedWishes];
+  }
 
   async function checkAuthentication() {
     if (!authenticationChecked) {
@@ -66,19 +72,62 @@
   <h3>Your Saved Wishes</h3>
 
   <ChildDropdown bind:selectedChild on:childSelected={handleChildSelected} />
-  <ul>
-    {#if savedWishes.length > 0}
-      <ul>
-        {#each savedWishes as wish}
-          <li>
-            <a href={wish.url} target="_blank" rel="noopener noreferrer">
+
+  <table>
+    <thead>
+      <tr>
+        <th>Wish</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {#each savedWishes as wish (wish.id)}
+        <tr>
+          <td>
+            <a class={wish.bought ? 'bought' : ''} href={wish.url} target="_blank" rel="noopener noreferrer">
               {wish.title}
             </a>
-          </li>
-        {/each}
-      </ul>
-    {:else}
-      <p>No wishes are saved for this child.</p>
-    {/if}
-  </ul>
+          </td>
+          <td>
+            <button on:click={() => toggleBoughtStatus(wish)} class={wish.bought ? 'bought' : ''}>
+              {wish.bought ? 'Bought' : 'Buy'}
+            </button>
+          </td>
+        </tr>
+      {/each}
+    </tbody>
+  </table>
+
+  {#if savedWishes.length === 0}
+    <p>No wishes are saved for this child.</p>
+  {/if}
 </div>
+
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  th,
+  td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+
+  a.bought {
+    color: #888;
+    text-decoration: line-through;
+  }
+
+  button.bought {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+</style>

@@ -37,7 +37,9 @@ router.get('/api/parent/saved-wishes/:childId', async (req, res) => {
     const childId = req.params.childId;
     console.log(childId);
 
-    const childWishlist = await query('SELECT sw.id, sw.child_id, w.title, w.url FROM saved_wishes sw JOIN wishes w ON sw.wish_id = w.id WHERE sw.child_id = ?', [childId]);
+    // const childWishlist = await query('SELECT sw.id, sw.child_id, w.title, w.url FROM saved_wishes sw JOIN wishes w ON sw.wish_id = w.id WHERE sw.child_id = ?', [childId]);
+
+    const childWishlist = await query('SELECT sw.id, sw.child_id, w.title, w.url, w.bought FROM saved_wishes sw JOIN wishes w ON sw.wish_id = w.id WHERE sw.child_id = ?', [childId]);
 
     return res.status(200).send({ wishlist: childWishlist });
   } catch (error) {
@@ -56,7 +58,7 @@ router.post('/api/parent/saved-wishes/:childId', async (req, res) => {
       return res.status(403).send({ message: 'Unauthorized' });
     }
 
-    const parentUserId = req.session.user.id; // Make sure to use the correct parent user ID
+    const parentUserId = req.session.user.id;
 
     const checkSql = 'SELECT * FROM saved_wishes WHERE child_id = ? AND parent_user_id = ? AND wish_id = ?';
     const checkResult = await query(checkSql, [childId, parentUserId, wishId]);
@@ -80,7 +82,7 @@ router.post('/api/parent/saved-wishes/:childId', async (req, res) => {
   }
 });
 
-// TODO: Move this to another router!
+// TODO: Move this to another router??
 // http://localhost:8080/api/parent/family-children'
 router.get('/api/parent/family-children', async (req, res) => {
   try {
@@ -94,7 +96,7 @@ router.get('/api/parent/family-children', async (req, res) => {
     return res.status(200).send({ children: familyChildren });
   } catch (error) {
     console.error('Fetch family children error:', error);
-    return res.status(500).sendDate({ error: 'Internal server error' });
+    return res.status(500).send({ error: 'Internal server error' });
   }
 });
 

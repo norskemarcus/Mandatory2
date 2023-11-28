@@ -18,21 +18,6 @@ export const createSavedWishesTable = async () => {
     console.log('Saved_wishes table created successfully');
   } catch (err) {
     console.error('Error creating the saved_wishes table:', err);
-    throw err; // Rethrow the error to be caught by the caller
+    throw err;
   }
 };
-
-// import connection from './connection';
-
-//   connection.query(createSavedWishesTableSQL, err => {
-//     if (err) {
-//       console.error('Error creating the saved_wishes table:', err);
-//     } else {
-//       console.log('Saved_wishes table created successfully');
-//     }
-//   });
-// };
-
-// FOREIGN KEY (wish_id) REFERENCES wishes(id): This sets up a foreign key relationship between saved_wishes.wish_id and the wishes.id column. It ensures that each wish_id in the saved_wishes table corresponds to a valid wish.
-
-// FOREIGN KEY (parent_user_id) REFERENCES users(id): Similarly, this sets up a foreign key relationship between saved_wishes.parent_user_id and the users.id column, ensuring that each parent_user_id corresponds to a valid user.
