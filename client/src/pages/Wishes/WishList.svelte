@@ -10,7 +10,8 @@ WishList.svelte: This component is responsible for managing the wishlist, fetchi
   import WishSetCard from './WishSetCard.svelte';
   import ChildDropdown from '../Parent/ChildDropdown.svelte';
   import { fetchUser } from '../../user/userApi.js';
-  import { user } from '../../store/stores.js';
+  import { user } from '../../stores/stores.js';
+  import io from 'socket.io-client/dist/socket.io.js';
 
   let wishes = [];
   let selectedWishes = new Set();

@@ -42,19 +42,42 @@ router.get('/api/parent/child-wishlist/:childId', async (req, res) => {
   }
 });
 
-async function createWish(userId, title, description, price, url, imageUrl) {
+// async function getChildUsername(userId) {
+//   const getChildUserameSQL = 'SELECT username FROM users WHERE id = ?';
+//   try {
+//     const result = await query(getChildUserameSQL, [userId]);
+//     return result[0]?.username;
+//   } catch (error) {
+//     console.error('Error fetching child username:', error);
+//     throw new Error('Failed to fetch child username');
+//   }
+// }
+
+async function createWish(io, userId, title, description, price, url, imageUrl) {
   const checkExistingSQL = 'SELECT id FROM wishes WHERE title = ? AND user_id = ?';
 
   try {
+    // const childUsername = await getChildUsername(userId);
+
     const existingWishes = await query(checkExistingSQL, [title, userId]);
     if (existingWishes.length > 0) {
-      throw new Error('A wish with this title already exists');
+      return { error: 'A wish with this title already exists' };
     }
 
     const insertSQL = 'INSERT INTO wishes (title, description, price, url, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)';
 
     const priceValue = price ? parseFloat(price) : null;
     const insertResults = await query(insertSQL, [title, description, priceValue, url, imageUrl, userId]);
+
+    if (insertResults.insertId) {
+      const newWish = { title, description, price: priceValue, url, imageUrl };
+      // Emit the event
+      // const notificationMessage = `${childUsername} added a new wish: ${title}`;
+      // io.emit('new-wish', { userId: userId, message: notificationMessage, wish: newWish });
+
+      io.emit('new-wish', { userId: userId, wish: newWish });
+    }
+    console.log('Wish created successfully, wishId:', insertResults.insertId);
 
     return { message: 'Wish created successfully', wishId: insertResults.insertId };
   } catch (error) {
@@ -68,7 +91,12 @@ router.post('/api/form/wishes', async (req, res) => {
     const { title, description, price, url } = req.body;
     const userId = req.session.user.id;
 
-    const result = await createWish(userId, title, description, price, url, null, userId);
+    const result = await createWish(req.io, userId, title, description, price, url, null);
+
+    if (result.error) {
+      return res.status(400).send({ error: result.error });
+    }
+
     res.status(201).send(result);
   } catch (error) {
     res.status(500).send({ error: 'Failed to create wish' });
@@ -79,15 +107,17 @@ router.post('/api/wishes', async (req, res) => {
   try {
     const { title, description, price, url, imageUrl } = req.body;
     const userId = req.session.user.id;
+    const result = await createWish(req.io, userId, title, description, price, url, imageUrl, userId);
 
-    const result = await createWish(userId, title, description, price, url, imageUrl, userId);
+    if (result.error) {
+      return res.status(400).send({ error: result.error });
+    }
     res.status(201).send(result);
   } catch (error) {
     console.error('Error creating wish:', error);
     res.status(500).send({ error: 'Failed to create wish' });
   }
 });
-
 // router.post('/api/wishes', async (req, res) => {
 //   if (!req.session.user) {
 //     console.log('User is not logged in');
@@ -136,7 +166,7 @@ router.delete('/api/wishes/:wishId', (req, res) => {
   const wishId = req.params.wishId;
 
   const checkExistingSQL = 'SELECT id, user_id FROM wishes WHERE id = ?';
-  connection.query(checkExistingSQL, [wishId], (checkErr, results) => {
+  query(checkExistingSQL, [wishId], (checkErr, results) => {
     if (checkErr) {
       console.error('Error checking for existing wish:', checkErr);
       return res.status(500).send({ error: 'Failed to check for existing wish' });
@@ -151,7 +181,7 @@ router.delete('/api/wishes/:wishId', (req, res) => {
     }
 
     const deleteSQL = 'DELETE FROM wishes WHERE id = ?';
-    connection.query(deleteSQL, [wishId], (deleteErr, result) => {
+    query(deleteSQL, [wishId], (deleteErr, result) => {
       if (deleteErr) {
         console.error('Error deleting wish:', deleteErr);
         return res.status(500).send({ error: 'Failed to delete wish' });

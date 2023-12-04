@@ -1,6 +1,6 @@
 <script>
   import { useNavigate, useLocation } from 'svelte-navigator';
-  import { user } from './store/stores.js';
+  import { user } from './stores/stores.js';
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -12,8 +12,6 @@
   // 	});
   // }
 </script>
-
-
 
 {#if $user}
   <slot />

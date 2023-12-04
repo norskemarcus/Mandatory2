@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import WishSetCard from '../Wishes/WishSetCard.svelte';
   import { fetchUser } from '../../user/userApi.js';
-  import { user } from '../../store/stores.js';
+  import { user } from '../../stores/stores.js';
 
   let wishes = [];
   let editMode = false;
@@ -45,6 +45,7 @@
 
         if (response.ok) {
           wishes = wishes.filter(w => w.id !== toBeDeleted.id);
+          wishes = [...wishes];
           toBeDeleted = null;
         } else {
           console.error('Error deleting wish:', response.status);

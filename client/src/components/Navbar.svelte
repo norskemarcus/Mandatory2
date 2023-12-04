@@ -4,12 +4,20 @@
   import { Link } from 'svelte-navigator';
   import 'iconify-icon';
   import { fetchUser } from '../user/userApi';
-  import { user } from '../store/stores.js';
+  import { user } from '../stores/stores.js';
   import { onMount } from 'svelte';
-  import { isDarkMode } from '../store/stores.js';
+  import { isDarkMode } from '../stores/stores.js';
   import { FormGroup, Input } from 'sveltestrap';
-
+  import { notifications, dismissNotification, addNotification } from '../stores/notificationStore.js';
+  import io from 'socket.io-client/dist/socket.io.js';
   let isOpen = false;
+
+  const socket = io('http://localhost:8080');
+
+  // Why inside a onMount?? It should listen all the time...
+  socket.on('new-wish', data => {
+    addNotification(`New wish: ${data.wish.title}`);
+  });
 
   onMount(() => {
     checkUserLoginStatus();
@@ -92,6 +100,23 @@
             </DropdownMenu>
           </Dropdown>
 
+          <!-- Notification Dropdown specifically for Parents -->
+          {#if $user && $user.role === 'Parent' && $notifications.length > 0}
+            <Dropdown nav inNavbar>
+              <DropdownToggle nav caret>
+                Notifications ({$notifications.length})
+              </DropdownToggle>
+              <DropdownMenu end>
+                {#each $notifications as notification, index}
+                  <DropdownItem as="div" class="notification-item">
+                    {notification}
+                    <button class="dismiss-btn" on:click={() => dismissNotification(index)}>Dismiss</button>
+                  </DropdownItem>
+                {/each}
+              </DropdownMenu>
+            </Dropdown>
+          {/if}
+
           <!-- Child-specific options for parents -->
           <Dropdown nav inNavbar>
             <DropdownToggle nav caret>Children</DropdownToggle>
@@ -104,7 +129,7 @@
         {:else}
           <!-- Child-specific options -->
           <Dropdown nav inNavbar>
-            <DropdownToggle nav caret>Wishlist (child)</DropdownToggle>
+            <DropdownToggle nav caret>Wishlist</DropdownToggle>
             <DropdownMenu end>
               <DropdownItem as="div">
                 <Link to="/childsWishlist" class="dropdown-item">My wishlist</Link>
@@ -118,6 +143,7 @@
             </DropdownMenu>
           </Dropdown>
         {/if}
+
         <!-- Common account options for both parents and children -->
         <Dropdown nav inNavbar>
           <DropdownToggle nav caret>Account</DropdownToggle>
@@ -154,5 +180,17 @@
   .house-icon {
     color: rgb(31, 13, 13);
     font-size: 24px;
+  }
+  .notification-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dismiss-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #333; /* Adjust as per your theme */
   }
 </style>

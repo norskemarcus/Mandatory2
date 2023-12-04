@@ -1,5 +1,5 @@
 <script>
-  import { isConsentGiven } from '../../store/stores';
+  import { isConsentGiven } from '../../stores/stores';
   import { navigate } from 'svelte-navigator';
 
   function updateConsent(allCookies = false) {

@@ -11,7 +11,7 @@
   import 'iconify-icon';
   import Footer from './components/Footer.svelte';
   import Navbar from './components/Navbar.svelte';
-  import { isDarkMode } from './store/stores.js';
+  import { isDarkMode } from './stores/stores.js';
   import { onMount } from 'svelte';
   import ParentDashboard from './pages/Parent/ParentDashboard.svelte';
   import CookiePolicy from './pages/Home/CookiePolicy.svelte';
@@ -58,7 +58,6 @@
     <PrivateRoute path="/childsWishlist">
       <ChildWishList />
     </PrivateRoute>
-
 
     <PrivateRoute path="/wishlist">
       <WishList />

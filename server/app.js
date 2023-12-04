@@ -24,25 +24,25 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: false })); // parsing incoming HTTP request bodies when the data is submitted as form data in the x-www-form-urlencoded format.
 
-// // npm i express-rate-limit
-// const allRoutesRateLimiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // reset efter 15 min
-//   limit: 200,
-//   standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-//   legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
-//   // store: ... , // Use an external store for consistency across multiple server instances.
-// });
+// npm i express-rate-limit
+const allRoutesRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // reset efter 15 min
+  limit: 200,
+  standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+  // store: ... , // Use an external store for consistency across multiple server instances.
+});
 
-// const authRateLimiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes, reset efter 15 min
-//   limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes). -------------------------------Change this when finished!!
-//   standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-//   legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
-//   // store: ... , // Use an external store for consistency across multiple server instances.
-// });
+const authRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes, reset efter 15 min
+  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes). -------------------------------Change this when finished!!
+  standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+  // store: ... , // Use an external store for consistency across multiple server instances.
+});
 
-// app.use(allRoutesRateLimiter); // asynkron funktion som er middleware
-// app.use('/auth', authRateLimiter);
+app.use(allRoutesRateLimiter); // asynkron funktion som er middleware
+app.use('/auth', authRateLimiter);
 
 app.use(
   session({
@@ -66,6 +66,12 @@ const io = new Server(server, {
     origin: '*',
     methods: ['*'],
   },
+});
+
+// Pass io to wishRouter.js: To achieve this, you can pass the io instance to your wishRouter.js. One way to do this is by using a middleware function in app.js that attaches io to the request object:
+app.use((req, res, next) => {
+  req.io = io;
+  next();
 });
 
 // an event handler for io.on('connection', ...), which is executed whenever a client (browser) establishes a WebSocket connection with your server.
