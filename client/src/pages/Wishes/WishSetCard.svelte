@@ -6,13 +6,11 @@ WishSetCard.svelte: This component should be responsible for displaying an indiv
 <script>
   import WishCard from './WishCard.svelte';
   export let wish;
-  // export let selectedWish;
   export let userRole;
-  export let isSelected; // Prop for whether the wish is selected
-  export let onSelect;
-  export let selectedChild;
-  export let onSave;
-  // Prop for the function to call when the checkbox is changed
+  export let isSelected = false; // Prop for whether the wish is selected, false = optional prop
+  export let onSelect = () => {};
+  export let selectedChild = null;
+  export let onSave = () => {};
 </script>
 
 <article class="wish-set-card">

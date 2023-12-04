@@ -157,7 +157,7 @@ router.get('/api/search', async (req, res) => {
   }
 });
 
-router.delete('/api/wishes/:wishId', (req, res) => {
+router.delete('/api/wishes/:wishId', async (req, res) => {
   if (!req.session.user) {
     return res.status(401).send({ error: 'User is not logged in' });
   }
@@ -165,31 +165,21 @@ router.delete('/api/wishes/:wishId', (req, res) => {
   const userId = req.session.user.id;
   const wishId = req.params.wishId;
 
-  const checkExistingSQL = 'SELECT id, user_id FROM wishes WHERE id = ?';
-  query(checkExistingSQL, [wishId], (checkErr, results) => {
-    if (checkErr) {
-      console.error('Error checking for existing wish:', checkErr);
-      return res.status(500).send({ error: 'Failed to check for existing wish' });
-    }
+  try {
+    await query('START TRANSACTION');
+    const deleteSavedWishSQL = 'DELETE FROM saved_wishes WHERE wish_id = ?';
+    await query(deleteSavedWishSQL, [wishId]);
 
-    if (results.length === 0) {
-      return res.status(404).send({ error: 'Wish not found' });
-    }
+    const deleteWishSQL = 'DELETE FROM wishes WHERE id = ? AND user_id = ?';
+    await query(deleteWishSQL, [wishId, userId]);
+    await query('COMMIT');
 
-    if (results[0].user_id !== userId) {
-      return res.status(403).send({ error: 'Permission denied. You cannot delete this wish.' });
-    }
-
-    const deleteSQL = 'DELETE FROM wishes WHERE id = ?';
-    query(deleteSQL, [wishId], (deleteErr, result) => {
-      if (deleteErr) {
-        console.error('Error deleting wish:', deleteErr);
-        return res.status(500).send({ error: 'Failed to delete wish' });
-      }
-
-      res.status(200).send({ message: 'Wish deleted successfully' });
-    });
-  });
+    res.status(200).send({ message: 'Wish deleted successfully' });
+  } catch (error) {
+    await query('ROLLBACK');
+    console.error('Error during deleting wish:', error);
+    res.status(500).send({ error: 'Failed to delete wish' });
+  }
 });
 
 export default router;

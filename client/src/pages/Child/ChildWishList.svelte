@@ -8,7 +8,6 @@
   let editMode = false;
   let toBeDeleted = null;
   let dialogRef;
-  let selectedWishes = new Set();
   let loggedIn = false;
   let userRole = '';
 
@@ -26,17 +25,20 @@
     editMode = !editMode;
   }
 
-  function handleEdit(wish) {
-    editMode = wish;
-  }
+  // function handleEdit(wish) {
+  //   editMode = wish;
+  // }
 
   function handleDelete(wish) {
     toBeDeleted = wish;
+    console.log('Wish:', wish);
+    console.log('tobeDeleted in handleDelete:', toBeDeleted);
     dialogRef.showModal();
   }
 
   async function handleConfirmDelete() {
     if (toBeDeleted) {
+      console.log('toBeDeleted in handleConfirmDelete:', toBeDeleted.id);
       try {
         const response = await fetch(`http://localhost:8080/api/wishes/${toBeDeleted.id}`, {
           method: 'DELETE',
@@ -44,6 +46,7 @@
         });
 
         if (response.ok) {
+          console.log('success deleting wish');
           wishes = wishes.filter(w => w.id !== toBeDeleted.id);
           wishes = [...wishes];
           toBeDeleted = null;
@@ -75,43 +78,6 @@
       console.error('Wishes fetch error:', error);
     }
   }
-
-  function selectWish(wishId, isSelected) {
-    if (isSelected) {
-      selectedWishes.add(wishId);
-    } else {
-      selectedWishes.delete(wishId);
-    }
-  }
-
-  function saveSelectedWishes() {
-    const wishesToSave = Array.from(selectedWishes);
-
-    fetch('http://localhost:8080/api/parent/saved-wishes', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ wishIds: wishesToSave }),
-      credentials: 'include',
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok.');
-        }
-        return response.json(); // Handle the case where there might not be any JSON to parse
-      })
-      .then(data => {
-        if (data.success) {
-          console.log('Wishes saved successfully!');
-          // Here you can clear the selected wishes or navigate the user to the updated list
-          selectedWishes.clear();
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-  }
 </script>
 
 <h3>My Wishlist:</h3>
@@ -127,17 +93,14 @@
 
   <div class="wishlist">
     {#each wishes as wish (wish.id)}
-      {#if !editMode}
-        <WishSetCard {wish} {userRole} isSelected={selectedWishes.has(wish.id)} onSelect={selectWish} />
-      {:else}
-        <div class="wish-item">
-          <WishSetCard {wish} {userRole} onSelect={selectWish} isSelected={selectedWishes.has(wish.id)} />
+      <div class="wish-item">
+        <WishSetCard {wish} {userRole} />
+        {#if editMode}
           <div class="buttons">
-            <button on:click={() => handleEdit(wish)} id="edit-btn">Edit</button>
             <button on:click={() => handleDelete(wish)} class="del-btn">Delete</button>
           </div>
-        </div>
-      {/if}
+        {/if}
+      </div>
     {/each}
   </div>
 

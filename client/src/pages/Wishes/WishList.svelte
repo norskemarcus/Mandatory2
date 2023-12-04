@@ -15,6 +15,7 @@ WishList.svelte: This component is responsible for managing the wishlist, fetchi
 
   let wishes = [];
   let selectedWishes = new Set();
+  let selectedWish;
   let loggedIn = false;
   let userRole = '';
   let selectedChild = null;
@@ -99,10 +100,6 @@ WishList.svelte: This component is responsible for managing the wishlist, fetchi
       console.error('An error occurred while saving a wish');
     }
   }
-
-  function selectWish() {
-    console.log('What should be here in selectWish???');
-  }
 </script>
 
 <div class="dropdown">
@@ -111,7 +108,7 @@ WishList.svelte: This component is responsible for managing the wishlist, fetchi
 
 <div class="wishlist">
   {#each wishes as wish (wish.id)}
-    <WishSetCard {wish} {userRole} isSelected={selectedWishes.has(wish.id)} onSave={handleOnSave} onSelect={selectWish} {selectedChild} />
+    <WishSetCard {wish} {userRole} isSelected={selectedWishes.has(wish.id)} onSave={handleOnSave} onSelect={selectedWish} {selectedChild} />
   {/each}
 </div>
 

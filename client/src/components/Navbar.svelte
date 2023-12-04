@@ -14,7 +14,7 @@
 
   const socket = io('http://localhost:8080');
 
-  // Why inside a onMount?? It should listen all the time...
+  
   socket.on('new-wish', data => {
     addNotification(`New wish: ${data.wish.title}`);
   });
