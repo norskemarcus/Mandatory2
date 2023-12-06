@@ -52,11 +52,11 @@ export async function signUp(username, password) {
 }
 
 export async function signUpChild(username, password, parent_id) {
-  // const selectSql = 'SELECT id FROM users WHERE username = ?';
-  // const existingUsers = await query(selectSql, [username]);
-  // if (existingUsers.length > 0) {
-  //   throw new Error('User already exists');
-  // }
+  const selectSql = 'SELECT id FROM users WHERE username = ?';
+  const existingUsers = await query(selectSql, [username]);
+  if (existingUsers.length > 0) {
+    throw new Error('User already exists');
+  }
 
   const hashedPassword = await bcrypt.hash(password, saltRounds);
   const role = 'Child';
@@ -91,6 +91,6 @@ export async function logIn(username, password) {
     delete user.password;
     return user;
   } catch (error) {
-    throw error; // TODO: Lave en toast med fejlmelding
+    throw error;
   }
 }

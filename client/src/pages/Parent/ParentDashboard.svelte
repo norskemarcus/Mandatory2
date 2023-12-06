@@ -1,10 +1,8 @@
 <script>
-  import { onMount, afterUpdate } from 'svelte';
+  import { onMount } from 'svelte';
   import ChildDropdown from './ChildDropdown.svelte';
   import { fetchUser } from '../../user/userApi.js';
-  import { user } from '../../stores/stores.js';
-  import io from 'socket.io-client/dist/socket.io.js';
-  import { notifications, addNotification, dismissNotification } from '../../stores/notificationStore';
+  import { user } from '../../stores/globalStore.js';
 
   let savedWishes = [];
   let loggedIn = false;
@@ -122,32 +120,5 @@
   button.bought {
     background-color: #ccc;
     cursor: not-allowed;
-  }
-  .notifications {
-    position: absolute;
-    top: 60px;
-    left: 20px;
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 4px;
-    max-width: 300px;
-    z-index: 1000;
-  }
-  .notification {
-    position: relative;
-    padding: 10px;
-    margin-bottom: 5px;
-  }
-
-  .notification button {
-    position: absolute;
-    color: red;
-    top: 5px;
-    right: 5px;
-    border: none;
-    background: none;
-    cursor: pointer;
   }
 </style>

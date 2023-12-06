@@ -1,6 +1,4 @@
-// Create a saved_wishes table that links wishes to a user (parent) account.
-
-import { query } from './connection.js'; // Ensure this is the promise-based query function
+import { query } from './connection.js';
 
 export const createSavedWishesTable = async () => {
   const createSavedWishesTableSQL = `
@@ -8,6 +6,8 @@ export const createSavedWishesTable = async () => {
       id INT AUTO_INCREMENT PRIMARY KEY,
       wish_id INT NOT NULL,
       parent_user_id INT NOT NULL,
+      saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      bought BOOLEAN DEFAULT FALSE,
       FOREIGN KEY (wish_id) REFERENCES wishes(id),
       FOREIGN KEY (parent_user_id) REFERENCES users(id)
     );

@@ -42,22 +42,22 @@ router.get('/api/parent/child-wishlist/:childId', async (req, res) => {
   }
 });
 
-// async function getChildUsername(userId) {
-//   const getChildUserameSQL = 'SELECT username FROM users WHERE id = ?';
-//   try {
-//     const result = await query(getChildUserameSQL, [userId]);
-//     return result[0]?.username;
-//   } catch (error) {
-//     console.error('Error fetching child username:', error);
-//     throw new Error('Failed to fetch child username');
-//   }
-// }
+async function getChildUsername(userId) {
+  const getChildUserameSQL = 'SELECT username FROM users WHERE id = ?';
+  try {
+    const result = await query(getChildUserameSQL, [userId]);
+    return result[0]?.username;
+  } catch (error) {
+    console.error('Error fetching child username:', error);
+    throw new Error('Failed to fetch child username');
+  }
+}
 
 async function createWish(io, userId, title, description, price, url, imageUrl) {
   const checkExistingSQL = 'SELECT id FROM wishes WHERE title = ? AND user_id = ?';
 
   try {
-    // const childUsername = await getChildUsername(userId);
+    const childUsername = await getChildUsername(userId);
 
     const existingWishes = await query(checkExistingSQL, [title, userId]);
     if (existingWishes.length > 0) {
@@ -72,10 +72,7 @@ async function createWish(io, userId, title, description, price, url, imageUrl) 
     if (insertResults.insertId) {
       const newWish = { title, description, price: priceValue, url, imageUrl };
       // Emit the event
-      // const notificationMessage = `${childUsername} added a new wish: ${title}`;
-      // io.emit('new-wish', { userId: userId, message: notificationMessage, wish: newWish });
-
-      io.emit('new-wish', { userId: userId, wish: newWish });
+      io.emit('new-wish', { userId: userId, childUsername: childUsername, wish: newWish });
     }
     console.log('Wish created successfully, wishId:', insertResults.insertId);
 
@@ -118,32 +115,6 @@ router.post('/api/wishes', async (req, res) => {
     res.status(500).send({ error: 'Failed to create wish' });
   }
 });
-// router.post('/api/wishes', async (req, res) => {
-//   if (!req.session.user) {
-//     console.log('User is not logged in');
-//     return res.status(401).send({ error: 'User is not logged in' });
-//   }
-
-//   const userId = req.session.user.id;
-//   const { title, description, price, url, imageUrl } = req.body;
-
-//   const checkExistingSQL = 'SELECT id FROM wishes WHERE title = ? AND user_id = ?';
-
-//   try {
-//     const existingWishes = await query(checkExistingSQL, [title, userId]);
-//     if (existingWishes.length > 0) {
-//       return res.status(400).send({ error: 'A wish with this title already exists' });
-//     }
-
-//     const insertSQL = 'INSERT INTO wishes (title, description, price, url, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)';
-//     const insertResults = await query(insertSQL, [title, description, price, url, imageUrl, userId]);
-
-//     res.status(201).send({ message: 'Wish created successfully', wishId: insertResults.insertId });
-//   } catch (error) {
-//     console.error('Error processing your request:', error);
-//     res.status(500).send({ error: 'Failed to process your request' });
-//   }
-// });
 
 router.get('/api/search', async (req, res) => {
   try {
@@ -167,12 +138,25 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
 
   try {
     await query('START TRANSACTION');
+
+    const wishTitleSQL = 'SELECT title FROM wishes WHERE id = ?';
+    const [title] = await query(wishTitleSQL, [wishId]); // destructering, becuase object with title from sql
+    console.log(title);
+
     const deleteSavedWishSQL = 'DELETE FROM saved_wishes WHERE wish_id = ?';
     await query(deleteSavedWishSQL, [wishId]);
+
+    const childUsername = await getChildUsername(userId);
+    console.log('Useresults from delete:', childUsername);
 
     const deleteWishSQL = 'DELETE FROM wishes WHERE id = ? AND user_id = ?';
     await query(deleteWishSQL, [wishId, userId]);
     await query('COMMIT');
+
+    // Notify parent about the deletion
+    if (childUsername) {
+      req.io.emit('wish-deleted', { childUsername: childUsername, wish: title }); // pga et objekt
+    }
 
     res.status(200).send({ message: 'Wish deleted successfully' });
   } catch (error) {

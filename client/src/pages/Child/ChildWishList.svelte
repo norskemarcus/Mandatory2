@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import WishSetCard from '../Wishes/WishSetCard.svelte';
   import { fetchUser } from '../../user/userApi.js';
-  import { user } from '../../stores/stores.js';
+  import { user } from '../../stores/globalStore.js';
 
   let wishes = [];
   let editMode = false;
@@ -10,6 +10,7 @@
   let dialogRef;
   let loggedIn = false;
   let userRole = '';
+  let selectedWishId = null;
 
   onMount(async () => {
     const fetchedUser = await fetchUser();
@@ -25,14 +26,9 @@
     editMode = !editMode;
   }
 
-  // function handleEdit(wish) {
-  //   editMode = wish;
-  // }
-
   function handleDelete(wish) {
+    selectedWishId = wish.id;
     toBeDeleted = wish;
-    console.log('Wish:', wish);
-    console.log('tobeDeleted in handleDelete:', toBeDeleted);
     dialogRef.showModal();
   }
 
@@ -128,14 +124,6 @@
     justify-content: space-between;
   }
 
-  .wish-item {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    margin: 10px;
-    position: relative;
-  }
-
   .buttons {
     display: flex;
     flex-direction: row;
@@ -160,26 +148,8 @@
     border-radius: 5px;
   }
 
-  .save-btn {
-    padding: 5px 10px;
-    margin-bottom: 20px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-
   .del-btn {
     background-color: #d9534f;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-
-  #edit-btn {
-    background-color: #5bc0de;
     color: white;
     border: none;
     cursor: pointer;

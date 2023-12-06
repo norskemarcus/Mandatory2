@@ -1,10 +1,30 @@
 <script>
   import { onMount } from 'svelte';
+  import ChildDropdown from './ChildDropdown.svelte';
+  import { fetchUser } from '../../user/userApi.js';
+  import { user } from '../../stores/globalStore.js';
   import { toast } from 'svelte-french-toast';
+  import io from 'socket.io-client/dist/socket.io.js';
+  // import { notifications, dismissNotification, addNotification } from '../stores/notificationStore.js';
 
+  let selectedChild = null;
+  // copied from the other search:
   let searchQuery = '';
   let searchResults = [];
   let isLoading = false;
+
+  // Example client-side socket event listener
+  // socket.on('wish-suggested', data => {
+  //   if (data.childId === loggedInChildId) {
+  //     // Add the suggested wish to the notifications
+  //     addNotification(`A new wish suggested: ${data.wish.title}`);
+  //   }
+  // });
+
+  function onChildSelected(event) {
+    selectedChild = event.detail;
+    console.log('selected child: ', selectedChild.username);
+  }
 
   async function performSearch() {
     searchResults = [];
@@ -30,42 +50,31 @@
       toast.error('Please enter a search query');
     }
   }
-  async function saveToWishlist(item) {
-    const priceInfo = item.pagemap?.offer?.[0];
-    const price = priceInfo?.price;
-    const currency = priceInfo?.pricecurrency;
 
-    console.log(price);
-    console.log(currency);
+  async function suggestToChild(item) {
+    if (!selectedChild) {
+      return;
+    }
 
+    // ... rest of the suggestion logic
+    // Make sure to include the selected child's ID in the request to the backend
+  }
+
+  async function fetchSuggestions() {
     try {
-      const response = await fetch('/api/wishes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: item.title,
-          description: item.snippet,
-          price: item.pagemap?.offer?.[0]?.price,
-          currency: currency,
-          url: item.link,
-          imageUrl: item.pagemap?.cse_image?.[0]?.src || '',
-        }),
-        credentials: 'include',
-      });
-
+      const response = await fetch('/api/child/suggestions', { credentials: 'include' });
       if (!response.ok) {
-        throw new Error('Error saving to wishlist');
+        throw new Error('Error fetching suggestions');
       }
-
-      toast.success('Item saved to wishlist');
+      const data = await response.json();
+      // Handle the fetched suggestions
     } catch (error) {
-      toast.error('Failed to save item to wishlist');
-      console.error('Error saving item:', error);
+      console.error('Error fetching suggestions:', error);
     }
   }
 </script>
+
+<ChildDropdown bind:selectedChild on:childSelected={onChildSelected} />
 
 <form on:submit|preventDefault={performSearch} class="search-form">
   <input type="text" bind:value={searchQuery} placeholder="Search for products" class="search-input" />
@@ -98,7 +107,7 @@
         </div>
       </a>
 
-      <button on:click={() => saveToWishlist(item)} class="save-button">
+      <button on:click={() => suggestToChild(item)} class="save-button">
         <i class="fas fa-heart" />
         {item.isSaved ? 'Unsave' : 'Save'}
       </button>

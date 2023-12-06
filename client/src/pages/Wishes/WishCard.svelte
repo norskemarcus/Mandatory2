@@ -3,19 +3,35 @@ This component should only be responsible for displaying an individual wish. Sin
 -->
 <script>
   import { FaHeart } from 'svelte-icons/fa';
+  import { savedWishes } from '../../stores/savedWishesStore.js';
+
   export let wish;
   export let userRole;
-  export let isSelected;
   export let onSelect; // Prop for the function to call when the checkbox is changed
   export let onSave;
   export let selectedChild;
+  export let handleToggleWish;
   let buttonClass = 'save-button';
-  let heartClass = '';
+
+  let isSaved;
+
+  // Manual Subscription = Subscribe to changes in the saved wishes store, However, it's important to manually unsubscribe when the component is destroyed to prevent memory leaks. Svelte doesn't automatically clean up manual subscriptions!
+  // savedWishes.subscribe(currentSet => {
+  //   isSaved = currentSet.has(wish.id);
+  // });
+
+  // Reactive subscription to the store
+  //$: isCurrentlySaved = $savedWishes;
+
+  // Auto-subscribe to the store
+  $: isSaved = $savedWishes.has(wish.id);
+
+  // Reactive statement to update the heart class based on isSaved
+  $: heartClass = isSaved ? 'saved' : '';
 
   function saveWish() {
-    onSave(selectedChild.id, wish.id, !isSelected);
-    heartClass = isSelected ? '' : 'saved';
-    console.log('I clicked', wish.id);
+    handleToggleWish(selectedChild.id, wish.id);
+    console.log('WishCard is saved:', isSaved);
   }
 </script>
 
@@ -53,9 +69,8 @@ This component should only be responsible for displaying an individual wish. Sin
     {#if userRole === 'Parent'}
       <button on:click={saveWish} class={buttonClass}>
         <FaHeart class={'heart-icon ' + heartClass} />
-        {isSelected ? 'Unsave' : 'Save'}
+        {isSaved ? 'Save' : 'Unsave'}
       </button>
-      
     {/if}
   </div>
 </article>
@@ -70,7 +85,10 @@ This component should only be responsible for displaying an individual wish. Sin
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
     padding: 1em;
     margin: 1em;
-    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    transition:
+      background-color 0.3s,
+      border-color 0.3s,
+      color 0.3s;
   }
 
   h2 {

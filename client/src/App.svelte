@@ -8,15 +8,17 @@
   import AddWish from './pages/Wishes/AddWish.svelte';
   import WishList from './pages/Wishes/WishList.svelte';
   import Search from './pages/Wishes/Search.svelte';
+  import SearchSuggest from './pages/Parent/SearchSuggest.svelte';
   import 'iconify-icon';
   import Footer from './components/Footer.svelte';
   import Navbar from './components/Navbar.svelte';
-  import { isDarkMode } from './stores/stores.js';
+  import { isDarkMode } from './stores/globalStore.js';
   import { onMount } from 'svelte';
   import ParentDashboard from './pages/Parent/ParentDashboard.svelte';
   import CookiePolicy from './pages/Home/CookiePolicy.svelte';
   import ChildAccounts from './pages/Parent/ChildAccounts.svelte';
   import ChildWishList from './pages/Child/ChildWishList.svelte';
+  import Account from './pages/Account/Account.svelte';
 
   let message = '';
 
@@ -65,6 +67,14 @@
 
     <PrivateRoute path="/search">
       <Search />
+    </PrivateRoute>
+
+    <PrivateRoute path="/searchSuggest">
+      <SearchSuggest />
+    </PrivateRoute>
+
+    <PrivateRoute path="/account">
+      <Account />
     </PrivateRoute>
 
     <Route path="/login" on:click={clearMessage} component={Login} />

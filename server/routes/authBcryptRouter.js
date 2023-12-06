@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { signUp, logIn, signUpChild } from '../database/createUsersTable.js';
+import { signUp, logIn, signUpChild } from '../database/createUsers.js';
 
 const router = Router();
 

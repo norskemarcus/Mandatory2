@@ -4,9 +4,9 @@
   import { Link } from 'svelte-navigator';
   import 'iconify-icon';
   import { fetchUser } from '../user/userApi';
-  import { user } from '../stores/stores.js';
+  import { user } from '../stores/globalStore.js';
   import { onMount } from 'svelte';
-  import { isDarkMode } from '../stores/stores.js';
+  import { isDarkMode } from '../stores/globalStore.js';
   import { FormGroup, Input } from 'sveltestrap';
   import { notifications, dismissNotification, addNotification } from '../stores/notificationStore.js';
   import io from 'socket.io-client/dist/socket.io.js';
@@ -14,9 +14,25 @@
 
   const socket = io('http://localhost:8080');
 
-  
+  // socket.on('new-wish', data => {
+  //   addNotification(`New wish from ${data.childUsername}: ${data.wish.title}`);
+  // });
+
   socket.on('new-wish', data => {
-    addNotification(`New wish: ${data.wish.title}`);
+    addNotification({
+      message: `New wish from ${data.childUsername}: ${data.wish.title}`,
+      link: `/wishlist/${data.wish.id}`, // //${data.wish.id}
+      color: 'default',
+    });
+  });
+
+  socket.on('wish-deleted', data => {
+    console.log('wish-deleted:', data);
+    addNotification({
+      message: `${data.childUsername} has deleted a wish: ${data.wish.title}`,
+      link: `/childsWishlist`,
+      type: 'alert',
+    });
   });
 
   onMount(() => {
@@ -106,12 +122,16 @@
               <DropdownToggle nav caret>
                 Notifications ({$notifications.length})
               </DropdownToggle>
-              <DropdownMenu end>
+              <DropdownMenu end class="notifications-dropdown">
                 {#each $notifications as notification, index}
-                  <DropdownItem as="div" class="notification-item">
-                    {notification}
+                  <div class="notification-item {notification.type}">
+                    {#if notification.link}
+                      <a href={notification.link}>{notification.message}</a>
+                    {:else}
+                      <span>{notification.message}</span>
+                    {/if}
                     <button class="dismiss-btn" on:click={() => dismissNotification(index)}>Dismiss</button>
-                  </DropdownItem>
+                  </div>
                 {/each}
               </DropdownMenu>
             </Dropdown>
@@ -149,7 +169,7 @@
           <DropdownToggle nav caret>Account</DropdownToggle>
           <DropdownMenu end>
             <DropdownItem as="div">
-              <Link to="/profile" class="dropdown-item">My profile</Link>
+              <Link to="/account" class="dropdown-item">My account</Link>
             </DropdownItem>
 
             <DropdownItem divider />
@@ -185,12 +205,53 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    min-width: 800px;
+  }
+
+  .notification-item.alert {
+    background-color: #ffd5d5;
+    color: red;
   }
 
   .dismiss-btn {
     border: none;
     background: none;
     cursor: pointer;
-    color: #333; /* Adjust as per your theme */
+    color: #333;
+    margin-left: 10px;
+  }
+
+  @media (max-width: 1150px) {
+    .notification-item {
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .notification-item span {
+      max-width: 100%;
+      white-space: normal;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .notification-item {
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .notification-item span {
+      max-width: 100%;
+      white-space: normal;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .notification-item {
+      font-size: 14px;
+    }
   }
 </style>

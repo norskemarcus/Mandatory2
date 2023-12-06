@@ -1,26 +1,35 @@
-<!-- 
-  This is the top-level parent component that fetches and lists all wishes, passing down the necessary props to WishSetCard.
-
-  To access selectedChild within the WishSetCard.svelte component, you should pass it as a prop from the parent component, which is WishList.svelte.
-
-WishList.svelte: This component is responsible for managing the wishlist, fetching wishes, and handling interactions like editing, deleting, and selecting wishes for a parent's list. It should pass down the necessary props to WishSetCard.svelte for displaying individual wishes.-->
-
 <script>
   import { onMount } from 'svelte';
   import WishSetCard from './WishSetCard.svelte';
   import ChildDropdown from '../Parent/ChildDropdown.svelte';
   import { fetchUser } from '../../user/userApi.js';
-  import { user } from '../../stores/stores.js';
-  import io from 'socket.io-client/dist/socket.io.js';
+  import { user } from '../../stores/globalStore.js';
+  import { savedWishes } from '../../stores/savedWishesStore.js';
 
   let wishes = [];
-  let selectedWishes = new Set();
-  let selectedWish;
   let loggedIn = false;
   let userRole = '';
   let selectedChild = null;
   let authenticationChecked = false;
   let children = [];
+  let isCurrentlySaved;
+
+  let isLoading = true;
+
+  // Subscribe to the store
+  savedWishes.subscribe(currentSet => {
+    isCurrentlySaved = currentSet;
+    console.log('Initial value of savedWishes:', isCurrentlySaved);
+  });
+
+  onMount(async () => {
+    if (children.length > 0) {
+      await fetchWishesForChild(children[0].id);
+    }
+    await checkAuthentication();
+    await fetchSavedWishes();
+    isLoading = false;
+  });
 
   async function checkAuthentication() {
     if (!authenticationChecked) {
@@ -34,17 +43,32 @@ WishList.svelte: This component is responsible for managing the wishlist, fetchi
     }
   }
 
-  onMount(() => {
-    if (children.length > 0) {
-      fetchWishesForChild(children[0].id);
+  async function fetchSavedWishes(childId) {
+    try {
+      const response = await fetch(`http://localhost:8080/api/parent/saved-wishes/${childId}`, {
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const wishIds = new Set(data.wishlist.map(wish => wish.id));
+        console.log('wishIds:', wishIds);
+        savedWishes.set(wishIds);
+        console.log('savedWishes after update in fetchSavedWishes:', isCurrentlySaved);
+      } else {
+        console.error('Error fetching saved wishes:', response.status);
+      }
+    } catch (error) {
+      console.error('Error fetching saved wishes:', error);
     }
-    checkAuthentication();
-  });
+  }
 
-  function handleChildSelected(event) {
-    const selectedChild = event.detail;
-
-    fetchWishesForChild(selectedChild.id);
+  async function handleChildSelected(event) {
+    selectedChild = event.detail;
+    isLoading = true;
+    await fetchSavedWishes(selectedChild.id);
+    await fetchWishesForChild(selectedChild.id);
+    isLoading = false;
   }
 
   async function fetchWishesForChild(childId) {
@@ -66,16 +90,22 @@ WishList.svelte: This component is responsible for managing the wishlist, fetchi
     }
   }
 
-  function handleOnSave(childId, wishId, isSelected) {
-    if (isSelected) {
-      selectedWishes.add(wishId);
-      saveSelectedWish(childId, wishId);
+  // function handleToggleWish(childId, wishId) {
+  //   if (isCurrentlySaved.has(wishId)) {
+  //     unsaveWish(childId, wishId);
+  //   } else {
+  //     saveSelectedWish(childId, wishId);
+  //   }
+  // }
+
+  function handleToggleWish(childId, wishId) {
+    if ($savedWishes.has(wishId)) {
+      unsaveWish(childId, wishId);
     } else {
-      //TODO: Add code to handle un-saving the wish if needed
-      console.log('Wish un-saved:', wishId);
-      // selectedWishes.delete(wishId);
+      saveSelectedWish(childId, wishId);
     }
   }
+
   async function saveSelectedWish(childId, wishId) {
     try {
       const response = await fetch(`http://localhost:8080/api/parent/saved-wishes/${childId}`, {
@@ -88,16 +118,43 @@ WishList.svelte: This component is responsible for managing the wishlist, fetchi
       });
 
       if (response.ok) {
-        console.log('Wishes saved successfully!');
-      }
-
-      const errorResponse = await response.json();
-
-      if (errorResponse && errorResponse.error) {
-        console.error(`Failed to save a wish: ${errorResponse.error}`);
+        console.log('savedWishes inside saveSelectedWish, before update:', savedWishes);
+        savedWishes.update(currentSet => {
+          currentSet.add(wishId);
+          console.log('savedWishes after update in saveSelectedWish:', isCurrentlySaved);
+          return new Set(currentSet);
+        });
+      } else {
+        // Handle error response
       }
     } catch (error) {
       console.error('An error occurred while saving a wish');
+    }
+  }
+
+  async function unsaveWish(childId, wishId) {
+    try {
+      const response = await fetch(`http://localhost:8080/api/parent/unsave-wish/${childId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ wishId }),
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        console.log('savedWishes inside unsaveWish, before update:', savedWishes);
+        savedWishes.update(currentSet => {
+          currentSet.delete(wishId);
+          console.log('savedWishes after update in unsaveWish:', isCurrentlySaved);
+          return new Set(currentSet);
+        });
+      } else {
+        // Handle error response
+      }
+    } catch (error) {
+      console.error('An error occurred while un-saving a wish');
     }
   }
 </script>
@@ -105,12 +162,15 @@ WishList.svelte: This component is responsible for managing the wishlist, fetchi
 <div class="dropdown">
   <ChildDropdown bind:selectedChild on:childSelected={handleChildSelected} />
 </div>
-
-<div class="wishlist">
-  {#each wishes as wish (wish.id)}
-    <WishSetCard {wish} {userRole} isSelected={selectedWishes.has(wish.id)} onSave={handleOnSave} onSelect={selectedWish} {selectedChild} />
-  {/each}
-</div>
+{#if !isLoading}
+  <div class="wishlist">
+    {#each wishes as wish (wish.id)}
+      <WishSetCard {wish} {userRole} onSave={() => handleToggleWish(selectedChild.id, wish.id)} {selectedChild} {handleToggleWish} />
+    {/each}
+  </div>
+{:else}
+  <p>Loading...</p>
+{/if}
 
 <svelte:head>
   <title>My Wishlist</title>
@@ -127,7 +187,7 @@ WishList.svelte: This component is responsible for managing the wishlist, fetchi
     justify-content: space-between;
   }
 
-  .wish-item {
+  /* .wish-item {
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 10px;
@@ -197,5 +257,5 @@ WishList.svelte: This component is responsible for managing the wishlist, fetchi
     background-color: #333;
     border-color: #444;
     color: #ddd;
-  }
+  } */
 </style>

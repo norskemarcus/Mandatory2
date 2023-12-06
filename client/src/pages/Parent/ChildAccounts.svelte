@@ -1,7 +1,7 @@
 <script>
   import { navigate } from 'svelte-navigator';
 
-  import { isDarkMode } from '../../stores/stores.js';
+  import { isDarkMode } from '../../stores/globalStore.js';
 
   let childUsername = '';
   let childPassword = '';

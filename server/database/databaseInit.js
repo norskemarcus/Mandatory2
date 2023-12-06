@@ -1,5 +1,5 @@
-import { createUsersTable } from './createUsersTable.js';
-import { createWishTable } from './createWishTable.js';
+import { createUsersTable } from './createUsers.js';
+import { createWishTable } from './createWishes.js';
 import { createSavedWishesTable } from './createSavedWishes.js';
 
 export const initializeDatabase = async () => {
