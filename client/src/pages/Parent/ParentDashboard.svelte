@@ -35,9 +35,9 @@
         if (response.ok) {
           const responseData = await response.json();
 
-          savedWishes = responseData.wishlist.map((savedWish, index) => ({
+          savedWishes = responseData.wishlist.map(savedWish => ({
             ...savedWish,
-            id: `wish_${index}`, // Use a unique identifier
+            id: savedWish.wish_id,
             bought: savedWish.bought,
             statusText: savedWish.bought ? 'Bought' : 'Buy',
           }));

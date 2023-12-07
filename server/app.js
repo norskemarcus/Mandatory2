@@ -84,21 +84,19 @@ io.on('connection', socket => {
     io.emit('parent-wish-added', data);
   });
 
-  // Event handler for parent suggesting a wish to a child
-  // socket.on('suggest-wish', async data => {
-  //   try {
-  //     const { childId, wish } = data;
+  socket.on('suggest-wish', async data => {
+    try {
+      const { childId, wish } = data;
 
-  //     socket.to(childId).emit('wish-suggested', wish);
-  //   } catch (error) {
-  //     console.error('Error suggesting wish:', error);
-  //   }
-  // });
+      socket.to(childId).emit('wish-suggested', wish);
+    } catch (error) {
+      console.error('Error suggesting wish:', error);
+    }
+  });
 
-  // Event handler for child responding to the suggestion
   socket.on('respond-suggestion', data => {
     const { parentId, response } = data;
-    // Forward the response to the parent
+
     socket.to(parentId).emit('suggestion-response', response);
   });
 });
@@ -108,6 +106,9 @@ app.use(contactRoute);
 
 import { initializeDatabase } from './database/databaseInit.js';
 import authBryptRouter from './routes/authBcryptRouter.js';
+import crudUserRouter from './routes/crudUserRouter.js';
+app.use(crudUserRouter);
+
 import wishRouter from './routes/wishRouter.js';
 
 import savedWishesRouter from './routes/savedWishesRouter.js';

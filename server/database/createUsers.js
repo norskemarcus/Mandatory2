@@ -11,7 +11,7 @@ export const createUsersTable = async () => {
         password VARCHAR(255) NOT NULL,
         role ENUM('Parent', 'Child') NOT NULL,
         parent_id INT, 
-        FOREIGN KEY (parent_id) REFERENCES users(id) ON DELETE CASCADE
+        FOREIGN KEY (parent_id) REFERENCES users(id) ON DELETE SET NULL
     );
   `;
 

@@ -11,10 +11,8 @@ export const createWishTable = async () => {
     url TEXT DEFAULT NULL,
     image_url TEXT DEFAULT NULL,
     user_id INT, 
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );`;
-
-
 
   try {
     await query(createWishesSQL);
