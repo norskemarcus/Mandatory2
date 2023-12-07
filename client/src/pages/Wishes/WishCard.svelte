@@ -16,15 +16,18 @@ This component should only be responsible for displaying an individual wish. Sin
   let isSaved;
 
   // Manual Subscription = Subscribe to changes in the saved wishes store, However, it's important to manually unsubscribe when the component is destroyed to prevent memory leaks. Svelte doesn't automatically clean up manual subscriptions!
-  // savedWishes.subscribe(currentSet => {
-  //   isSaved = currentSet.has(wish.id);
-  // });
+  savedWishes.subscribe(currentSet => {
+    console.log('currentSet:', currentSet, 'savedWishes:', savedWishes);
+    isSaved = currentSet.has(wish.id);
+
+    console.log('wishId in WishCard:', wish.id);
+  });
 
   // Reactive subscription to the store
   //$: isCurrentlySaved = $savedWishes;
 
   // Auto-subscribe to the store
-  $: isSaved = $savedWishes.has(wish.id);
+  // $: isSaved = $savedWishes.has(wish.id);
 
   // Reactive statement to update the heart class based on isSaved
   $: heartClass = isSaved ? 'saved' : '';
@@ -69,7 +72,7 @@ This component should only be responsible for displaying an individual wish. Sin
     {#if userRole === 'Parent'}
       <button on:click={saveWish} class={buttonClass}>
         <FaHeart class={'heart-icon ' + heartClass} />
-        {isSaved ? 'Save' : 'Unsave'}
+        {isSaved ? 'Unsave' : 'Save'}
       </button>
     {/if}
   </div>

@@ -26,7 +26,6 @@ router.get('/api/parent/saved-wishes', async (req, res) => {
 });
 
 // get the selected child wishlist
-// http://localhost:8080/api/parent/saved-wishes/${selectedChild.id}`,
 router.get('/api/parent/saved-wishes/:childId', async (req, res) => {
   try {
     if (!req.session.user || req.session.user.role !== 'Parent') {
@@ -35,9 +34,8 @@ router.get('/api/parent/saved-wishes/:childId', async (req, res) => {
 
     //const parentId = req.session.user.id;
     const childId = req.params.childId;
-    console.log('childID:', childId);
 
-    const childWishlist = await query('SELECT sw.id, sw.child_id, w.title, w.url, w.bought FROM saved_wishes sw JOIN wishes w ON sw.wish_id = w.id WHERE sw.child_id = ?', [childId]);
+    const childWishlist = await query('SELECT sw.wish_id, sw.child_id, w.title, w.url, w.bought FROM saved_wishes sw JOIN wishes w ON sw.wish_id = w.id WHERE sw.child_id = ?', [childId]);
 
     return res.status(200).send({ wishlist: childWishlist });
   } catch (error) {
@@ -62,7 +60,7 @@ router.post('/api/parent/saved-wishes/:childId', async (req, res) => {
     const checkResult = await query(checkSql, [childId, parentUserId, wishId]);
 
     if (checkResult.length > 0) {
-      return res.status(200).send({ message: 'Wish is already saved' });
+      return res.send({ message: 'Wish is already saved' });
     }
 
     const insertSql = 'INSERT INTO saved_wishes (wish_id, parent_user_id, child_id) VALUES (?, ?, ?)';
@@ -80,24 +78,9 @@ router.post('/api/parent/saved-wishes/:childId', async (req, res) => {
   }
 });
 
-router.get('/api/parent/family-children', async (req, res) => {
-  try {
-    if (!req.session.user || req.session.user.role !== 'Parent') {
-      return res.status(403).json({ message: 'Unauthorized' });
-    }
-    const parentId = req.session.user.id;
-
-    const familyChildren = await query('SELECT * FROM users WHERE role = "Child" AND parent_id = ?', [parentId]);
-
-    return res.status(200).send({ children: familyChildren });
-  } catch (error) {
-    console.error('Fetch family children error:', error);
-    return res.status(500).send({ error: 'Internal server error' });
-  }
-});
-
 router.delete('/api/parent/unsave-wish/:childId', async (req, res) => {
   try {
+    console.log('unsave');
     // wishId bliver sendt med body
     const { wishId } = req.body;
 
@@ -124,6 +107,22 @@ router.delete('/api/parent/unsave-wish/:childId', async (req, res) => {
   } catch (error) {
     console.error('Error un-saving wish:', error);
     return res.status(500).send({ error: error.message });
+  }
+});
+
+router.get('/api/parent/family-children', async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== 'Parent') {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+    const parentId = req.session.user.id;
+
+    const familyChildren = await query('SELECT * FROM users WHERE role = "Child" AND parent_id = ?', [parentId]);
+
+    return res.status(200).send({ children: familyChildren });
+  } catch (error) {
+    console.error('Fetch family children error:', error);
+    return res.status(500).send({ error: 'Internal server error' });
   }
 });
 

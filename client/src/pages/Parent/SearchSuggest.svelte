@@ -4,26 +4,43 @@
   import { fetchUser } from '../../user/userApi.js';
   import { user } from '../../stores/globalStore.js';
   import { toast } from 'svelte-french-toast';
-  import io from 'socket.io-client/dist/socket.io.js';
-  // import { notifications, dismissNotification, addNotification } from '../stores/notificationStore.js';
+  import socket from '../../sockets/socket.js';
 
+  let loggedIn = false;
+  let userRole = '';
   let selectedChild = null;
-  // copied from the other search:
+  let authenticationChecked = false;
+
   let searchQuery = '';
   let searchResults = [];
   let isLoading = false;
 
-  // Example client-side socket event listener
-  // socket.on('wish-suggested', data => {
-  //   if (data.childId === loggedInChildId) {
-  //     // Add the suggested wish to the notifications
-  //     addNotification(`A new wish suggested: ${data.wish.title}`);
-  //   }
-  // });
+  async function checkAuthentication() {
+    if (!authenticationChecked) {
+      const fetchedUser = await fetchUser();
+      if (fetchedUser) {
+        user.set(fetchedUser);
+        userRole = fetchedUser.role;
+        loggedIn = true;
+      }
+      authenticationChecked = true;
+    }
+  }
+
+  onMount(() => {
+    checkAuthentication();
+  });
 
   function onChildSelected(event) {
     selectedChild = event.detail;
     console.log('selected child: ', selectedChild.username);
+  }
+
+  function suggestWishToChild(wish) {
+    if (!selectedChild) {
+      return;
+    }
+    socket.emit('suggest-wish', { childId: selectedChild.id, wish: wish });
   }
 
   async function performSearch() {
@@ -50,28 +67,6 @@
       toast.error('Please enter a search query');
     }
   }
-
-  async function suggestToChild(item) {
-    if (!selectedChild) {
-      return;
-    }
-
-    // ... rest of the suggestion logic
-    // Make sure to include the selected child's ID in the request to the backend
-  }
-
-  async function fetchSuggestions() {
-    try {
-      const response = await fetch('/api/child/suggestions', { credentials: 'include' });
-      if (!response.ok) {
-        throw new Error('Error fetching suggestions');
-      }
-      const data = await response.json();
-      // Handle the fetched suggestions
-    } catch (error) {
-      console.error('Error fetching suggestions:', error);
-    }
-  }
 </script>
 
 <ChildDropdown bind:selectedChild on:childSelected={onChildSelected} />
@@ -82,8 +77,6 @@
     <i class="fas fa-search search-icon" />
   </button>
 </form>
-
-<!-- add is loading when it works -->
 
 <div class="search-results">
   {#each searchResults as item, index (item.cacheId || index)}
@@ -107,10 +100,7 @@
         </div>
       </a>
 
-      <button on:click={() => suggestToChild(item)} class="save-button">
-        <i class="fas fa-heart" />
-        {item.isSaved ? 'Unsave' : 'Save'}
-      </button>
+      <button on:click={() => suggestWishToChild(item)} class="save-button"> Suggest </button>
     </div>
   {/each}
 </div>
@@ -128,6 +118,7 @@
     padding: 0.5em 1em;
     border-radius: 24px;
     box-shadow: 0 1px 6px 0 rgba(32, 33, 36, 0.28);
+    margin-top: 2rem;
   }
 
   .search-input {

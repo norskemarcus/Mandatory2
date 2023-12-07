@@ -16,10 +16,8 @@
 
   let isLoading = true;
 
-  // Subscribe to the store
   savedWishes.subscribe(currentSet => {
     isCurrentlySaved = currentSet;
-    console.log('Initial value of savedWishes:', isCurrentlySaved);
   });
 
   onMount(async () => {
@@ -27,7 +25,7 @@
       await fetchWishesForChild(children[0].id);
     }
     await checkAuthentication();
-    await fetchSavedWishes();
+
     isLoading = false;
   });
 
@@ -51,10 +49,8 @@
 
       if (response.ok) {
         const data = await response.json();
-        const wishIds = new Set(data.wishlist.map(wish => wish.id));
-        console.log('wishIds:', wishIds);
+        const wishIds = new Set(data.wishlist.map(wish => wish.wish_id));
         savedWishes.set(wishIds);
-        console.log('savedWishes after update in fetchSavedWishes:', isCurrentlySaved);
       } else {
         console.error('Error fetching saved wishes:', response.status);
       }
@@ -100,8 +96,10 @@
 
   function handleToggleWish(childId, wishId) {
     if ($savedWishes.has(wishId)) {
+      console.log('unsave handle');
       unsaveWish(childId, wishId);
     } else {
+      console.log('save handle');
       saveSelectedWish(childId, wishId);
     }
   }
@@ -118,10 +116,9 @@
       });
 
       if (response.ok) {
-        console.log('savedWishes inside saveSelectedWish, before update:', savedWishes);
         savedWishes.update(currentSet => {
           currentSet.add(wishId);
-          console.log('savedWishes after update in saveSelectedWish:', isCurrentlySaved);
+
           return new Set(currentSet);
         });
       } else {
@@ -143,10 +140,14 @@
         credentials: 'include',
       });
 
+      console.log('savedWishes outside', savedWishes);
+
       if (response.ok) {
-        console.log('savedWishes inside unsaveWish, before update:', savedWishes);
         savedWishes.update(currentSet => {
+          console.log('currentSet:', currentSet);
           currentSet.delete(wishId);
+          console.log('currentSet after delete:', currentSet);
+
           console.log('savedWishes after update in unsaveWish:', isCurrentlySaved);
           return new Set(currentSet);
         });

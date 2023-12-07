@@ -59,7 +59,7 @@ app.use(
 import http from 'http';
 const server = http.createServer(app);
 
-import { Server } from 'socket.io';
+import { Server } from 'socket.io'; // WebSocket server
 
 const io = new Server(server, {
   cors: {
@@ -68,13 +68,13 @@ const io = new Server(server, {
   },
 });
 
-// Pass io to wishRouter.js: To achieve this, you can pass the io instance to your wishRouter.js. One way to do this is by using a middleware function in app.js that attaches io to the request object:
+// Middleware to attach io to the request object
 app.use((req, res, next) => {
   req.io = io;
   next();
 });
 
-// an event handler for io.on('connection', ...), which is executed whenever a client (browser) establishes a WebSocket connection with your server.
+// Event handler for when a client connects
 io.on('connection', socket => {
   console.log('A socket connected');
 
@@ -82,6 +82,24 @@ io.on('connection', socket => {
   socket.on('child-add-wish', data => {
     // Broadcast the new wish to all connected clients (including the parent dashboard)
     io.emit('parent-wish-added', data);
+  });
+
+  // Event handler for parent suggesting a wish to a child
+  // socket.on('suggest-wish', async data => {
+  //   try {
+  //     const { childId, wish } = data;
+
+  //     socket.to(childId).emit('wish-suggested', wish);
+  //   } catch (error) {
+  //     console.error('Error suggesting wish:', error);
+  //   }
+  // });
+
+  // Event handler for child responding to the suggestion
+  socket.on('respond-suggestion', data => {
+    const { parentId, response } = data;
+    // Forward the response to the parent
+    socket.to(parentId).emit('suggestion-response', response);
   });
 });
 

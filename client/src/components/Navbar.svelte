@@ -1,6 +1,5 @@
-<script lang="ts">
-  import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, NavLink } from 'sveltestrap';
-
+<script>
+  import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'sveltestrap';
   import { Link } from 'svelte-navigator';
   import 'iconify-icon';
   import { fetchUser } from '../user/userApi';
@@ -9,35 +8,35 @@
   import { isDarkMode } from '../stores/globalStore.js';
   import { FormGroup, Input } from 'sveltestrap';
   import { notifications, dismissNotification, addNotification } from '../stores/notificationStore.js';
-  import io from 'socket.io-client/dist/socket.io.js';
+  import { initializeSocketListeners, respondToSuggestion } from '../sockets/eventHandlers';
+  import { fetchSuggestions } from '../services/getSuggestions.js';
+
+  //TODO: remember that it should also delete the notification from the database and not just dismiss!!
+
   let isOpen = false;
-
-  const socket = io('http://localhost:8080');
-
-  // socket.on('new-wish', data => {
-  //   addNotification(`New wish from ${data.childUsername}: ${data.wish.title}`);
-  // });
-
-  socket.on('new-wish', data => {
-    addNotification({
-      message: `New wish from ${data.childUsername}: ${data.wish.title}`,
-      link: `/wishlist/${data.wish.id}`, // //${data.wish.id}
-      color: 'default',
-    });
-  });
-
-  socket.on('wish-deleted', data => {
-    console.log('wish-deleted:', data);
-    addNotification({
-      message: `${data.childUsername} has deleted a wish: ${data.wish.title}`,
-      link: `/childsWishlist`,
-      type: 'alert',
-    });
-  });
 
   onMount(() => {
     checkUserLoginStatus();
+    initializeSocketListeners(addNotification);
   });
+
+  // Function to handle child responses
+  // function handleChildResponse(data) {
+  //   const actions = data.map((suggestion) => {
+  //     // Check if it's a response from a child and handle accordingly
+  //     if (suggestion.fromChild) {
+  //       if (suggestion.response === 'accept') {
+  //         return { action: 'saveAsWish', suggestion };
+  //       } else if (suggestion.response === 'deny') {
+  //         return { action: 'deleteFromDatabase', suggestion };
+  //       }
+  //     }
+  //   }
+
+  // ...
+
+  // Call fetchSuggestions with the callback function
+  // fetchSuggestions(handleChildResponse);
 
   function toggleTheme(event) {
     isDarkMode.set(event.target.checked);
@@ -83,6 +82,11 @@
       console.error('Logout error:', error);
     }
   }
+
+  // You can now use the respondToSuggestion function in this component
+  function handleResponse(wishId, response) {
+    respondToSuggestion(wishId, response);
+  }
 </script>
 
 <svelte:head>
@@ -111,7 +115,7 @@
               </DropdownItem>
 
               <DropdownItem as="div">
-                <Link to="/search" class="dropdown-item">Search & suggest</Link>
+                <Link to="/searchSuggest" class="dropdown-item">Search & suggest</Link>
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
@@ -129,6 +133,31 @@
                       <a href={notification.link}>{notification.message}</a>
                     {:else}
                       <span>{notification.message}</span>
+                    {/if}
+                    <button class="dismiss-btn" on:click={() => dismissNotification(index)}>Dismiss</button>
+                  </div>
+                {/each}
+              </DropdownMenu>
+            </Dropdown>
+          {/if}
+
+          <!-- Add child-specific options for notifications -->
+          {#if $user && $user.role === 'Child'}
+            <Dropdown nav inNavbar>
+              <DropdownToggle nav caret>
+                Notifications ({$notifications.length})
+              </DropdownToggle>
+              <DropdownMenu end class="notifications-dropdown">
+                {#each $notifications as notification, index}
+                  <div class="notification-item {notification.type}">
+                    {#if notification.link}
+                      <a href={notification.link}>{notification.message}</a>
+                    {:else}
+                      <span>{notification.message}</span>
+                    {/if}
+                    {#if $user.role === 'Child' && notification.type === 'default'}
+                      <button class="accept-btn" on:click={() => handleResponse(notification.wish.id, 'accept')}>Accept</button>
+                      <button class="deny-btn" on:click={() => handleResponse(notification.wish.id, 'deny')}>Deny</button>
                     {/if}
                     <button class="dismiss-btn" on:click={() => dismissNotification(index)}>Dismiss</button>
                   </div>
