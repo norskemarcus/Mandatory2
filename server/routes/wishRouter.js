@@ -4,7 +4,6 @@ import { query } from '../database/connection.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// This is for the logged in child, who wants to see his or hers list and edit/delete button
 router.get('/api/wishes', async (req, res) => {
   if (!req.session.user) {
     return res.status(401).send({ error: 'User is not logged in' });
@@ -33,8 +32,6 @@ router.get('/api/parent/child-wishlist/:childId', async (req, res) => {
     const selectSql = `SELECT * FROM wishes WHERE user_id = ?`;
 
     const results = await query(selectSql, [childId]);
-    console.log(results);
-
     res.send({ wishlist: results });
   } catch (error) {
     console.error('Error fetching child wishlist:', error);
@@ -71,11 +68,8 @@ async function createWish(io, userId, title, description, price, url, imageUrl) 
 
     if (insertResults.insertId) {
       const newWish = { title, description, price: priceValue, url, imageUrl };
-      // Emit the event
       io.emit('new-wish', { userId: userId, childUsername: childUsername, wish: newWish });
     }
-    console.log('Wish created successfully, wishId:', insertResults.insertId);
-
     return { message: 'Wish created successfully', wishId: insertResults.insertId };
   } catch (error) {
     console.error('Error creating wish:', error);
@@ -141,21 +135,18 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
 
     const wishTitleSQL = 'SELECT title FROM wishes WHERE id = ?';
     const [title] = await query(wishTitleSQL, [wishId]); // destructering, becuase object with title from sql
-    console.log(title);
 
     const deleteSavedWishSQL = 'DELETE FROM saved_wishes WHERE wish_id = ?';
     await query(deleteSavedWishSQL, [wishId]);
 
     const childUsername = await getChildUsername(userId);
-    console.log('Useresults from delete:', childUsername);
 
     const deleteWishSQL = 'DELETE FROM wishes WHERE id = ? AND user_id = ?';
     await query(deleteWishSQL, [wishId, userId]);
     await query('COMMIT');
 
-    // Notify parent about the deletion
     if (childUsername) {
-      req.io.emit('wish-deleted', { childUsername: childUsername, wish: title }); // pga et objekt
+      req.io.emit('wish-deleted', { childUsername: childUsername, wish: title });
     }
 
     res.status(200).send({ message: 'Wish deleted successfully' });

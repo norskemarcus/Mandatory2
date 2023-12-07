@@ -10,11 +10,6 @@
   let selectedChild = null;
   let authenticationChecked = false;
 
-  function toggleBoughtStatus(wish) {
-    wish.bought = !wish.bought;
-    console.log('Toggle bought status for:', wish);
-  }
-
   async function checkAuthentication() {
     if (!authenticationChecked) {
       const fetchedUser = await fetchUser();
@@ -39,8 +34,13 @@
         });
         if (response.ok) {
           const responseData = await response.json();
-          savedWishes = responseData.wishlist;
-          console.log(savedWishes);
+
+          savedWishes = responseData.wishlist.map((savedWish, index) => ({
+            ...savedWish,
+            id: `wish_${index}`, // Use a unique identifier
+            bought: savedWish.bought,
+            statusText: savedWish.bought ? 'Bought' : 'Buy',
+          }));
         } else {
           console.error('Error fetching saved wishes:', response.status);
         }
@@ -49,12 +49,37 @@
       }
     }
   }
-
   function handleChildSelected(event) {
     const selectedChild = event.detail;
-    console.log('Child selected:', selectedChild);
     if (selectedChild) {
       fetchSavedWishes(selectedChild.id);
+    }
+  }
+
+  async function toggleBoughtStatus(wish, childId) {
+    let newBoughtStatus = !wish.bought;
+
+    savedWishes = savedWishes.map(wishItem => {
+      if (wishItem.id === wish.id) {
+        return { ...wishItem, bought: newBoughtStatus, statusText: newBoughtStatus ? 'Bought' : 'Buy' };
+      }
+      return wishItem;
+    });
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/parent/saved-wishes/${childId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ wishId: wish.wish_id, bought: newBoughtStatus }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        console.error('Error updating saved wish status:', response.status);
+      }
+    } catch (error) {
+      console.error('Failed to update saved wish status:', error);
     }
   }
 </script>
@@ -73,18 +98,20 @@
     </thead>
     <tbody>
       {#each savedWishes as wish (wish.id)}
-        <tr>
-          <td>
-            <a class={wish.bought ? 'bought' : ''} href={wish.url} target="_blank" rel="noopener noreferrer">
-              {wish.title}
-            </a>
-          </td>
-          <td>
-            <button on:click={() => toggleBoughtStatus(wish)} class={wish.bought ? 'bought' : ''}>
-              {wish.bought ? 'Bought' : 'Buy'}
-            </button>
-          </td>
-        </tr>
+        {#if wish.id !== undefined}
+          <tr>
+            <td>
+              <a class={wish.bought ? 'bought' : ''} href={wish.url} target="_blank" rel="noopener noreferrer">
+                {wish.title}
+              </a>
+            </td>
+            <td>
+              <button on:click={() => toggleBoughtStatus(wish, selectedChild.id)} class={wish.bought ? 'bought' : ''}>
+                {wish.bought ? 'Bought' : 'Buy'}
+              </button>
+            </td>
+          </tr>
+        {/if}
       {/each}
     </tbody>
   </table>

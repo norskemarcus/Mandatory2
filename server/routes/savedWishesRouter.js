@@ -35,7 +35,7 @@ router.get('/api/parent/saved-wishes/:childId', async (req, res) => {
     //const parentId = req.session.user.id;
     const childId = req.params.childId;
 
-    const childWishlist = await query('SELECT sw.wish_id, sw.child_id, w.title, w.url, w.bought FROM saved_wishes sw JOIN wishes w ON sw.wish_id = w.id WHERE sw.child_id = ?', [childId]);
+    const childWishlist = await query('SELECT sw.wish_id, sw.child_id, sw.bought, w.title, w.url FROM saved_wishes sw JOIN wishes w ON sw.wish_id = w.id WHERE sw.child_id = ?', [childId]);
 
     return res.status(200).send({ wishlist: childWishlist });
   } catch (error) {
@@ -74,6 +74,35 @@ router.post('/api/parent/saved-wishes/:childId', async (req, res) => {
     return res.status(500).send({ error: 'Failed to save wish' });
   } catch (error) {
     console.error('Error saving wish:', error);
+    return res.status(500).send({ error: error.message });
+  }
+});
+
+router.patch('/api/parent/saved-wishes/:childId', async (req, res) => {
+  try {
+    const { bought } = req.body;
+    console.log('bought:', bought);
+    const childId = req.params.childId;
+    console.log('childId:', childId);
+    const { wishId } = req.body;
+    console.log('wishId:', wishId);
+
+    if (!req.session.user || req.session.user.role !== 'Parent') {
+      return res.status(403).send({ message: 'Unauthorized' });
+    }
+
+    const parentUserId = req.session.user.id;
+
+    const updateSql = 'UPDATE saved_wishes SET bought = ? WHERE child_id = ? AND parent_user_id = ? AND wish_id = ?';
+    const updateResult = await query(updateSql, [bought, childId, parentUserId, wishId]);
+
+    if (updateResult.affectedRows > 0) {
+      return res.status(200).send({ message: 'Wish status updated successfully' });
+    }
+
+    return res.status(404).send({ message: 'Wish not found' });
+  } catch (error) {
+    console.error('Error updating wish status:', error);
     return res.status(500).send({ error: error.message });
   }
 });
