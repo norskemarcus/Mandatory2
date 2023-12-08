@@ -3,6 +3,8 @@
   import WishSetCard from '../Wishes/WishSetCard.svelte';
   import { fetchUser } from '../../user/userApi.js';
   import { user } from '../../stores/globalStore.js';
+  import { deleteWish } from '../../services/wishService.js';
+  import { toast } from 'svelte-french-toast';
 
   let wishes = [];
   let editMode = false;
@@ -34,23 +36,19 @@
 
   async function handleConfirmDelete() {
     if (toBeDeleted) {
-      console.log('toBeDeleted in handleConfirmDelete:', toBeDeleted.id);
       try {
-        const response = await fetch(`http://localhost:8080/api/wishes/${toBeDeleted.id}`, {
-          method: 'DELETE',
-          credentials: 'include',
-        });
+        const response = await deleteWish(toBeDeleted.id);
 
-        if (response.ok) {
-          console.log('success deleting wish');
+        if (response) {
           wishes = wishes.filter(w => w.id !== toBeDeleted.id);
           wishes = [...wishes];
           toBeDeleted = null;
         } else {
-          console.error('Error deleting wish:', response.status);
+          toast.error('Failed to delete wish');
         }
       } catch (error) {
         console.error('Delete wish error:', error);
+        toast.error('An error occurred while deleting the wish');
       }
     }
     dialogRef.close();

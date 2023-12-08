@@ -10,6 +10,7 @@ export const createWishTable = async () => {
     currency VARCHAR(3) DEFAULT NULL,
     url TEXT DEFAULT NULL,
     image_url TEXT DEFAULT NULL,
+    isSavedByChild BOOLEAN DEFAULT FALSE,
     user_id INT, 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );`;

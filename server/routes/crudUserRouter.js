@@ -24,9 +24,9 @@ router.delete('/api/users/:userId', async (req, res) => {
   console.log(userRole);
 
   try {
-    await query('START TRANSACTION');
+    // await query('START TRANSACTION');
 
-    if (userRole === 'Parent') {
+    /*     if (userRole === 'Parent') {
       const checkSavedWishesSQL = 'SELECT COUNT(*) AS count FROM saved_wishes WHERE parent_user_id = ?';
       const [savedWishesResult] = await query(checkSavedWishesSQL, [userId]);
       if (savedWishesResult.count > 0) {
@@ -58,10 +58,10 @@ router.delete('/api/users/:userId', async (req, res) => {
         await query(deleteNotificationsSQL, [userId]);
       }
     }
-    const deleteUserSQL = 'DELETE FROM users WHERE id = ?';
+ */ const deleteUserSQL = 'DELETE FROM users WHERE id = ?';
     await query(deleteUserSQL, [userId]);
 
-    await query('COMMIT');
+    //await query('COMMIT');
 
     req.session.destroy(err => {
       if (err) {
@@ -72,7 +72,7 @@ router.delete('/api/users/:userId', async (req, res) => {
       res.status(200).send({ message: 'User account and session deleted successfully' });
     });
   } catch (error) {
-    await query('ROLLBACK');
+    // await query('ROLLBACK');
     console.error('Error during deleting user:', error);
     res.status(500).send({ error: 'Failed to delete user' });
   }

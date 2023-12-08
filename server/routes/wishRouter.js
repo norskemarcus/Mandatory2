@@ -51,14 +51,13 @@ async function getChildUsername(userId) {
 }
 
 async function createWish(io, userId, title, description, price, url, imageUrl) {
-  const checkExistingSQL = 'SELECT id FROM wishes WHERE title = ? AND user_id = ?';
-
   try {
     const childUsername = await getChildUsername(userId);
+    const checkExistingSQL = 'SELECT id FROM wishes WHERE url = ? AND user_id = ?';
+    const existingWishes = await query(checkExistingSQL, [url, userId]);
 
-    const existingWishes = await query(checkExistingSQL, [title, userId]);
     if (existingWishes.length > 0) {
-      return { error: 'A wish with this title already exists' };
+      return { error: 'A wish with this URL already exists' };
     }
 
     const insertSQL = 'INSERT INTO wishes (title, description, price, url, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)';
@@ -85,11 +84,12 @@ router.post('/api/form/wishes', async (req, res) => {
     const result = await createWish(req.io, userId, title, description, price, url, null);
 
     if (result.error) {
-      return res.status(400).send({ error: result.error });
+      res.status(400).send({ error: result.error });
+    } else {
+      res.status(200).send({ message: result.message, wishId: result.wishId });
     }
-
-    res.status(201).send(result);
   } catch (error) {
+    console.error('Error creating wish:', error);
     res.status(500).send({ error: 'Failed to create wish' });
   }
 });
@@ -119,6 +119,24 @@ router.get('/api/search', async (req, res) => {
   } catch (error) {
     console.error('API search error:', error);
     res.status(500).send('Internal Server Error');
+  }
+});
+
+router.get('/api/wishes/check', async (req, res) => {
+  try {
+    const url = req.query.url;
+    const userId = req.session.user.id;
+
+    const queryResult = await query('SELECT id FROM wishes WHERE url = ? AND user_id = ?', [url, userId]);
+
+    if (queryResult.length > 0) {
+      res.send({ isSavedByChild: true, wishId: queryResult[0].id });
+    } else {
+      res.send({ isSavedByChild: false });
+    }
+  } catch (error) {
+    console.error('Error checking wish:', error);
+    res.status(500).send({ error: 'Internal server error' });
   }
 });
 

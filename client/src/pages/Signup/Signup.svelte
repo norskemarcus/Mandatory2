@@ -19,6 +19,7 @@
       if (response.ok) {
         message = data.message;
         newUser = data.user;
+        window.location.href = '/';
       } else {
         console.error('Server error response:', data);
         message = 'Error: ' + data.message;

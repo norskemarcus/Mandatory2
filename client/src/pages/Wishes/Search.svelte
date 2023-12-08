@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { toast } from 'svelte-french-toast';
+  import { deleteWish } from '../../services/wishService';
 
   let searchQuery = '';
   let searchResults = [];
@@ -12,13 +13,28 @@
     if (searchQuery.trim()) {
       isLoading = true;
       try {
-        // This request is made to the Vite server, which will proxy it to Express
         const response = await fetch(`/api/search?query=${encodeURIComponent(searchQuery)}`);
         if (!response.ok) {
           throw new Error('Error fetching search results');
         }
+
         const data = await response.json();
-        searchResults = data.items || [];
+        const items = data.items || [];
+
+        const checkPromises = items.map(async item => {
+          try {
+            const checkResponse = await fetch(`/api/wishes/check?url=${encodeURIComponent(item.link)}`);
+            if (checkResponse.ok) {
+              const checkData = await checkResponse.json();
+              return { ...item, isSavedByChild: checkData.isSavedByChild };
+            }
+            return { ...item, isSavedByChild: false };
+          } catch {
+            return { ...item, isSavedByChild: false };
+          }
+        });
+
+        searchResults = await Promise.all(checkPromises);
         isLoading = false;
       } catch (error) {
         toast.error('Failed to load search results');
@@ -26,43 +42,57 @@
         isLoading = false;
       }
     } else {
-      // TODO: WHY DOES THIS NOT WORK???
       toast.error('Please enter a search query');
+      console.log('Please enter a search query');
     }
   }
-  async function saveToWishlist(item) {
-    const priceInfo = item.pagemap?.offer?.[0];
-    const price = priceInfo?.price;
-    const currency = priceInfo?.pricecurrency;
 
-    console.log(price);
-    console.log(currency);
-
+  async function saveToWishlist(item, index) {
     try {
-      const response = await fetch('/api/wishes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: item.title,
-          description: item.snippet,
-          price: item.pagemap?.offer?.[0]?.price,
-          currency: currency,
-          url: item.link,
-          imageUrl: item.pagemap?.cse_image?.[0]?.src || '',
-        }),
-        credentials: 'include',
-      });
+      const checkResponse = await fetch(`/api/wishes/check?url=${encodeURIComponent(item.link)}`);
+      if (!checkResponse.ok) {
+        throw new Error('Error checking wishlist');
+      }
+      const checkData = await checkResponse.json();
+      console.log(checkData);
 
-      if (!response.ok) {
-        throw new Error('Error saving to wishlist');
+      let response;
+      if (checkData.isSavedByChild) {
+        response = await deleteWish(checkData.wishId);
+        if (response) {
+          toast.success('Item unsaved from wishlist');
+        } else {
+          toast.error('Failed to unsave item from wishlist');
+        }
+      } else {
+        response = await fetch('/api/wishes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: item.title,
+            description: item.snippet,
+            price: item.pagemap?.offer?.[0]?.price,
+            currency: item.pagemap?.offer?.[0]?.pricecurrency,
+            url: item.link,
+            imageUrl: item.pagemap?.cse_image?.[0]?.src || '',
+          }),
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('Error saving to wishlist');
+        }
+        toast.success('Item saved to wishlist');
       }
 
-      toast.success('Item saved to wishlist');
+      searchResults = searchResults.map((result, idx) => (idx === index ? { ...result, isSavedByChild: !checkData.isSavedByChild } : result));
+
+      console.log(searchResults);
     } catch (error) {
-      toast.error('Failed to save item to wishlist');
-      console.error('Error saving item:', error);
+      toast.error('Failed to process your request');
+      console.error('Error processing wish:', error);
     }
   }
 </script>
@@ -73,8 +103,6 @@
     <i class="fas fa-search search-icon" />
   </button>
 </form>
-
-<!-- add is loading when it works -->
 
 <div class="search-results">
   {#each searchResults as item, index (item.cacheId || index)}
@@ -98,9 +126,9 @@
         </div>
       </a>
 
-      <button on:click={() => saveToWishlist(item)} class="save-button">
+      <button on:click={() => saveToWishlist(item, index)} class="save-button {item.isSavedByChild ? 'saved' : ''}">
         <i class="fas fa-heart" />
-        {item.isSaved ? 'Unsave' : 'Save'}
+        {item.isSavedByChild ? 'Unsave' : 'Save'}
       </button>
     </div>
   {/each}
@@ -184,7 +212,7 @@
   }
 
   .search-result-image {
-    max-width: 100%; /* Limit image width to not exceed the container */
+    max-width: 100%;
     max-height: 150px;
     margin: auto;
     display: block;
@@ -227,6 +255,10 @@
 
   .save-button:hover {
     background-color: #0056b3;
+  }
+
+  .save-button.saved {
+    background-color: grey;
   }
 
   .save-button i.fas.fa-heart {

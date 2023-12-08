@@ -26,7 +26,7 @@
       });
 
       if (response.ok) {
-        navigate('/parent-dashboard');
+        navigate('/parentDashboard');
       } else {
         throw new Error('Server responded with an error');
       }
