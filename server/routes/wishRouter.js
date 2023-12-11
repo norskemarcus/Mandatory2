@@ -52,7 +52,6 @@ async function getChildUsername(userId) {
 
 async function createWish(io, userId, title, description, price, url, imageUrl) {
   try {
-    const childUsername = await getChildUsername(userId);
     const checkExistingSQL = 'SELECT id FROM wishes WHERE url = ? AND user_id = ?';
     const existingWishes = await query(checkExistingSQL, [url, userId]);
 
@@ -67,13 +66,41 @@ async function createWish(io, userId, title, description, price, url, imageUrl) 
 
     if (insertResults.insertId) {
       const newWish = { title, description, price: priceValue, url, imageUrl };
-      io.emit('new-wish', { userId: userId, childUsername: childUsername, wish: newWish });
+      const childUsername = await getChildUsername(userId);
+
+      const parentIdSQL = 'SELECT parent_id FROM users WHERE id = ?;';
+      const parent_id_result = await query(parentIdSQL, [userId]);
+
+      if (parent_id_result.length === 0) {
+        return { error: 'User not found' };
+      }
+
+      const parentId = parent_id_result[0].parent_id;
+
+      await saveNotification(userId, parentId, `${childUsername} added a new wish: ${title}`);
+      emitNewWishEvent(io, userId, childUsername, newWish);
     }
     return { message: 'Wish created successfully', wishId: insertResults.insertId };
   } catch (error) {
     console.error('Error creating wish:', error);
     throw new Error('Failed to create wish');
   }
+}
+
+async function saveNotification(userId, parentId, message) {
+  console.log('INSERT INTO notifications in wishRouter');
+  try {
+    const notificationInsertSQL = 'INSERT INTO notifications (user_id, parent_id, message) VALUES (?, ?, ?)';
+    await query(notificationInsertSQL, [userId, parentId, message]);
+    // TODO returning notification ID or a success indicator???
+  } catch (error) {
+    console.error('Error saving notification:', error);
+  }
+}
+
+function emitNewWishEvent(io, userId, childUsername, newWish) {
+  // io.emit('new-wish', { userId, childUsername, wish: newWish });
+  io.emit('new-wish', { userId: userId, childUsername: childUsername, wish: newWish });
 }
 
 router.post('/api/form/wishes', async (req, res) => {

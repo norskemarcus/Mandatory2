@@ -8,35 +8,41 @@
   import { isDarkMode } from '../stores/globalStore.js';
   import { FormGroup, Input } from 'sveltestrap';
   import { notifications, dismissNotification, addNotification } from '../stores/notificationStore.js';
-  import { initializeSocketListeners, respondToSuggestion } from '../sockets/eventHandlers';
+  import { initializeSocketListeners, respondToSuggestion } from '../sockets/eventHandlers.js';
   import { fetchSuggestions } from '../services/getSuggestions.js';
-
-  //TODO: remember that it should also delete the notification from the database and not just dismiss!!
+  import { deleteNotification, fetchNotifications } from '../services/notificationService.js';
 
   let isOpen = false;
 
-  onMount(() => {
-    checkUserLoginStatus();
+  onMount(async () => {
+    await checkUserLoginStatus();
     initializeSocketListeners(addNotification);
+
+    if ($user && $user.role === 'Parent') {
+      fetchNotifications($user.id)
+        .then(fetchedNotifications => {
+          notifications.set(fetchedNotifications);
+        })
+        .catch(error => {
+          console.error('Error fetching notifications:', error);
+        });
+    }
   });
 
-  // Function to handle child responses
-  // function handleChildResponse(data) {
-  //   const actions = data.map((suggestion) => {
-  //     // Check if it's a response from a child and handle accordingly
-  //     if (suggestion.fromChild) {
-  //       if (suggestion.response === 'accept') {
-  //         return { action: 'saveAsWish', suggestion };
-  //       } else if (suggestion.response === 'deny') {
-  //         return { action: 'deleteFromDatabase', suggestion };
-  //       }
-  //     }
-  //   }
+  function handleChildResponse(id, answer) {
+    const actions = id.map(suggestion => {
+      if (suggestion.fromChild) {
+        if (suggestion.response === 'accept') {
+          return { action: 'saveAsWish', suggestion };
+        } else if (suggestion.response === 'deny') {
+          return { action: 'deleteFromDatabase', suggestion };
+        }
+      }
+      return null;
+    });
 
-  // ...
-
-  // Call fetchSuggestions with the callback function
-  // fetchSuggestions(handleChildResponse);
+    fetchSuggestions(handleChildResponse);
+  }
 
   function toggleTheme(event) {
     isDarkMode.set(event.target.checked);
@@ -83,6 +89,18 @@
     }
   }
 
+  async function handleDismissParent(notificationId) {
+    try {
+      const result = await deleteNotification(notificationId);
+      console.log(result.message);
+
+      // Update the notifications store to remove the dismissed notification
+      notifications.update(n => n.filter(notification => notification.id !== notificationId));
+    } catch (error) {
+      console.error('Error in handleDismissParent:', error);
+    }
+  }
+
   // You can now use the respondToSuggestion function in this component
   function handleResponse(wishId, response) {
     respondToSuggestion(wishId, response);
@@ -100,7 +118,7 @@
   <NavbarToggler on:click={() => (isOpen = !isOpen)} />
   <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
     <Nav class="ms-auto" navbar>
-      <!-- Only parents can see this  -->
+      <!-- Only parents  -->
       {#if $user}
         {#if $user.role === 'Parent'}
           <Dropdown nav inNavbar>
@@ -120,8 +138,8 @@
             </DropdownMenu>
           </Dropdown>
 
-          <!-- Notification Dropdown specifically for Parents -->
-          {#if $user && $user.role === 'Parent' && $notifications.length > 0}
+          <!-- Notifications Parents -->
+          {#if $user && $user.role === 'Parent' && $notifications && $notifications.length > 0}
             <Dropdown nav inNavbar>
               <DropdownToggle nav caret>
                 Notifications ({$notifications.length})
@@ -134,14 +152,21 @@
                     {:else}
                       <span>{notification.message}</span>
                     {/if}
-                    <button class="dismiss-btn" on:click={() => dismissNotification(index)}>Dismiss</button>
+
+                    <button
+                      class="dismiss-btn"
+                      on:click={() => {
+                        console.log(notification.id);
+                        handleDismissParent(notification.id);
+                      }}>Dismiss</button
+                    >
                   </div>
                 {/each}
               </DropdownMenu>
             </Dropdown>
           {/if}
 
-          <!-- Add child-specific options for notifications -->
+          <!-- Child notifications -->
           {#if $user && $user.role === 'Child'}
             <Dropdown nav inNavbar>
               <DropdownToggle nav caret>
@@ -156,8 +181,8 @@
                       <span>{notification.message}</span>
                     {/if}
                     {#if $user.role === 'Child' && notification.type === 'default'}
-                      <button class="accept-btn" on:click={() => handleResponse(notification.wish.id, 'accept')}>Accept</button>
-                      <button class="deny-btn" on:click={() => handleResponse(notification.wish.id, 'deny')}>Deny</button>
+                      <button class="accept-btn" on:click={() => handleChildResponse(notification.wish.id, 'accept')}>Accept</button>
+                      <button class="deny-btn" on:click={() => handleChildResponse(notification.wish.id, 'deny')}>Deny</button>
                     {/if}
                     <button class="dismiss-btn" on:click={() => dismissNotification(index)}>Dismiss</button>
                   </div>
@@ -166,7 +191,7 @@
             </Dropdown>
           {/if}
 
-          <!-- Child-specific options for parents -->
+          <!-- Child pages for parents -->
           <Dropdown nav inNavbar>
             <DropdownToggle nav caret>Children</DropdownToggle>
             <DropdownMenu end>
@@ -176,7 +201,7 @@
             </DropdownMenu>
           </Dropdown>
         {:else}
-          <!-- Child-specific options -->
+          <!-- Childrens options -->
           <Dropdown nav inNavbar>
             <DropdownToggle nav caret>Wishlist</DropdownToggle>
             <DropdownMenu end>
@@ -193,7 +218,7 @@
           </Dropdown>
         {/if}
 
-        <!-- Common account options for both parents and children -->
+        <!-- Common for both parents and children -->
         <Dropdown nav inNavbar>
           <DropdownToggle nav caret>Account</DropdownToggle>
           <DropdownMenu end>
@@ -209,7 +234,7 @@
           <Input id="c3" type="switch" label="Dark mode" on:change={toggleTheme} bind:checked={$isDarkMode} />
         </FormGroup>
 
-        <!-- If you are not logged in -->
+        <!-- Not logged in -->
       {:else}
         <NavItem>
           <Link to="/login" class="nav-link">Log in</Link>

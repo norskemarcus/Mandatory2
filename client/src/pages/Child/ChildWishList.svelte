@@ -162,7 +162,6 @@
   }
 
   :global(body.dark-mode) .wish-item {
-    background-color: #333;
     border-color: #444;
     color: #ddd;
   }

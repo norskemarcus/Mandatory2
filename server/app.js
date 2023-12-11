@@ -44,17 +44,29 @@ const authRateLimiter = rateLimit({
 app.use(allRoutesRateLimiter); // asynkron funktion som er middleware
 app.use('/auth', authRateLimiter);
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      secure: false,
-      httpOnly: true,
-    },
-  }),
-);
+const sessionMiddleware = session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    secure: false,
+    httpOnly: true,
+  },
+});
+
+app.use(sessionMiddleware);
+
+// app.use(
+//   session({
+//     secret: process.env.SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: {
+//       secure: false,
+//       httpOnly: true,
+//     },
+//   }),
+// );
 
 import http from 'http';
 const server = http.createServer(app);
@@ -74,32 +86,37 @@ app.use((req, res, next) => {
   next();
 });
 
-// Event handler for when a client connects
-io.on('connection', socket => {
-  console.log('A socket connected');
-
-  // event handlers for specific events related to wishes
-  socket.on('child-add-wish', data => {
-    // Broadcast the new wish to all connected clients (including the parent dashboard)
-    io.emit('parent-wish-added', data);
-  });
-
-  socket.on('suggest-wish', async data => {
-    try {
-      const { childId, wish } = data;
-
-      socket.to(childId).emit('wish-suggested', wish);
-    } catch (error) {
-      console.error('Error suggesting wish:', error);
-    }
-  });
-
-  socket.on('respond-suggestion', data => {
-    const { parentId, response } = data;
-
-    socket.to(parentId).emit('suggestion-response', response);
-  });
+// Share session middleware with Socket.IO
+io.use((socket, next) => {
+  sessionMiddleware(socket.request, {}, next);
 });
+
+// In your app.js or a similar file where you initialize your sockets
+let socketUserMap = {};
+
+import setupSocketHandlers from './sockets/socketHandlers.js';
+
+io.on('connection', socket => {
+  const session = socket.request.session;
+  if (session && session.user) {
+    console.log('Connected user:', session.user.id);
+    // Now you can associate the socket ID with the user ID
+    socketUserMap[socket.id] = session.user.id;
+
+    // Initialize your socket event handlers
+    setupSocketHandlers(socket);
+
+    // Handle disconnect
+    socket.on('disconnect', () => {
+      delete socketUserMap[socket.id];
+    });
+  }
+});
+
+// io.on('connection', socket => {
+//   console.log('A socket connected:');
+//   setupSocketHandlers(socket);
+// });
 
 import contactRoute from './routes/contactRouter.js';
 app.use(contactRoute);
@@ -110,6 +127,12 @@ import crudUserRouter from './routes/crudUserRouter.js';
 app.use(crudUserRouter);
 
 import wishRouter from './routes/wishRouter.js';
+
+import notificationRouter from './routes/notificationRouter.js';
+app.use(notificationRouter);
+
+import suggestionRouter from './routes/suggestionsRouter.js';
+app.use(suggestionRouter);
 
 import savedWishesRouter from './routes/savedWishesRouter.js';
 app.use(savedWishesRouter);

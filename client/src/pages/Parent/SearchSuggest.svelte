@@ -3,7 +3,7 @@
   import ChildDropdown from './ChildDropdown.svelte';
   import { fetchUser } from '../../user/userApi.js';
   import { user } from '../../stores/globalStore.js';
-  import { toast } from 'svelte-french-toast';
+  import { toast, Toaster } from 'svelte-french-toast';
   import socket from '../../sockets/socket.js';
 
   let loggedIn = false;
@@ -36,20 +36,12 @@
     console.log('selected child: ', selectedChild.username);
   }
 
-  function suggestWishToChild(wish) {
-    if (!selectedChild) {
-      return;
-    }
-    socket.emit('suggest-wish', { childId: selectedChild.id, wish: wish });
-  }
-
   async function performSearch() {
     searchResults = [];
 
     if (searchQuery.trim()) {
       isLoading = true;
       try {
-        // This request is made to the Vite server, which will proxy it to Express
         const response = await fetch(`/api/search?query=${encodeURIComponent(searchQuery)}`);
         if (!response.ok) {
           throw new Error('Error fetching search results');
@@ -63,8 +55,53 @@
         isLoading = false;
       }
     } else {
-      // TODO: WHY DOES THIS NOT WORK???
       toast.error('Please enter a search query');
+    }
+  }
+
+  async function suggestWishToChild(wish) {
+    if (!selectedChild) {
+      toast.error('Please select a child first.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:8080/api/parent/suggestions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          childId: selectedChild.id,
+          wish: {
+            title: wish.title,
+            description: wish.description,
+            price: wish.pagemap?.offer?.[0]?.price,
+            url: wish.link,
+            imageUrl: wish.pagemap?.cse_image?.[0]?.src,
+            currency: wish.pagemap?.offer?.[0]?.pricecurrency,
+          },
+        }),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        console.log('Failed to suggest wish');
+        throw new Error('Failed to suggest wish');
+      }
+
+      const data = await response.json();
+      if (data && data.message) {
+        toast.success(data.message); //TODO: Why is toast not working here?
+        console.log(data.message);
+      } else {
+        toast.success('Wish suggested successfully');
+      }
+      // Emit a socket event for real-time update, using the suggestion ID if available
+      socket.emit('wish-suggested', { childId: selectedChild.id, wish, suggestionId: data.suggestionId });
+    } catch (error) {
+      console.error('Error suggesting wish:', error);
+      toast.error('Error suggesting wish');
     }
   }
 </script>
@@ -104,6 +141,8 @@
     </div>
   {/each}
 </div>
+
+<Toaster />
 
 <svelte:head>
   <script async src="https://cse.google.com/cse.js?cx=433462c853ba94cc2"></script>
@@ -229,9 +268,9 @@
     background-color: #0056b3;
   }
 
-  .save-button i.fas.fa-heart {
+  /* .save-button i.fas.fa-heart {
     margin-right: 8px;
-  }
+  } */
 
   :global(body.dark-mode) .search-result-image-container {
     background-color: #000;

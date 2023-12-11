@@ -8,7 +8,7 @@ export const createSavedWishesTable = async () => {
       parent_user_id INT NOT NULL,
       saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       bought BOOLEAN DEFAULT FALSE,
-      FOREIGN KEY (wish_id) REFERENCES wishes(id) 
+      FOREIGN KEY (wish_id) REFERENCES wishes(id), 
       FOREIGN KEY (parent_user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `;

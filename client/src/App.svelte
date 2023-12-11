@@ -6,8 +6,8 @@
   import Signup from './pages/Signup/Signup.svelte';
   import PrivateRoute from './PrivateRoute.svelte';
   import AddWish from './pages/Wishes/AddWish.svelte';
-  import WishList from './pages/Wishes/WishList.svelte';
-  import Search from './pages/Wishes/Search.svelte';
+  import WishList from './pages/Wishes/WishListToParent.svelte';
+  import Search from './pages/Child/ChildSearchWish.svelte';
   import SearchSuggest from './pages/Parent/SearchSuggest.svelte';
   import 'iconify-icon';
   import Footer from './components/Footer.svelte';

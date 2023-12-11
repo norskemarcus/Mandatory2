@@ -86,20 +86,12 @@
     }
   }
 
-  // function handleToggleWish(childId, wishId) {
-  //   if (isCurrentlySaved.has(wishId)) {
-  //     unsaveWish(childId, wishId);
-  //   } else {
-  //     saveSelectedWish(childId, wishId);
-  //   }
-  // }
-
   function handleToggleWish(childId, wishId) {
     if ($savedWishes.has(wishId)) {
-      console.log('unsave handle');
+    
       unsaveWish(childId, wishId);
     } else {
-      console.log('save handle');
+    
       saveSelectedWish(childId, wishId);
     }
   }
@@ -140,15 +132,15 @@
         credentials: 'include',
       });
 
-      console.log('savedWishes outside', savedWishes);
+    
 
       if (response.ok) {
         savedWishes.update(currentSet => {
-          console.log('currentSet:', currentSet);
+         
           currentSet.delete(wishId);
-          console.log('currentSet after delete:', currentSet);
+         
 
-          console.log('savedWishes after update in unsaveWish:', isCurrentlySaved);
+         
           return new Set(currentSet);
         });
       } else {

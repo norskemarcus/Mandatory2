@@ -43,7 +43,29 @@
       }
     } else {
       toast.error('Please enter a search query');
-      console.log('Please enter a search query');
+    }
+  }
+
+  async function saveNotification(wish) {
+    try {
+      const message = `A new wish has been added: ${wish.title}`;
+
+      const response = await fetch('http://localhost:8080/notifications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message }),
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        console.log('Notification saved successfully.');
+      } else {
+        console.error('Failed to save notification:', response.status);
+      }
+    } catch (error) {
+      console.error('Error saving notification:', error);
     }
   }
 
@@ -54,7 +76,6 @@
         throw new Error('Error checking wishlist');
       }
       const checkData = await checkResponse.json();
-      console.log(checkData);
 
       let response;
       if (checkData.isSavedByChild) {
@@ -88,8 +109,6 @@
       }
 
       searchResults = searchResults.map((result, idx) => (idx === index ? { ...result, isSavedByChild: !checkData.isSavedByChild } : result));
-
-      console.log(searchResults);
     } catch (error) {
       toast.error('Failed to process your request');
       console.error('Error processing wish:', error);
