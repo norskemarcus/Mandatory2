@@ -62,8 +62,9 @@
       <button type="submit">Add a wish</button>
     </div>
   </form>
-  <Toaster />
 </div>
+
+<Toaster />
 
 <svelte:head>
   <title>Add a wish</title>
@@ -79,7 +80,10 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+    transition:
+      background-color 0.3s,
+      border-color 0.3s,
+      box-shadow 0.3s;
   }
 
   label {
@@ -96,7 +100,10 @@
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    transition:
+      background-color 0.3s,
+      border-color 0.3s,
+      color 0.3s;
   }
 
   input[type='text'] {

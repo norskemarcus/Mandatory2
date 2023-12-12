@@ -11,6 +11,7 @@
   import { initializeSocketListeners, respondToSuggestion } from '../sockets/eventHandlers.js';
   import { fetchSuggestions } from '../services/getSuggestions.js';
   import { deleteNotification, fetchNotifications } from '../services/notificationService.js';
+  import socket from '../sockets/socket.js';
 
   let isOpen = false;
 
@@ -78,9 +79,8 @@
 
       if (response.ok) {
         user.set(null);
+        socket.emit('user-logout');
         window.location.href = '/';
-
-        user.set(null);
       } else {
         console.error('Error logging out:', response.status);
       }

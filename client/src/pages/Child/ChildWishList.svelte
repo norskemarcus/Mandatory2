@@ -4,7 +4,7 @@
   import { fetchUser } from '../../user/userApi.js';
   import { user } from '../../stores/globalStore.js';
   import { deleteWish } from '../../services/wishService.js';
-  import { toast } from 'svelte-french-toast';
+  import { toast, Toaster } from 'svelte-french-toast';
 
   let wishes = [];
   let editMode = false;
@@ -104,6 +104,7 @@
     </dialog>
   {/if}
 </div>
+<Toaster />
 
 <svelte:head>
   <title>My Wishlist</title>

@@ -1,4 +1,20 @@
-export default function setupSocketHandlers(socket, socketUserMap) {
+import { addUser, removeUser, getUserId } from './socketStore.js';
+
+export default function setupSocketHandlers(socket, io) {
+  socket.on('user-login', ({ userId }) => {
+    console.log(`User ${userId} logged in with socket ID ${socket.id}`);
+    // map each socket connection to the corresponding user ID.
+    addUser(socket.id, userId);
+  });
+
+  socket.on('user-logout', () => {
+    const userId = getUserId(socket.id);
+    if (userId) {
+      console.log(`User ${userId} logged out.`);
+      removeUser(socket.id);
+    }
+  });
+
   socket.on('child-add-wish', data => {
     io.emit('parent-wish-added', data);
   });
@@ -20,12 +36,9 @@ export default function setupSocketHandlers(socket, socketUserMap) {
   // Handle child's response to a suggestion
   socket.on('respond-to-suggestion', async data => {
     const { suggestionId, response } = data;
-
-    // Update the suggestion status in the database
     await updateSuggestionStatus(suggestionId, response);
 
-    // Get parent user ID from socketUserMap
-    const parentUserId = socketUserMap[socket.id];
+    const parentUserId = getUserId(socket.id);
 
     if (parentUserId) {
       // Notify the parent about the child's decision
@@ -35,7 +48,11 @@ export default function setupSocketHandlers(socket, socketUserMap) {
     }
   });
 
-  // Notify the parent about the child's decision
-  // io.to(parentUserId).emit('child-responded', { suggestionId, response });
-  // });
+  socket.on('disconnect', () => {
+    const userId = getUserId(socket.id);
+    if (userId) {
+      console.log(`User ${userId} disconnected.`);
+      removeUser(socket.id);
+    }
+  });
 }

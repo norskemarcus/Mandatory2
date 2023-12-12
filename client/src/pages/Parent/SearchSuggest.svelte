@@ -92,13 +92,13 @@
 
       const data = await response.json();
       if (data && data.message) {
-        toast.success(data.message); //TODO: Why is toast not working here?
+        toast.success(data.message);
         console.log(data.message);
       } else {
         toast.success('Wish suggested successfully');
       }
       // Emit a socket event for real-time update, using the suggestion ID if available
-      socket.emit('wish-suggested', { childId: selectedChild.id, wish, suggestionId: data.suggestionId });
+      // socket.emit('wish-suggested', { childId: selectedChild.id, wish, suggestionId: data.suggestionId });
     } catch (error) {
       console.error('Error suggesting wish:', error);
       toast.error('Error suggesting wish');

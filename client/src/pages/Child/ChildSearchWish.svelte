@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { toast } from 'svelte-french-toast';
+  import { toast, Toaster } from 'svelte-french-toast';
   import { deleteWish } from '../../services/wishService';
 
   let searchQuery = '';
@@ -152,6 +152,8 @@
     </div>
   {/each}
 </div>
+
+<Toaster />
 
 <svelte:head>
   <script async src="https://cse.google.com/cse.js?cx=433462c853ba94cc2"></script>

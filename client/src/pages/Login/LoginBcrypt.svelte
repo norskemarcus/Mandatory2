@@ -3,18 +3,17 @@
   // import { writable } from 'svelte/store';
   import { createEventDispatcher } from 'svelte';
   import { user } from '../../stores/globalStore.js';
+  import socket from '../../sockets/socket.js';
+  import { useNavigate } from 'svelte-navigator';
+  import { get } from 'svelte/store'; // get the current value of the user
 
   // Create an event dispatcher, to pass a signal from Login to App.svelte, to inform at the user has logged out, and the message should be cleared
   const dispatch = createEventDispatcher();
+  const navigate = useNavigate();
 
   export let username = 'test1@test.com';
   export let password = 'test1234';
   export let message = '';
-
-  //const user = writable();
-  // setContext('user', user);
-
-  //setContext('currentUser', currentUser);
 
   async function login() {
     try {
@@ -32,10 +31,15 @@
 
       if (response.ok) {
         message = data.message;
-        dispatch('logout');
+        dispatch('logout'); // TODO: CHANGE NAME!  This dispatch is typically used to notify other components about an event, so this should be name loggedIn or something??
         user.set(data.user);
+        console.log('Current user:', get(user));
 
-        window.location.href = '/';
+        if ($user && $user.id) {
+          socket.emit('user-login', { userId: $user.id });
+        }
+
+        navigate('/');
       } else {
         message = data.message || 'Error: Something went wrong';
         user.set(null);
@@ -54,7 +58,7 @@
     <input id="username" required type="username" name="username" placeholder="Your username" bind:value={username} />
 
     <label for="password">Password</label>
-    <input id="password" required type="password" name="password" placeholder="Password" bind:value={password} />
+    <input id="password" required type="password" name="password" placeholder="Password" bind:value={password} autocomplete="new-password" />
 
     <div class="button-container">
       <button type="submit">Log in</button>

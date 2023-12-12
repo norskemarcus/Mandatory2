@@ -11,7 +11,7 @@
   });
 
   function handleChange() {
-    dispatch('childSelected', selectedChild); // Emit the childSelected event with the selected child
+    dispatch('childSelected', selectedChild); 
   }
 
   async function fetchChildren() {
