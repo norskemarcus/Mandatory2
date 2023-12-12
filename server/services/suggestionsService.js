@@ -17,22 +17,13 @@ async function checkExistingSuggestion(childId, parentUserId) {
   return checkResult.length > 0;
 }
 
-async function insertSuggestion(wish) {
+async function insertSuggestion(wish, childId, parentUserId) {
   if (!wish || !wish.title || !wish.url) {
     console.error('Invalid or incomplete wish object:', wish);
     return false;
   }
 
-  const {
-    parentUserId, // Destructure the object
-    childId,
-    title,
-    description = null,
-    price = null,
-    url,
-    imageUrl = null,
-    currency = null,
-  } = wish;
+  const { title, description = null, price = null, url, imageUrl = null, currency = null } = wish;
 
   const insertSql = `INSERT INTO suggestions (parent_user_id, child_id, title, description, price, url, image_url, currency) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 

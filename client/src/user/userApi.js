@@ -18,7 +18,6 @@ export async function fetchUser() {
 
 export async function fetchParentByUsername(username) {
   try {
-    // TODO: MAKE THIS IN BACKEND
     const response = await fetch(`http://localhost:8080/api/get-parent-by-username/${username}`, {
       credentials: 'include',
     });

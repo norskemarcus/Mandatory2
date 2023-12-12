@@ -68,14 +68,7 @@ app.use((req, res, next) => {
   next();
 });
 
-const ioMiddleware = (req, res, next) => {
-  req.io = io;
-  next();
-};
-
 // Share session middleware with Socket.IO
-// This is used to share your Express session middleware with Socket.IO. It allows Socket.IO to access the session data. This is crucial if you're using sessions to manage user authentication and need to access the session data in your socket event handlers.
-
 io.use((socket, next) => {
   sessionMiddleware(socket.request, {}, next);
 });
@@ -91,6 +84,7 @@ app.use(contactRoute);
 
 import { initializeDatabase } from './database/databaseInit.js';
 import authBryptRouter from './routes/authBcryptRouter.js';
+
 import crudUserRouter from './routes/crudUserRouter.js';
 app.use(crudUserRouter);
 
@@ -100,11 +94,11 @@ import notificationRouter from './routes/notificationRouter.js';
 app.use(notificationRouter);
 
 import suggestionRouter from './routes/suggestionsRouter.js';
-//app.use(suggestionRouter);
+app.use(suggestionRouter);
 
 //  pass the io-middleware to your routes so that you can emit events from your routes.
 // This is specifically for making the io instance available in your routes. It's a good approach if you need to emit events from your routes.
-app.use('/api/suggestions', ioMiddleware, suggestionRouter);
+// app.use('/api/parent/suggestions', ioMiddleware, suggestionRouter);
 
 import savedWishesRouter from './routes/savedWishesRouter.js';
 app.use(savedWishesRouter);

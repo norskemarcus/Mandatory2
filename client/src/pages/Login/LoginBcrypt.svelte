@@ -3,9 +3,9 @@
   // import { writable } from 'svelte/store';
   import { createEventDispatcher } from 'svelte';
   import { user } from '../../stores/globalStore.js';
-  import socket from '../../sockets/socket.js';
+  // import socket from '../../sockets/socket.js';
   import { useNavigate } from 'svelte-navigator';
-  import { get } from 'svelte/store'; // get the current value of the user
+  // import { get } from 'svelte/store'; // get the current value of the user
 
   // Create an event dispatcher, to pass a signal from Login to App.svelte, to inform at the user has logged out, and the message should be cleared
   const dispatch = createEventDispatcher();
@@ -33,11 +33,11 @@
         message = data.message;
         dispatch('logout'); // TODO: CHANGE NAME!  This dispatch is typically used to notify other components about an event, so this should be name loggedIn or something??
         user.set(data.user);
-        console.log('Current user:', get(user));
+        // console.log('Current user:', get(user));
 
-        if ($user && $user.id) {
-          socket.emit('user-login', { userId: $user.id });
-        }
+        // if ($user && $user.id) {
+        //   socket.emit('user-login', { userId: $user.id });
+        // }
 
         navigate('/');
       } else {

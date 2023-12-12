@@ -85,20 +85,15 @@
         credentials: 'include',
       });
 
-      if (!response.ok) {
-        console.log('Failed to suggest wish');
-        throw new Error('Failed to suggest wish');
-      }
-
-      const data = await response.json();
-      if (data && data.message) {
-        toast.success(data.message);
-        console.log(data.message);
+      if (response.ok) {
+        const data = await response.json();
+        toast.success(data.message || 'Wish suggested successfully');
+        // socket.emit('new-suggestion', { childId, suggestion });
+        socket.emit('new-suggestion', { childId: selectedChild.id, wish, suggestionId: data.suggestionId });
       } else {
-        toast.success('Wish suggested successfully');
+        console.error('Failed to send suggestion');
+        toast.error('Error suggesting wish');
       }
-      // Emit a socket event for real-time update, using the suggestion ID if available
-      // socket.emit('wish-suggested', { childId: selectedChild.id, wish, suggestionId: data.suggestionId });
     } catch (error) {
       console.error('Error suggesting wish:', error);
       toast.error('Error suggesting wish');

@@ -23,9 +23,9 @@ export function initializeSocketListeners(addNotification) {
     });
   });
 
-  socket.on('wish-suggested', data => {
+  socket.on('new-suggestion', suggestion => {
     addNotification({
-      message: `You have a new wish suggestion: ${data.wish.title}`,
+      message: `You have a new wish suggestion: ${suggestion.wish.title}`,
       link: `/wishlist`, // ${data.wish.id} TODO: Implement this!
       color: 'default',
     });
