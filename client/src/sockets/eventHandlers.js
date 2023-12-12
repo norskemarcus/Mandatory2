@@ -1,6 +1,7 @@
 import socket from '../sockets/socket.js';
+import { suggestions } from '../stores/suggestionStore';
 
-export function initializeSocketListeners(addNotification) {
+export function initializeSocketListeners(addNotification, addSuggestion) {
   socket.on('new-wish', async data => {
     const notificationMessage = `${data.childUsername} added a new wish: ${data.wish.title}`;
 
@@ -14,8 +15,6 @@ export function initializeSocketListeners(addNotification) {
   socket.on('wish-deleted', async data => {
     console.log('wish-deleted:', data);
 
-    // TODO: FIX THIS: await saveWishDeletedNotification(data.childUsername, data.wish.title);
-
     addNotification({
       message: `${data.childUsername} has deleted a wish: ${data.wish.title}`,
       link: `/childsWishlist`,
@@ -23,11 +22,12 @@ export function initializeSocketListeners(addNotification) {
     });
   });
 
-  socket.on('new-suggestion', suggestion => {
-    addNotification({
-      message: `You have a new wish suggestion: ${suggestion.wish.title}`,
-      link: `/wishlist`, // ${data.wish.id} TODO: Implement this!
-      color: 'default',
+  // TODO: CHECK IF THIS IS CORRECT!!
+  socket.on('new-suggestion', async data => {
+    addSuggestion({
+      message: `You have a new wish suggestion: ${data.wish.title}`,
+      link: `/wishlist/${data.wish.id}`, // Assuming data.wish.id exists
+      wish: data.wish, // Storing the entire wish object for future use
     });
   });
 

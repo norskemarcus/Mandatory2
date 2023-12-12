@@ -1,6 +1,6 @@
 import Router from 'express';
 import { query } from '../database/connection.js';
-import { getSuggestions, checkExistingSuggestion, insertSuggestion } from '../services/suggestionsService.js';
+import { fetchSuggestions, checkExistingSuggestion, insertSuggestion } from '../services/suggestionsService.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -12,9 +12,11 @@ router.get('/api/child/suggestions', async (req, res) => {
   }
 
   const childId = req.session.user.id;
+
   try {
-    const suggestions = await getSuggestions(childId);
+    const suggestions = await fetchSuggestions(childId);
     res.send({ suggestions });
+    console.log('suggestions in the router.get:', suggestions);
   } catch (error) {
     console.error('Error in GET /api/child/suggestions:', error);
     res.status(500).send({ error: 'Internal Server Error' });

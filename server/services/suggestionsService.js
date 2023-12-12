@@ -1,6 +1,6 @@
 import { query } from '../database/connection.js';
 
-async function getSuggestions(childId) {
+async function fetchSuggestions(childId) {
   const selectSql = 'SELECT * FROM suggestions WHERE child_id = ?';
   try {
     const suggestions = await query(selectSql, [childId]);
@@ -32,4 +32,4 @@ async function insertSuggestion(wish, childId, parentUserId) {
   return insertResult.affectedRows > 0;
 }
 
-export { getSuggestions, checkExistingSuggestion, insertSuggestion };
+export { fetchSuggestions, checkExistingSuggestion, insertSuggestion };

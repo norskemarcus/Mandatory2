@@ -8,16 +8,18 @@
   import { isDarkMode } from '../stores/globalStore.js';
   import { FormGroup, Input } from 'sveltestrap';
   import { notifications, dismissNotification, addNotification } from '../stores/notificationStore.js';
+
   import { initializeSocketListeners, respondToSuggestion } from '../sockets/eventHandlers.js';
-  import { fetchSuggestions } from '../services/getSuggestions.js';
+  import { fetchSuggestions } from '../services/suggestionService.js';
   import { deleteNotification, fetchNotifications } from '../services/notificationService.js';
   import socket from '../sockets/socket.js';
+  import { suggestions, addSuggestion } from '../stores/suggestionStore';
 
   let isOpen = false;
 
   onMount(async () => {
     await checkUserLoginStatus();
-    initializeSocketListeners(addNotification);
+    initializeSocketListeners(addNotification, addSuggestion);
 
     if ($user && $user.role === 'Parent') {
       fetchNotifications($user.id)
@@ -26,6 +28,17 @@
         })
         .catch(error => {
           console.error('Error fetching notifications:', error);
+        });
+    }
+
+    // TODO: fix this
+    if ($user && $user.role === 'Child') {
+      fetchSuggestions($user.id)
+        .then(fetchSuggestions => {
+          suggestions.set(fetchSuggestions);
+        })
+        .catch(error => {
+          console.error('Error fetching suggestions:', error);
         });
     }
   });
@@ -105,6 +118,12 @@
   function handleResponse(wishId, response) {
     respondToSuggestion(wishId, response);
   }
+
+  // If you need a function to handle child's response
+  function handleResponseToSuggestion(suggestionId, response) {
+    console.log('handleResponseToSuggestion', suggestionId, response);
+    // Handle response logic, possibly emitting another socket event
+  }
 </script>
 
 <svelte:head>
@@ -167,24 +186,18 @@
           {/if}
 
           <!-- Child notifications -->
-          {#if $user && $user.role === 'Child'}
+          {#if $user && $user.role === 'Child' && $suggestions && $suggestions.length > 0}
             <Dropdown nav inNavbar>
               <DropdownToggle nav caret>
                 Notifications ({$notifications.length})
               </DropdownToggle>
               <DropdownMenu end class="notifications-dropdown">
-                {#each $notifications as notification, index}
-                  <div class="notification-item {notification.type}">
-                    {#if notification.link}
-                      <a href={notification.link}>{notification.message}</a>
-                    {:else}
-                      <span>{notification.message}</span>
-                    {/if}
-                    {#if $user.role === 'Child' && notification.type === 'default'}
-                      <button class="accept-btn" on:click={() => handleChildResponse(notification.wish.id, 'accept')}>Accept</button>
-                      <button class="deny-btn" on:click={() => handleChildResponse(notification.wish.id, 'deny')}>Deny</button>
-                    {/if}
-                    <button class="dismiss-btn" on:click={() => dismissNotification(index)}>Dismiss</button>
+                {#each $suggestions as suggestion}
+                  <div class="suggestion-item">
+                    <a href={suggestion.link}>{suggestion.message}</a>
+
+                    <button on:click={() => handleResponseToSuggestion(suggestion.id, 'accept')}>Accept</button>
+                    <button on:click={() => handleResponseToSuggestion(suggestion.id, 'deny')}>Deny</button>
                   </div>
                 {/each}
               </DropdownMenu>
