@@ -20,7 +20,7 @@ export default function setupSocketHandlers(socket, io) {
   });
 
   socket.on('new-suggestion', data => {
-    io.emit('suggestion-response', data);
+    //  io.emit('suggestion-response', data);
   });
 
   // socket.on('new-suggestion', async data => {

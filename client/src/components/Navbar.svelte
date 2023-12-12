@@ -137,6 +137,25 @@
   <NavbarToggler on:click={() => (isOpen = !isOpen)} />
   <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
     <Nav class="ms-auto" navbar>
+      <!-- Child notifications -->
+      {#if $user && $user.role === 'Child' && $suggestions && $suggestions.length > 0}
+        <Dropdown nav inNavbar>
+          <DropdownToggle nav caret>
+            Suggestions ({$suggestions.length})
+          </DropdownToggle>
+          <DropdownMenu end class="suggestions-dropdown">
+            {#each $suggestions as suggestion}
+              <div class="suggestion-item">
+                <span class="suggestion-title">{suggestion.title}</span>
+                <div class="suggestion-actions">
+                  <button class="btn btn-success btn-sm" on:click={() => handleResponseToSuggestion(suggestion.id, 'accept')}>Accept</button>
+                  <button class="btn btn-danger btn-sm" on:click={() => handleResponseToSuggestion(suggestion.id, 'deny')}>Deny</button>
+                </div>
+              </div>
+            {/each}
+          </DropdownMenu>
+        </Dropdown>
+      {/if}
       <!-- Only parents  -->
       {#if $user}
         {#if $user.role === 'Parent'}
@@ -179,25 +198,6 @@
                         handleDismissParent(notification.id);
                       }}>Dismiss</button
                     >
-                  </div>
-                {/each}
-              </DropdownMenu>
-            </Dropdown>
-          {/if}
-
-          <!-- Child notifications -->
-          {#if $user && $user.role === 'Child' && $suggestions && $suggestions.length > 0}
-            <Dropdown nav inNavbar>
-              <DropdownToggle nav caret>
-                Notifications ({$notifications.length})
-              </DropdownToggle>
-              <DropdownMenu end class="notifications-dropdown">
-                {#each $suggestions as suggestion}
-                  <div class="suggestion-item">
-                    <a href={suggestion.link}>{suggestion.message}</a>
-
-                    <button on:click={() => handleResponseToSuggestion(suggestion.id, 'accept')}>Accept</button>
-                    <button on:click={() => handleResponseToSuggestion(suggestion.id, 'deny')}>Deny</button>
                   </div>
                 {/each}
               </DropdownMenu>
@@ -286,6 +286,27 @@
     cursor: pointer;
     color: #333;
     margin-left: 10px;
+  }
+
+  .suggestions-dropdown {
+    max-width: 400px; /* Adjust as needed */
+  }
+
+  .suggestion-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .suggestion-title {
+    flex-grow: 1;
+    margin-right: 1rem; /* Space between title and buttons */
+  }
+
+  .suggestion-actions button {
+    margin-left: 0.5rem;
   }
 
   @media (max-width: 1150px) {
