@@ -7,14 +7,14 @@
   import { onMount } from 'svelte';
   import { isDarkMode } from '../stores/globalStore.js';
   import { FormGroup, Input } from 'sveltestrap';
-  import { notifications, dismissNotification, addNotification } from '../stores/notificationStore.js';
-
+  import { notifications, addNotification } from '../stores/notificationStore.js';
   import { initializeSocketListeners, respondToSuggestion } from '../sockets/eventHandlers.js';
   import { fetchSuggestions } from '../services/suggestionService.js';
   import { deleteNotification, fetchNotifications } from '../services/notificationService.js';
   import socket from '../sockets/socket.js';
   import { suggestions, addSuggestion } from '../stores/suggestionStore';
-
+  import { handleSuggestionResponse } from '../services/suggestionService.js';
+  import { toast, Toaster } from 'svelte-french-toast';
   let isOpen = false;
 
   onMount(async () => {
@@ -31,7 +31,6 @@
         });
     }
 
-    // TODO: fix this
     if ($user && $user.role === 'Child') {
       fetchSuggestions($user.id)
         .then(fetchSuggestions => {
@@ -43,19 +42,14 @@
     }
   });
 
-  function handleChildResponse(id, answer) {
-    const actions = id.map(suggestion => {
-      if (suggestion.fromChild) {
-        if (suggestion.response === 'accept') {
-          return { action: 'saveAsWish', suggestion };
-        } else if (suggestion.response === 'deny') {
-          return { action: 'deleteFromDatabase', suggestion };
-        }
-      }
-      return null;
-    });
-
-    fetchSuggestions(handleChildResponse);
+  async function handleResponseToSuggestion(suggestionId, response) {
+    const result = await handleSuggestionResponse(suggestionId, response);
+    if (result.ok) {
+      suggestions.update(suggestions => suggestions.filter(s => s.id !== suggestionId));
+      toast.success(result.message);
+    } else {
+      toast.error(result.message);
+    }
   }
 
   function toggleTheme(event) {
@@ -117,12 +111,6 @@
   // You can now use the respondToSuggestion function in this component
   function handleResponse(wishId, response) {
     respondToSuggestion(wishId, response);
-  }
-
-  // If you need a function to handle child's response
-  function handleResponseToSuggestion(suggestionId, response) {
-    console.log('handleResponseToSuggestion', suggestionId, response);
-    // Handle response logic, possibly emitting another socket event
   }
 </script>
 
@@ -263,6 +251,8 @@
   </Collapse>
 </Navbar>
 
+<Toaster />
+
 <style>
   .house-icon {
     color: rgb(31, 13, 13);
@@ -289,24 +279,26 @@
   }
 
   .suggestions-dropdown {
-    max-width: 400px; /* Adjust as needed */
+    max-width: 400px;
   }
 
   .suggestion-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem;
+    padding: 1rem;
+    min-width: 600px;
     border-bottom: 1px solid #ddd;
   }
 
   .suggestion-title {
     flex-grow: 1;
-    margin-right: 1rem; /* Space between title and buttons */
+    margin-right: 1rem;
   }
 
   .suggestion-actions button {
     margin-left: 0.5rem;
+    margin-top: 0.5rem;
   }
 
   @media (max-width: 1150px) {

@@ -1,16 +1,3 @@
-// export async function fetchSuggestions(id, answer, handleResponseCallback) {
-//   try {
-//     const response = await fetch('/api/child/suggestions', { credentials: 'include' });
-//     if (!response.ok) {
-//       throw new Error('Error fetching suggestions');
-//     }
-//     const data = await response.json();
-//     handleResponseCallback(id, answer, data);
-//   } catch (error) {
-//     console.error('Error fetching suggestions:', error);
-//   }
-// }
-
 export async function fetchSuggestions(childId) {
   console.log('childId:', childId);
   try {
@@ -24,5 +11,24 @@ export async function fetchSuggestions(childId) {
   } catch (error) {
     console.error('Error fetching suggestions:', error);
     throw error;
+  }
+}
+
+export async function handleSuggestionResponse(suggestionId, response) {
+  try {
+    const result = await fetch('http://localhost:8080/api/child/respond-to-suggestion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ suggestionId, response }),
+      credentials: 'include',
+    });
+
+    const data = await result.json();
+    return { ok: result.ok, message: data.message || data.error };
+  } catch (error) {
+    console.error('Failed to send suggestion response:', error);
+    return { ok: false, message: 'Error processing suggestion response' };
   }
 }

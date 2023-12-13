@@ -46,30 +46,62 @@ router.post('/api/parent/suggestions', async (req, res) => {
   }
 });
 
-router.post('/api/child/accept-suggestion', async (req, res) => {
+router.post('/api/child/respond-to-suggestion', async (req, res) => {
   try {
-    const { suggestionId, wishId } = req.body;
-    const childId = req.session.user.id;
+    const { suggestionId, response } = req.body;
+    const userId = req.session.user.id;
 
-    const checkSql = 'SELECT * FROM suggestions WHERE id = ? AND child_id = ?';
-    const checkResult = await query(checkSql, [suggestionId, childId]);
-
-    if (checkResult.length === 0) {
-      return res.status(403).send({ message: 'Unauthorized: This suggestion does not belong to you' });
+    if (response === 'accept') {
+      const result = await acceptSuggestion(suggestionId, userId);
+      res.status(200).send(result);
+    } else if (response === 'deny') {
+      const result = await deleteSuggestion(suggestionId);
+      res.status(200).send(result);
+    } else {
+      res.status(400).send({ error: 'Invalid response' });
     }
-
-    const updateSql = 'UPDATE suggestions SET wish_id = ?, suggestion_status = "accepted" WHERE id = ?';
-    const updateResult = await query(updateSql, [wishId, suggestionId]);
-
-    if (updateResult.affectedRows > 0) {
-      return res.status(200).send({ message: 'Suggestion accepted and converted to a wish' });
-    }
-
-    return res.status(500).send({ error: 'Failed to accept suggestion' });
   } catch (error) {
-    console.error('Error accepting suggestion:', error);
-    return res.status(500).send({ error: error.message });
+    console.error('Error responding to suggestion:', error);
+    res.status(500).send({ error: 'Failed to process suggestion response' });
   }
 });
+
+async function acceptSuggestion(suggestionId, userId) {
+  try {
+    const getSuggestionSQL = 'SELECT * FROM suggestions WHERE id = ?';
+    const suggestions = await query(getSuggestionSQL, [suggestionId]);
+
+    if (suggestions.length === 0) {
+      return { error: 'Suggestion not found' };
+    }
+
+    const suggestion = suggestions[0];
+
+    const wishResult = await createWish(suggestion.title, suggestion.description, suggestion.price, suggestion.url, suggestion.image_url, userId);
+
+    if (wishResult.error) {
+      return { error: wishResult.error };
+    }
+
+    await deleteSuggestion(suggestionId);
+
+    return { message: 'Suggestion accepted and wish created' };
+  } catch (error) {
+    console.error('Error in acceptSuggestion:', error);
+    return { error: 'Failed to accept suggestion' };
+  }
+}
+
+async function deleteSuggestion(suggestionId) {
+  try {
+    const deleteSuggestionSQL = 'DELETE FROM suggestions WHERE id = ?';
+    await query(deleteSuggestionSQL, [suggestionId]);
+
+    return { message: 'Suggestion denied' };
+  } catch (error) {
+    console.error('Error in denySuggestion:', error);
+    return { error: 'Failed to deny suggestion' };
+  }
+}
 
 export default router;

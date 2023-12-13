@@ -46,6 +46,7 @@
     }
   }
 
+  // TODO: Hvorfor bruger jeg ikke denne?
   async function saveNotification(wish) {
     try {
       const message = `A new wish has been added: ${wish.title}`;
