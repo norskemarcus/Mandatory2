@@ -110,11 +110,6 @@
       console.error('Error in handleDismissParent:', error);
     }
   }
-
-  // You can now use the respondToSuggestion function in this component
-  function handleResponse(wishId, response) {
-    respondToSuggestion(wishId, response);
-  }
 </script>
 
 <svelte:head>
@@ -128,7 +123,7 @@
   <NavbarToggler on:click={() => (isOpen = !isOpen)} />
   <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
     <Nav class="ms-auto" navbar>
-      <!-- Child notifications -->
+      <!-- Child notifications  && $suggestions && $suggestions.length > 0  -->
       {#if $user && $user.role === 'Child' && $suggestions && $suggestions.length > 0}
         <Dropdown nav inNavbar>
           <DropdownToggle nav caret>
@@ -139,6 +134,7 @@
               <div class="suggestion-item">
                 <span class="suggestion-title">{suggestion.title}</span>
                 <div class="suggestion-actions">
+                  <span>{suggestion.message}</span>
                   <button class="btn btn-success btn-sm" on:click={() => handleResponseToSuggestion(suggestion.id, 'accept')}>Accept</button>
                   <button class="btn btn-danger btn-sm" on:click={() => handleResponseToSuggestion(suggestion.id, 'deny')}>Deny</button>
                 </div>

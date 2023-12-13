@@ -7,12 +7,14 @@ import { createWish } from './wishRouter.js';
 
 const router = Router();
 
-router.get('/api/child/suggestions', async (req, res) => {
+router.get('/api/child/suggestions/:childId', async (req, res) => {
   if (!req.session.user || req.session.user.role !== 'Child') {
     return res.status(401).send({ error: 'Unauthorized' });
   }
 
-  const childId = req.session.user.id;
+  const childId = req.params.childId;
+  // TODO: WHATS BEST TO USE  ?????*******************************************************************
+  //const childId = req.session.user.id;
 
   try {
     const suggestions = await fetchSuggestions(childId);

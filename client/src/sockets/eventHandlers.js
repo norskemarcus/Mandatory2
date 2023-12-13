@@ -1,5 +1,4 @@
 import socket from '../sockets/socket.js';
-import { suggestions } from '../stores/suggestionStore';
 
 export function initializeSocketListeners(addNotification, addSuggestion) {
   socket.on('new-wish', async data => {
@@ -22,12 +21,11 @@ export function initializeSocketListeners(addNotification, addSuggestion) {
     });
   });
 
-  // TODO: CHECK IF THIS IS CORRECT!!
   socket.on('new-suggestion', async data => {
     addSuggestion({
       message: `You have a new wish suggestion: ${data.wish.title}`,
-      link: `/wishlist/${data.wish.id}`, // Assuming data.wish.id exists
-      wish: data.wish, // Storing the entire wish object for future use
+      link: `/wishlist`, // TODO, fix this /${data.wish.id}
+      wish: data.wish, //, Storing the entire wish object for future use
     });
   });
 

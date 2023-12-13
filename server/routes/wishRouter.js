@@ -68,6 +68,23 @@ export async function createWish(io, userId, title, description, price, url, ima
 
     const insertResults = await query(insertSQL, [title, description, priceValue, url, imageUrl, userId]);
 
+    //     const parentIdSQL = 'SELECT parent_id FROM users WHERE id = ?;';
+    // const parent_id_result = await query(parentIdSQL, [userId]);
+
+    // console.log(`User ID: ${userId}, Parent ID result:`, parent_id_result);
+
+    // if (parent_id_result.length === 0) {
+    //     console.error(`User with ID ${userId} not found or has no parent.`);
+    //     return { error: `User not found or has no parent` };
+    // }
+
+    // const parentId = parent_id_result[0].parent_id;
+
+    // if (!parentId) {
+    //     console.error(`User with ID ${userId} does not have an associated parent.`);
+    //     return { error: 'User does not have an associated parent' };
+    // }
+
     if (insertResults.insertId) {
       const newWish = { title, description, price: priceValue, url, imageUrl };
       const childUsername = await getChildUsername(userId);
@@ -92,19 +109,16 @@ export async function createWish(io, userId, title, description, price, url, ima
 }
 
 async function saveNotification(userId, parentId, message) {
-  console.log('INSERT INTO notifications in wishRouter');
   try {
     const notificationInsertSQL = 'INSERT INTO notifications (user_id, parent_id, message) VALUES (?, ?, ?)';
     await query(notificationInsertSQL, [userId, parentId, message]);
-    // TODO returning notification ID or a success indicator???
+    // TODO returning notification ID or a success indicator
   } catch (error) {
     console.error('Error saving notification:', error);
   }
 }
 
 function emitNewWishEvent(io, userId, childUsername, newWish) {
-  // io.emit('new-wish', { userId, childUsername, wish: newWish });
-  // check 
   io.emit('new-wish', { userId: userId, childUsername: childUsername, wish: newWish });
 }
 

@@ -37,6 +37,7 @@ router.post('/notifications', async (req, res) => {
 
 router.delete('/notifications/:id', async (req, res) => {
   const userRole = req.session.user.role;
+  console.log('userRole in delete:', userRole);
 
   if (userRole === 'Parent') {
     try {
