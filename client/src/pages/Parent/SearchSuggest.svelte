@@ -4,7 +4,6 @@
   import { fetchUser } from '../../user/userApi.js';
   import { user } from '../../stores/globalStore.js';
   import { toast, Toaster } from 'svelte-french-toast';
-  import socket from '../../sockets/socket.js';
 
   let loggedIn = false;
   let userRole = '';
@@ -88,8 +87,6 @@
       if (response.ok) {
         const data = await response.json();
         toast.success(data.message || 'Wish suggested successfully');
-        // socket.emit('new-suggestion', { childId, suggestion });
-        //        socket.emit('new-suggestion', { childId: selectedChild.id, wish, suggestionId: data.suggestionId });
       } else {
         console.error('Failed to send suggestion');
         toast.error('Error suggesting wish');

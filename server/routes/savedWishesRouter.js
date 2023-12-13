@@ -3,29 +3,6 @@ import { query } from '../database/connection.js';
 
 const router = Router();
 
-// get all saved wishlist
-// TODO: When do I use this??
-// router.get('/api/parent/saved-wishes', async (req, res) => {
-//   if (!req.session.user || req.session.user.role !== 'Parent') {
-//     return res.status(403).send({ message: 'Unauthorized' });
-//   }
-
-//   let parent_user_id = req.session.user.id;
-//   if (userId) {
-//     const selectSql = `SELECT * FROM saved_wishes WHERE parent_user_id = ?`;
-
-//     try {
-//       const results = await query(selectSql, [parent_user_id]);
-//       res.send({ wishlist: results });
-//       console.log('Query results:', results);
-//     } catch (err) {
-//       return res.status(500).send({ error: err.message });
-//     }
-//   } else {
-//     return res.status(401).send({ error: 'User session data not found' });
-//   }
-// });
-
 router.get('/api/parent/saved-wishes/:childId', async (req, res) => {
   try {
     if (!req.session.user || req.session.user.role !== 'Parent') {

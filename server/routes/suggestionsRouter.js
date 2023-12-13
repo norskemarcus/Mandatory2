@@ -3,7 +3,6 @@ import { query } from '../database/connection.js';
 import { fetchSuggestions, checkExistingSuggestion, insertSuggestion } from '../services/suggestionsService.js';
 import dotenv from 'dotenv';
 dotenv.config();
-import { createWish } from './wishRouter.js';
 
 const router = Router();
 
@@ -19,7 +18,6 @@ router.get('/api/child/suggestions/:childId', async (req, res) => {
   try {
     const suggestions = await fetchSuggestions(childId);
     res.send({ suggestions });
-    console.log('suggestions in the router.get:', suggestions);
   } catch (error) {
     console.error('Error in GET /api/child/suggestions:', error);
     res.status(500).send({ error: 'Internal Server Error' });
@@ -36,12 +34,12 @@ router.post('/api/parent/suggestions', async (req, res) => {
       return res.status(403).send({ message: 'Unauthorized' });
     }
 
-    const suggestionSaved = await insertSuggestion(wish, childId, parentUserId);
+    const suggestionId = await insertSuggestion(wish, childId, parentUserId);
 
-    if (suggestionSaved) {
-      // Er user logget ind, kun sende hvis logget ind -
-      req.io.emit('new-suggestion', { childId: childId, wish, suggestionId: suggestionSaved.id });
-      return res.status(201).send({ message: 'Suggestion saved successfully', suggestionId: suggestionSaved.id });
+    if (suggestionId) {
+      req.io.emit('new-suggestion', { childId: childId, wish, suggestionId: suggestionId });
+
+      return res.status(201).send({ message: 'Suggestion saved successfully', suggestionId: suggestionId });
     } else {
       return res.status(500).send({ error: 'Failed to save suggestion' });
     }
@@ -56,11 +54,32 @@ router.post('/api/child/respond-to-suggestion', async (req, res) => {
     const { suggestionId, response } = req.body;
     const userId = req.session.user.id;
 
+    if (!userId || req.session.user.role !== 'Child') {
+      return res.status(403).send({ message: 'Unauthorized' });
+    }
+
     if (response === 'accept') {
       const result = await acceptSuggestion(suggestionId, userId);
+
+      await deleteSuggestion(suggestionId);
+
+      req.io.emit('suggestion-deleted', { suggestionId: suggestionId });
+
+      // const parentUserId = await getParentId(userId);
+
+      // req.io.to(parentUserId).emit('suggestion-response', {
+      //   message: `Your suggestion of ${result.title} was accepted by ${userId.username}.`,
+      // });
+
       res.status(200).send(result);
     } else if (response === 'deny') {
       const result = await deleteSuggestion(suggestionId);
+
+      const parentId = await getParentId(userId);
+
+      req.io.to(parentId).emit('suggestion-response', {
+        message: `Your suggestion of ${result.title} was not accepted by ${userId.username}.`,
+      });
       res.status(200).send(result);
     } else {
       res.status(400).send({ error: 'Invalid response' });
@@ -70,6 +89,19 @@ router.post('/api/child/respond-to-suggestion', async (req, res) => {
     res.status(500).send({ error: 'Failed to process suggestion response' });
   }
 });
+
+async function getParentId(userId) {
+  const parentIdSQL = 'SELECT parent_id FROM users WHERE id = ?;';
+  const parent_id_result = await query(parentIdSQL, [userId]);
+
+  console.log('parent_id_result :', parent_id_result.parent_id);
+
+  if (parent_id_result.length === 0) {
+    return { error: 'ParentId not found' };
+  }
+
+  return parent_id_result[0].parent_id;
+}
 
 async function acceptSuggestion(suggestionId, userId) {
   try {
@@ -82,13 +114,13 @@ async function acceptSuggestion(suggestionId, userId) {
 
     const suggestion = suggestions[0];
 
-    const wishResult = await createWish(suggestion.title, suggestion.description, suggestion.price, suggestion.url, suggestion.image_url, userId);
+    // misses currency
+    const wishResult = await createWishFromSuggestion(userId, suggestion.title, suggestion.description, suggestion.price, suggestion.url, suggestion.image_url);
 
-    if (wishResult.error) {
-      return { error: wishResult.error };
-    }
+    console.log('wishResult:', wishResult); // TODO: FJERNE
 
     await deleteSuggestion(suggestionId);
+    console.log('deleteSuggestion'); // TODO: FJERNE
 
     return { message: 'Suggestion accepted and wish created' };
   } catch (error) {
@@ -97,15 +129,49 @@ async function acceptSuggestion(suggestionId, userId) {
   }
 }
 
+async function createWishFromSuggestion(userId, title, description, price, url, imageUrl) {
+  try {
+    const checkExistingSQL = 'SELECT id FROM wishes WHERE url = ? AND user_id = ?';
+    const existingWishes = await query(checkExistingSQL, [url, userId]);
+
+    if (existingWishes.length > 0) {
+      return { error: 'A wish with this URL already exists' };
+    }
+    // TODO: currency misses
+
+    const insertSQL = 'INSERT INTO wishes (title, description, price, url, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)';
+
+    //     const priceValue = price ? parseFloat(price) : null;  // TODO: FJERNE?????
+    const priceValue = price && !isNaN(parseFloat(price)) ? parseFloat(price) : null;
+
+    const result = await query(insertSQL, [title, description, priceValue, url, imageUrl, userId]);
+
+    if (result.ok) {
+      return { message: 'Wish created successfully', wishId: insertResults.insertId };
+    }
+  } catch (error) {
+    console.error('Error creating wish:', error);
+    throw new Error('Failed to create wish');
+  }
+}
+
 async function deleteSuggestion(suggestionId) {
   try {
-    const deleteSuggestionSQL = 'DELETE FROM suggestions WHERE id = ?';
-    await query(deleteSuggestionSQL, [suggestionId]);
+    if (!suggestionId) {
+      throw new Error('No suggestionId provided');
+    }
 
-    return { message: 'Suggestion denied' };
+    const deleteSuggestionSQL = 'DELETE FROM suggestions WHERE id = ?';
+    const result = await query(deleteSuggestionSQL, [suggestionId]);
+
+    if (result.affectedRows === 0) {
+      throw new Error('No suggestion found with the provided ID');
+    }
+
+    return { message: 'Suggestion successfully deleted', deletedCount: result.affectedRows };
   } catch (error) {
-    console.error('Error in denySuggestion:', error);
-    return { error: 'Failed to deny suggestion' };
+    console.error('Error in deleteSuggestion:', error.message);
+    return { error: 'Failed to delete suggestion', details: error.message };
   }
 }
 

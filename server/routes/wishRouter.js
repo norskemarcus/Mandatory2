@@ -23,8 +23,6 @@ router.get('/api/wishes', async (req, res) => {
   }
 });
 
-// /api/parent/child-wishlist/${selectedChild.id}`,
-// Define the route for fetching a child's wishlist
 router.get('/api/parent/child-wishlist/:childId', async (req, res) => {
   try {
     const childId = req.params.childId;
@@ -50,7 +48,7 @@ async function getChildUsername(userId) {
   }
 }
 
-export async function createWish(io, userId, title, description, price, url, imageUrl) {
+async function createWish(io, userId, title, description, price, url, imageUrl) {
   try {
     const checkExistingSQL = 'SELECT id FROM wishes WHERE url = ? AND user_id = ?';
     const existingWishes = await query(checkExistingSQL, [url, userId]);
@@ -59,31 +57,12 @@ export async function createWish(io, userId, title, description, price, url, ima
       return { error: 'A wish with this URL already exists' };
     }
 
-    //TODO: currency and price should be fixed!
-
     const insertSQL = 'INSERT INTO wishes (title, description, price, url, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)';
 
-    //     const priceValue = price ? parseFloat(price) : null;
-    const priceValue = price && !isNaN(parseFloat(price)) ? parseFloat(price) : null;
+    const priceValue = price ? parseFloat(price) : null;
+    // const priceValue = price && !isNaN(parseFloat(price)) ? parseFloat(price) : null;
 
     const insertResults = await query(insertSQL, [title, description, priceValue, url, imageUrl, userId]);
-
-    //     const parentIdSQL = 'SELECT parent_id FROM users WHERE id = ?;';
-    // const parent_id_result = await query(parentIdSQL, [userId]);
-
-    // console.log(`User ID: ${userId}, Parent ID result:`, parent_id_result);
-
-    // if (parent_id_result.length === 0) {
-    //     console.error(`User with ID ${userId} not found or has no parent.`);
-    //     return { error: `User not found or has no parent` };
-    // }
-
-    // const parentId = parent_id_result[0].parent_id;
-
-    // if (!parentId) {
-    //     console.error(`User with ID ${userId} does not have an associated parent.`);
-    //     return { error: 'User does not have an associated parent' };
-    // }
 
     if (insertResults.insertId) {
       const newWish = { title, description, price: priceValue, url, imageUrl };

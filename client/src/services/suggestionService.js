@@ -5,7 +5,7 @@ export async function fetchSuggestions(childId) {
       throw new Error('Failed to fetch suggestions');
     }
     const data = await response.json();
-    console.log('data: *************************************', data);
+
     return data.suggestions;
   } catch (error) {
     console.error('Error fetching suggestions:', error);
@@ -14,6 +14,7 @@ export async function fetchSuggestions(childId) {
 }
 
 export async function handleSuggestionResponse(suggestionId, response) {
+  console.log('suggestionId: in handleSuggestionResponse (frontend)', suggestionId);
   try {
     const result = await fetch('http://localhost:8080/api/child/respond-to-suggestion', {
       method: 'POST',

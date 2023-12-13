@@ -1,4 +1,5 @@
 import socket from '../sockets/socket.js';
+import { suggestions } from '../stores/suggestionStore.js';
 
 export function initializeSocketListeners(addNotification, addSuggestion) {
   socket.on('new-wish', async data => {
@@ -25,42 +26,26 @@ export function initializeSocketListeners(addNotification, addSuggestion) {
     addSuggestion({
       message: `You have a new wish suggestion: ${data.wish.title}`,
       link: `/wishlist`, // TODO, fix this /${data.wish.id}
-      wish: data.wish, //, Storing the entire wish object for future use
+      wish: data.wish,
+      suggestionId: data.suggestionId,
     });
   });
 
-  // parents should get to know what the child answered to the suggestion
-  socket.on('child-responded', data => {
-    // Update the UI based on the child's response
+  socket.on('suggestion-response', data => {
+    addNotification({
+      message: `${data.wish.title} was accepted or denied by your child`,
+    });
+  });
+
+  socket.on('suggestion-deleted', data => {
+    const deletedSuggestionId = data.suggestionId;
+    // Update your state to filter out the deleted suggestion
+    suggestions.update(currentSuggestions => {
+      return currentSuggestions.filter(suggestion => suggestion.id !== deletedSuggestionId);
+    });
   });
 }
 
 export function respondToSuggestion(suggestionId, response) {
   socket.emit('respond-to-suggestion', { suggestionId: suggestionId, response: response });
 }
-
-// async function saveWishDeletedNotification(childUsername, wishTitle) {
-//   try {
-//     const response = await fetch('http://localhost:8080/notifications', {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({
-//         message: `${childUsername} has deleted a wish: ${wishTitle}`,
-//         link: '/childsWishlist',
-//         type: 'alert',
-//       }),
-//       credentials: 'include',
-//     });
-
-//     if (!response.ok) {
-//       throw new Error('Failed to send wish-deleted notification');
-//     }
-
-//     console.log('Notification successfully sent');
-//   } catch (error) {
-//     console.error('Error sending wish-deleted notification:', error);
-//     throw error;
-//   }
-// }

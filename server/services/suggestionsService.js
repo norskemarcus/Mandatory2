@@ -7,7 +7,7 @@ async function fetchSuggestions(childId) {
     return suggestions;
   } catch (error) {
     console.error('Error fetching suggestions:', error);
-    throw error; // Propagate the error to be handled by the caller
+    throw error;
   }
 }
 
@@ -27,9 +27,16 @@ async function insertSuggestion(wish, childId, parentUserId) {
 
   const insertSql = `INSERT INTO suggestions (parent_user_id, child_id, title, description, price, url, image_url, currency) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
+  const lastIdSql = `SELECT LAST_INSERT_ID() as id`;
+
   const insertResult = await query(insertSql, [parentUserId, childId, title, description, price, url, imageUrl, currency]);
 
-  return insertResult.affectedRows > 0;
+  if (insertResult && insertResult.affectedRows > 0) {
+    const idResult = await query(lastIdSql);
+    return idResult[0].id;
+  }
+
+  return null;
 }
 
 export { fetchSuggestions, checkExistingSuggestion, insertSuggestion };

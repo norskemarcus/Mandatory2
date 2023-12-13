@@ -46,6 +46,8 @@
   });
 
   async function handleResponseToSuggestion(suggestionId, response) {
+    console.log('suggestionId in Navbar:', suggestionId);
+
     const result = await handleSuggestionResponse(suggestionId, response);
     if (result.ok) {
       suggestions.update(suggestions => suggestions.filter(s => s.id !== suggestionId));
@@ -102,9 +104,7 @@
   async function handleDismissParent(notificationId) {
     try {
       const result = await deleteNotification(notificationId);
-      console.log(result.message);
-
-      // Update the notifications store to remove the dismissed notification
+      //TODO error handling here ********************************************?
       notifications.update(n => n.filter(notification => notification.id !== notificationId));
     } catch (error) {
       console.error('Error in handleDismissParent:', error);
@@ -123,7 +123,7 @@
   <NavbarToggler on:click={() => (isOpen = !isOpen)} />
   <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
     <Nav class="ms-auto" navbar>
-      <!-- Child notifications  && $suggestions && $suggestions.length > 0  -->
+      <!-- Child notifications    -->
       {#if $user && $user.role === 'Child' && $suggestions && $suggestions.length > 0}
         <Dropdown nav inNavbar>
           <DropdownToggle nav caret>
@@ -132,11 +132,14 @@
           <DropdownMenu end class="suggestions-dropdown">
             {#each $suggestions as suggestion}
               <div class="suggestion-item">
-                <span class="suggestion-title">{suggestion.title}</span>
-                <div class="suggestion-actions">
+                {#if suggestion.title}
+                  <span class="suggestion-title">{suggestion.title}</span>
+                {:else if suggestion.message}
                   <span>{suggestion.message}</span>
-                  <button class="btn btn-success btn-sm" on:click={() => handleResponseToSuggestion(suggestion.id, 'accept')}>Accept</button>
-                  <button class="btn btn-danger btn-sm" on:click={() => handleResponseToSuggestion(suggestion.id, 'deny')}>Deny</button>
+                {/if}
+                <div class="suggestion-actions">
+                  <button class="btn btn-success btn-sm" on:click={() => handleResponseToSuggestion(suggestion.id || suggestion.suggestionId, 'accept')}>Accept</button>
+                  <button class="btn btn-danger btn-sm" on:click={() => handleResponseToSuggestion(suggestion.id || suggestion.suggestionId, 'deny')}>Deny</button>
                 </div>
               </div>
             {/each}
