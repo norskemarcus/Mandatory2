@@ -50,7 +50,7 @@ async function getChildUsername(userId) {
   }
 }
 
-async function createWish(io, userId, title, description, price, url, imageUrl) {
+export async function createWish(io, userId, title, description, price, url, imageUrl) {
   try {
     const checkExistingSQL = 'SELECT id FROM wishes WHERE url = ? AND user_id = ?';
     const existingWishes = await query(checkExistingSQL, [url, userId]);
@@ -59,9 +59,13 @@ async function createWish(io, userId, title, description, price, url, imageUrl) 
       return { error: 'A wish with this URL already exists' };
     }
 
+    //TODO: currency and price should be fixed!
+
     const insertSQL = 'INSERT INTO wishes (title, description, price, url, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)';
 
-    const priceValue = price ? parseFloat(price) : null;
+    //     const priceValue = price ? parseFloat(price) : null;
+    const priceValue = price && !isNaN(parseFloat(price)) ? parseFloat(price) : null;
+
     const insertResults = await query(insertSQL, [title, description, priceValue, url, imageUrl, userId]);
 
     if (insertResults.insertId) {
@@ -100,6 +104,7 @@ async function saveNotification(userId, parentId, message) {
 
 function emitNewWishEvent(io, userId, childUsername, newWish) {
   // io.emit('new-wish', { userId, childUsername, wish: newWish });
+  // check 
   io.emit('new-wish', { userId: userId, childUsername: childUsername, wish: newWish });
 }
 

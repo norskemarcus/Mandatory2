@@ -6,7 +6,8 @@ export async function fetchNotifications(parentId) {
       throw new Error('Failed to fetch notifications');
     }
     const data = await response.json();
-    return data.notifications;
+    console.log('data:', data);
+    return data;
   } catch (error) {
     console.error('Error fetching notifications:', error);
     throw error;

@@ -19,7 +19,10 @@
 
   onMount(async () => {
     await checkUserLoginStatus();
-    initializeSocketListeners(addNotification, addSuggestion);
+
+    if ($user) {
+      initializeSocketListeners(addNotification, addSuggestion);
+    }
 
     if ($user && $user.role === 'Parent') {
       fetchNotifications($user.id)

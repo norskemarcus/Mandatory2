@@ -89,7 +89,7 @@
         const data = await response.json();
         toast.success(data.message || 'Wish suggested successfully');
         // socket.emit('new-suggestion', { childId, suggestion });
-        socket.emit('new-suggestion', { childId: selectedChild.id, wish, suggestionId: data.suggestionId });
+        //        socket.emit('new-suggestion', { childId: selectedChild.id, wish, suggestionId: data.suggestionId });
       } else {
         console.error('Failed to send suggestion');
         toast.error('Error suggesting wish');

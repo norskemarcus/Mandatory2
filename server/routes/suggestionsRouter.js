@@ -3,6 +3,7 @@ import { query } from '../database/connection.js';
 import { fetchSuggestions, checkExistingSuggestion, insertSuggestion } from '../services/suggestionsService.js';
 import dotenv from 'dotenv';
 dotenv.config();
+import { createWish } from './wishRouter.js';
 
 const router = Router();
 
@@ -36,6 +37,8 @@ router.post('/api/parent/suggestions', async (req, res) => {
     const suggestionSaved = await insertSuggestion(wish, childId, parentUserId);
 
     if (suggestionSaved) {
+      // Er user logget ind, kun sende hvis logget ind -
+      req.io.emit('new-suggestion', { childId: childId, wish, suggestionId: suggestionSaved.id });
       return res.status(201).send({ message: 'Suggestion saved successfully', suggestionId: suggestionSaved.id });
     } else {
       return res.status(500).send({ error: 'Failed to save suggestion' });
