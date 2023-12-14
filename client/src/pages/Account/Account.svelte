@@ -1,6 +1,7 @@
 <script>
   import { fetchParentUsername, fetchChildren, deleteChildAccount } from '../../user/userApi.js';
   import { user } from '../../stores/globalStore.js';
+  import { navigate } from 'svelte-navigator';
 
   let loggedIn = false;
   let userRole = '';
@@ -38,14 +39,6 @@
     }
   }
 
-  // async function fetchParentUsername(parentId) {
-  //   const parent = await fetchParentByUsername(parentId);
-  //   if (parent) {
-  //     return parent.username;
-  //   }
-  //   return '';
-  // }
-
   async function handleDeleteChild(childId) {
     const confirmDelete = confirm('Are you sure you want to delete this child account? This action cannot be undone.');
     if (confirmDelete) {
@@ -67,7 +60,7 @@
 
     const confirmDelete = confirm(confirmDeleteMessage);
     if (confirmDelete) {
-      // ... existing delete logic ...
+      navigate('/');
     }
   }
 </script>
@@ -77,7 +70,6 @@
   <p class="account-info">Username: {$user.username}</p>
   <p class="account-info">Role: {userRole}</p>
   {#if userRole === 'Parent'}
-    <!-- <p class="account-info">Your children:</p> -->
     <ul class="children-list">
       {#each children as child}
         <li class="children-item">
@@ -88,34 +80,12 @@
     </ul>
   {:else if userRole === 'Child'}
     <p class="account-info">Parent: {parentUsername}</p>
-    <!-- TODO: Display siblings if required -->
   {/if}
   <button class="delete-account-btn" on:click={deleteUserAccount}>Delete Account</button>
   {#if userRole === 'Parent'}
     <p class="warning-message">Deleting your account will affect your children's access to the app.</p>
   {/if}
 </div>
-
-<!-- <div>
-  <h1>Your Account</h1>
-  <p>Username: {$user.username}</p>
-  <p>Role: {userRole}</p>
-  {#if userRole === 'Parent'}
-    <p>Children's Usernames:</p>
-    <ul>
-      {#each children as child}
-        <li>
-          {child.username}
-          <button on:click={() => handleDeleteChild(child.id)}>Delete Child</button>
-        </li>
-      {/each}
-    </ul>
-  {:else if userRole === 'Child'}
-    <p>Parent's Name: {parentUsername}</p>
-
-  {/if}
-  <button on:click={deleteUserAccount}>Delete Account</button>
-</div> -->
 
 <style>
   .account-container {
@@ -158,7 +128,7 @@
   }
 
   .delete-child-btn {
-    background-color: #ff6868;
+    background-color: #d60f23;
     color: white;
     border: none;
     padding: 5px 10px;
@@ -168,7 +138,7 @@
   }
 
   .delete-account-btn {
-    background-color: #dc3545;
+    background-color: #d60f23;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -181,11 +151,11 @@
   }
 
   .delete-account-btn:hover {
-    background-color: #c82333;
+    background-color: #d84251;
   }
 
   .warning-message {
-    color: #dc3545;
+    color: #d60f23;
     font-size: 0.9rem;
     margin-top: 10px;
   }

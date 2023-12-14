@@ -55,13 +55,12 @@ router.delete('/api/children/:childId', async (req, res) => {
 });
 
 // when the user deletes h*self
-router.delete('/api/users/:userId', async (req, res) => {
+router.delete('/api/users', async (req, res) => {
   if (!req.session.user) {
     return res.status(401).send({ error: 'User is not logged in' });
   }
 
   const userId = req.session.user.id;
-  //const userRole = req.session.user.role;
 
   try {
     const deleteUserSQL = 'DELETE FROM users WHERE id = ?';

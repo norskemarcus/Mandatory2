@@ -63,11 +63,32 @@ export async function deleteChildAccount(childId) {
     if (response.ok) {
       return true;
     } else {
-      console.error('Failed to delete child account', await response.text());
+      const errorResponse = await response.text();
+      console.error('Failed to delete child account', errorResponse);
       return false;
     }
   } catch (error) {
     console.error('Error deleting child account:', error);
+    return false;
+  }
+}
+
+export async function deleteAccount() {
+  try {
+    const response = await fetch(`http://localhost:8080/api/users`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+
+    if (response.ok) {
+      return true;
+    } else {
+      const errorResponse = await response.text();
+      console.error('Failed to delete the account', errorResponse);
+      return false;
+    }
+  } catch (error) {
+    console.error('Error deleting account:', error);
     return false;
   }
 }
