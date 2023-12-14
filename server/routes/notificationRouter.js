@@ -22,7 +22,7 @@ router.post('/notifications', async (req, res) => {
     const { message } = req.body;
 
     const userId = req.session.user.id;
-    console.log('userId:', userId);
+
     const parentId = req.session.user.parent_id;
 
     const insertSQL = 'INSERT INTO notifications (user_id,  parent_id, message) VALUES (?, ?, ?)';
@@ -36,21 +36,17 @@ router.post('/notifications', async (req, res) => {
 });
 
 router.delete('/notifications/:id', async (req, res) => {
-  const userRole = req.session.user.role;
-  console.log('userRole in delete:', userRole);
+  try {
+    const notificationId = req.params.id;
+    console.log('notificationId in the router:', notificationId);
 
-  if (userRole === 'Parent') {
-    try {
-      const notificationId = req.params.id;
+    const deleteSQL = 'DELETE FROM notifications WHERE id = ?';
+    await query(deleteSQL, [notificationId]);
 
-      const deleteSQL = 'DELETE FROM notifications WHERE id = ?';
-      await query(deleteSQL, [notificationId]);
-
-      res.status(200).send({ message: 'Notification deleted successfully' });
-    } catch (error) {
-      console.error('Error deleting notification:', error);
-      res.status(500).send({ error: 'Internal server error' });
-    }
+    res.status(200).send({ message: 'Notification deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+    res.status(500).send({ error: 'Internal server error' });
   }
 });
 

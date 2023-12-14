@@ -50,13 +50,21 @@ async function getChildUsername(userId) {
 
 async function createWish(io, userId, title, description, price, url, imageUrl) {
   try {
-    const checkExistingSQL = 'SELECT id FROM wishes WHERE url = ? AND user_id = ?';
-    const existingWishes = await query(checkExistingSQL, [url, userId]);
+    if (url) {
+      const checkExistingURLSQL = 'SELECT id FROM wishes WHERE url = ? AND user_id = ?';
+      const existingWishesByURL = await query(checkExistingURLSQL, [url, userId]);
 
-    if (existingWishes.length > 0) {
-      return { error: 'A wish with this URL already exists' };
+      if (existingWishesByURL.length > 0) {
+        return { error: 'A wish with this URL already exists' };
+      }
+    } else {
+      const checkExistingTitleSQL = 'SELECT id FROM wishes WHERE title = ? AND user_id = ?';
+      const existingWishesByTitle = await query(checkExistingTitleSQL, [title, userId]);
+
+      if (existingWishesByTitle.length > 0) {
+        return { error: 'A wish with this title already exists' };
+      }
     }
-
     const insertSQL = 'INSERT INTO wishes (title, description, price, url, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)';
 
     const priceValue = price ? parseFloat(price) : null;
@@ -77,8 +85,10 @@ async function createWish(io, userId, title, description, price, url, imageUrl) 
 
       const parentId = parent_id_result[0].parent_id;
 
-      await saveNotification(userId, parentId, `${childUsername} added a new wish: ${title}`);
-      emitNewWishEvent(io, userId, childUsername, newWish);
+      const notificationMessage = `${childUsername} added a new wish: ${title}`;
+      const notificationId = await saveNotification(userId, parentId, notificationMessage);
+
+      emitNewWishEvent(io, userId, childUsername, newWish, notificationId);
     }
     return { message: 'Wish created successfully', wishId: insertResults.insertId };
   } catch (error) {
@@ -88,17 +98,39 @@ async function createWish(io, userId, title, description, price, url, imageUrl) 
 }
 
 async function saveNotification(userId, parentId, message) {
+  console.log('try to save a notification');
+
   try {
     const notificationInsertSQL = 'INSERT INTO notifications (user_id, parent_id, message) VALUES (?, ?, ?)';
-    await query(notificationInsertSQL, [userId, parentId, message]);
-    // TODO returning notification ID or a success indicator
+
+    const lastIdSql = 'SELECT LAST_INSERT_ID() as id';
+
+    const insertResult = await query(notificationInsertSQL, [userId, parentId, message]);
+
+    if (insertResult && insertResult.affectedRows > 0) {
+      const idResult = await query(lastIdSql);
+      return idResult[0].id;
+    }
+
+    return null;
   } catch (error) {
     console.error('Error saving notification:', error);
+    throw error; // Propagate the error to handle it in the calling function
   }
+
+  //   try {
+  //     const notificationInsertSQL = 'INSERT INTO notifications (user_id, parent_id, message) VALUES (?, ?, ?)';
+  //     const result = await query(notificationInsertSQL, [userId, parentId, message]);
+  //     return result.insertId;
+  //   } catch (error) {
+  //     console.error('Error saving notification:', error);
+  //     throw error;
+  //   }
+  // }
 }
 
-function emitNewWishEvent(io, userId, childUsername, newWish) {
-  io.emit('new-wish', { userId: userId, childUsername: childUsername, wish: newWish });
+function emitNewWishEvent(io, userId, childUsername, newWish, notificationId) {
+  io.emit('new-wish', { userId: userId, childUsername: childUsername, wish: newWish, notificationId: notificationId });
 }
 
 router.post('/api/form/wishes', async (req, res) => {

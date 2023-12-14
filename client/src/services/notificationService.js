@@ -12,8 +12,8 @@ export async function fetchNotifications(parentId) {
     throw error;
   }
 }
-
 export async function deleteNotification(notificationId) {
+  console.log('notificationId in deleteNotification:', notificationId);
   try {
     const response = await fetch(`http://localhost:8080/notifications/${notificationId}`, {
       method: 'DELETE',
@@ -23,14 +23,14 @@ export async function deleteNotification(notificationId) {
       credentials: 'include',
     });
 
+    const responseBody = await response.json();
     if (response.ok) {
       return { message: 'Notification deleted successfully' };
     } else {
-      const responseBody = await response.json();
       throw new Error(`Failed to delete notification: ${responseBody.error}`);
     }
   } catch (error) {
     console.error('Error deleting notification:', error);
-    throw new Error('Failed to delete notification');
+    throw error;
   }
 }

@@ -89,7 +89,7 @@
 
       if (response.ok) {
         user.set(null);
-        socket.emit('user-logout');
+        socket.emit('user-logout'); // TODO: REMOVE THIS??????????????????????????????????
         window.location.href = '/';
       } else {
         console.error('Error logging out:', response.status);
@@ -102,7 +102,7 @@
   async function handleDismissParent(notificationId) {
     try {
       const result = await deleteNotification(notificationId);
-      //TODO error handling here ********************************************?
+      console.log(result.message);
       notifications.update(n => n.filter(notification => notification.id !== notificationId));
     } catch (error) {
       console.error('Error in handleDismissParent:', error);
@@ -171,7 +171,7 @@
                 Notifications ({$notifications.length})
               </DropdownToggle>
               <DropdownMenu end class="notifications-dropdown">
-                {#each $notifications as notification, index}
+                {#each $notifications as notification}
                   <div class="notification-item {notification.type}">
                     {#if notification.link}
                       <a href={notification.link}>{notification.message}</a>
@@ -182,7 +182,6 @@
                     <button
                       class="dismiss-btn"
                       on:click={() => {
-                        console.log(notification.id);
                         handleDismissParent(notification.id);
                       }}>Dismiss</button
                     >

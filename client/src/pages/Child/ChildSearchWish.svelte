@@ -23,7 +23,7 @@
 
         const checkPromises = items.map(async item => {
           try {
-            const checkResponse = await fetch(`/api/wishes/check?url=${encodeURIComponent(item.link)}`);
+            const checkResponse = await fetch(`http://localhost:8080/api/wishes/check?url=${encodeURIComponent(item.link)}`);
             if (checkResponse.ok) {
               const checkData = await checkResponse.json();
               return { ...item, isSavedByChild: checkData.isSavedByChild };

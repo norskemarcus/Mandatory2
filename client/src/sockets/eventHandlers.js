@@ -9,6 +9,7 @@ export function initializeSocketListeners(addNotification, addSuggestion) {
       message: notificationMessage,
       link: `/wishlist`, // TODO: refactor with an optional parameter
       color: 'default',
+      id: data.notificationId,
     });
   });
 
