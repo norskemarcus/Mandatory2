@@ -17,23 +17,24 @@ router.get('/notifications/:parentId', async (req, res) => {
   }
 });
 
-router.post('/notifications', async (req, res) => {
-  try {
-    const { message } = req.body;
+// router.post('/notifications', async (req, res) => {
 
-    const userId = req.session.user.id;
+//   try {
+//     const { message } = req.body;
 
-    const parentId = req.session.user.parent_id;
+//     const userId = req.session.user.id;
 
-    const insertSQL = 'INSERT INTO notifications (user_id,  parent_id, message) VALUES (?, ?, ?)';
-    await query(insertSQL, [userId, parentId, message]);
+//     const parentId = req.session.user.parent_id;
 
-    res.status(201).send({ message: 'Notification created successfully' });
-  } catch (error) {
-    console.error('Error creating notification:', error);
-    res.status(500).send({ error: 'Internal server error' });
-  }
-});
+//     const insertSQL = 'INSERT INTO notifications (user_id,  parent_id, message) VALUES (?, ?, ?)';
+//     await query(insertSQL, [userId, parentId, message]);
+
+//     res.status(201).send({ message: 'Notification created successfully' });
+//   } catch (error) {
+//     console.error('Error creating notification:', error);
+//     res.status(500).send({ error: 'Internal server error' });
+//   }
+// });
 
 router.delete('/notifications/:id', async (req, res) => {
   try {

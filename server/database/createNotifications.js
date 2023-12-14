@@ -4,6 +4,7 @@ export const createNotificationsTable = async () => {
   const createNotificationsTableSQL = `
   CREATE TABLE IF NOT EXISTS notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    wish_id INT,
     user_id INT,
     parent_id INT,
     message TEXT,

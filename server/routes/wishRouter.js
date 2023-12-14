@@ -86,7 +86,7 @@ async function createWish(io, userId, title, description, price, url, imageUrl) 
       const parentId = parent_id_result[0].parent_id;
 
       const notificationMessage = `${childUsername} added a new wish: ${title}`;
-      const notificationId = await saveNotification(userId, parentId, notificationMessage);
+      const notificationId = await saveNotification(userId, parentId, notificationMessage, insertResults.insertId);
 
       emitNewWishEvent(io, userId, childUsername, newWish, notificationId);
     }
@@ -97,15 +97,13 @@ async function createWish(io, userId, title, description, price, url, imageUrl) 
   }
 }
 
-async function saveNotification(userId, parentId, message) {
-  console.log('try to save a notification');
-
+async function saveNotification(userId, parentId, message, wishId = null) {
   try {
-    const notificationInsertSQL = 'INSERT INTO notifications (user_id, parent_id, message) VALUES (?, ?, ?)';
+    const notificationInsertSQL = 'INSERT INTO notifications (user_id, parent_id, message, wish_id) VALUES (?, ?, ?, ?)';
 
     const lastIdSql = 'SELECT LAST_INSERT_ID() as id';
 
-    const insertResult = await query(notificationInsertSQL, [userId, parentId, message]);
+    const insertResult = await query(notificationInsertSQL, [userId, parentId, message, wishId]);
 
     if (insertResult && insertResult.affectedRows > 0) {
       const idResult = await query(lastIdSql);
@@ -117,16 +115,6 @@ async function saveNotification(userId, parentId, message) {
     console.error('Error saving notification:', error);
     throw error; // Propagate the error to handle it in the calling function
   }
-
-  //   try {
-  //     const notificationInsertSQL = 'INSERT INTO notifications (user_id, parent_id, message) VALUES (?, ?, ?)';
-  //     const result = await query(notificationInsertSQL, [userId, parentId, message]);
-  //     return result.insertId;
-  //   } catch (error) {
-  //     console.error('Error saving notification:', error);
-  //     throw error;
-  //   }
-  // }
 }
 
 function emitNewWishEvent(io, userId, childUsername, newWish, notificationId) {
@@ -208,20 +196,30 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
   try {
     await query('START TRANSACTION');
 
+    // Fetch the wish details
     const wishTitleSQL = 'SELECT title FROM wishes WHERE id = ?';
-    const [title] = await query(wishTitleSQL, [wishId]); // destructering, becuase object with title from sql
+    const [wish] = await query(wishTitleSQL, [wishId]);
+    const wishTitle = wish?.title;
 
-    const deleteSavedWishSQL = 'DELETE FROM saved_wishes WHERE wish_id = ?';
-    await query(deleteSavedWishSQL, [wishId]);
-
+    // Create a notification about the wish deletion
     const childUsername = await getChildUsername(userId);
+    const notificationMessage = `${childUsername} has deleted a wish: ${wishTitle}`;
+    const notificationInsertSQL = 'INSERT INTO notifications (user_id, parent_id, message, wish_id) VALUES (?, ?, ?, ?)';
+    await query(notificationInsertSQL, [userId, req.session.user.parent_id, notificationMessage, wishId]);
 
+    // Retrieve the ID of the newly created notification
+    const lastIdSql = 'SELECT LAST_INSERT_ID() as id';
+    const idResult = await query(lastIdSql);
+    const notificationId = idResult[0]?.id;
+
+    // Delete the wish
     const deleteWishSQL = 'DELETE FROM wishes WHERE id = ? AND user_id = ?';
     await query(deleteWishSQL, [wishId, userId]);
+
     await query('COMMIT');
 
     if (childUsername) {
-      req.io.emit('wish-deleted', { childUsername: childUsername, wish: title });
+      req.io.emit('wish-deleted', { childUsername: childUsername, wish: wishTitle, notificationId: notificationId });
     }
 
     res.status(200).send({ message: 'Wish deleted successfully' });
@@ -231,5 +229,4 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
     res.status(500).send({ error: 'Failed to delete wish' });
   }
 });
-
 export default router;

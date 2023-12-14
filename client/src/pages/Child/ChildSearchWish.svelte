@@ -46,29 +46,29 @@
     }
   }
 
-  // TODO: Hvorfor bruger jeg ikke denne?
-  async function saveNotification(wish) {
-    try {
-      const message = `A new wish has been added: ${wish.title}`;
+  // // TODO: Hvorfor bruger jeg ikke denne?
+  // async function saveNotification(wish) {
+  //   try {
+  //     const message = `A new wish has been added: ${wish.title}`;
 
-      const response = await fetch('http://localhost:8080/notifications', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message }),
-        credentials: 'include',
-      });
+  //     const response = await fetch('http://localhost:8080/notifications', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ message }),
+  //       credentials: 'include',
+  //     });
 
-      if (response.ok) {
-        console.log('Notification saved successfully.');
-      } else {
-        console.error('Failed to save notification:', response.status);
-      }
-    } catch (error) {
-      console.error('Error saving notification:', error);
-    }
-  }
+  //     if (response.ok) {
+  //       console.log('Notification saved successfully.');
+  //     } else {
+  //       console.error('Failed to save notification:', response.status);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error saving notification:', error);
+  //   }
+  // }
 
   async function saveToWishlist(item, index) {
     try {

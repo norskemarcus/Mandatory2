@@ -101,8 +101,7 @@
 
   async function handleDismissParent(notificationId) {
     try {
-      const result = await deleteNotification(notificationId);
-      console.log(result.message);
+      await deleteNotification(notificationId);
       notifications.update(n => n.filter(notification => notification.id !== notificationId));
     } catch (error) {
       console.error('Error in handleDismissParent:', error);

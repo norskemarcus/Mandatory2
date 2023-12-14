@@ -1,6 +1,6 @@
 import Router from 'express';
 import { query } from '../database/connection.js';
-import { fetchSuggestions, checkExistingSuggestion, insertSuggestion } from '../services/suggestionsService.js';
+import { fetchSuggestions, insertSuggestion } from '../services/suggestionsService.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -117,10 +117,7 @@ async function acceptSuggestion(suggestionId, userId) {
     // misses currency
     const wishResult = await createWishFromSuggestion(userId, suggestion.title, suggestion.description, suggestion.price, suggestion.url, suggestion.image_url);
 
-    console.log('wishResult:', wishResult); // TODO: FJERNE
-
     await deleteSuggestion(suggestionId);
-    console.log('deleteSuggestion'); // TODO: FJERNE
 
     return { message: 'Suggestion accepted and wish created' };
   } catch (error) {
@@ -141,7 +138,6 @@ async function createWishFromSuggestion(userId, title, description, price, url, 
 
     const insertSQL = 'INSERT INTO wishes (title, description, price, url, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)';
 
-    //     const priceValue = price ? parseFloat(price) : null;  // TODO: FJERNE?????
     const priceValue = price && !isNaN(parseFloat(price)) ? parseFloat(price) : null;
 
     const result = await query(insertSQL, [title, description, priceValue, url, imageUrl, userId]);

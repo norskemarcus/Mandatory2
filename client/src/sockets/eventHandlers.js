@@ -20,6 +20,7 @@ export function initializeSocketListeners(addNotification, addSuggestion) {
       message: `${data.childUsername} has deleted a wish: ${data.wish.title}`,
       link: `/childsWishlist`,
       type: 'alert',
+      id: data.notificationId,
     });
   });
 
