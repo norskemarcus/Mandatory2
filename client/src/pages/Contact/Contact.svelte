@@ -62,5 +62,42 @@
 </svelte:head>
 
 <style>
-  @import './contact.css';
+  .contact-container {
+    display: flex;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .contact-info-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-grow: 1;
+    padding: 2em;
+  }
+
+  label {
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+  }
+
+  button {
+    background-color: #5f26a8;
+    color: #fff;
+    padding: 7px 10px;
+    margin-top: 1em;
+    border: none;
+    cursor: pointer;
+  }
+
+  .message {
+    width: 100%;
+    margin-top: 10px;
+  }
 </style>

@@ -1,8 +1,8 @@
 <script>
-  // import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher } from 'svelte';
   import { user } from '../../stores/globalStore.js';
   import { useNavigate } from 'svelte-navigator';
-  //const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
   import socket from '../../sockets/socket.js';
 
   const navigate = useNavigate();
@@ -27,7 +27,7 @@
 
       if (response.ok) {
         message = data.message;
-        // dispatch('login');
+        dispatch('login');
         user.set(data.user);
 
         if ($user && $user.id) {

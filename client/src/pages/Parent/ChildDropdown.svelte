@@ -1,6 +1,5 @@
 <script>
   import { onMount, createEventDispatcher } from 'svelte';
-
   const dispatch = createEventDispatcher();
 
   let children = [];
@@ -11,7 +10,7 @@
   });
 
   function handleChange() {
-    dispatch('childSelected', selectedChild); 
+    dispatch('childSelected', selectedChild);
   }
 
   async function fetchChildren() {

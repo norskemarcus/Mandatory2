@@ -32,7 +32,6 @@
 
   function onChildSelected(event) {
     selectedChild = event.detail;
-    console.log('selected child: ', selectedChild.username);
   }
 
   async function performSearch() {
@@ -222,7 +221,7 @@
   }
 
   .search-result-image {
-    max-width: 100%; /* Limit image width to not exceed the container */
+    max-width: 100%;
     max-height: 150px;
     margin: auto;
     display: block;
@@ -251,8 +250,7 @@
   }
 
   .save-button {
-    background-color: green; /* example pink color */
-    color: white;
+    background-color: green;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
@@ -266,10 +264,6 @@
   .save-button:hover {
     background-color: #0056b3;
   }
-
-  /* .save-button i.fas.fa-heart {
-    margin-right: 8px;
-  } */
 
   :global(body.dark-mode) .search-result-image-container {
     background-color: #000;

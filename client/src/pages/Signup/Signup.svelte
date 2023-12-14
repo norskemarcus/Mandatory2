@@ -6,7 +6,6 @@
   let username = 'test1@test.com';
   let password = 'test1234';
   let message = '';
-  let newUser = null;
 
   onMount(() => {
     message = '';

@@ -161,7 +161,6 @@
     margin-top: 10px;
   }
 
-  /* Responsive adjustments */
   @media (max-width: 768px) {
     .account-container {
       padding: 10px;

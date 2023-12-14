@@ -5,6 +5,7 @@
   import { fetchUser } from '../../user/userApi.js';
   import { user } from '../../stores/globalStore.js';
   import { savedWishes } from '../../stores/savedWishesStore.js';
+  import { toast, Toaster } from 'svelte-french-toast';
 
   let wishes = [];
   let loggedIn = false;
@@ -83,15 +84,14 @@
       wishes = data.wishlist;
     } catch (error) {
       console.error('Wishes fetch error:', error);
+      toast.error('Failed to load saved wishes. Please try again.');
     }
   }
 
   function handleToggleWish(childId, wishId) {
     if ($savedWishes.has(wishId)) {
-    
       unsaveWish(childId, wishId);
     } else {
-    
       saveSelectedWish(childId, wishId);
     }
   }
@@ -114,7 +114,7 @@
           return new Set(currentSet);
         });
       } else {
-        // Handle error response
+        console.error('An error occurred while saving a wish');
       }
     } catch (error) {
       console.error('An error occurred while saving a wish');
@@ -132,15 +132,10 @@
         credentials: 'include',
       });
 
-    
-
       if (response.ok) {
         savedWishes.update(currentSet => {
-         
           currentSet.delete(wishId);
-         
 
-         
           return new Set(currentSet);
         });
       } else {
@@ -179,6 +174,4 @@
     flex-wrap: wrap;
     justify-content: space-between;
   }
-
-  
 </style>

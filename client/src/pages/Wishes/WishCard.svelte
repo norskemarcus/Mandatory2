@@ -1,13 +1,10 @@
-<!-- 
-This component should only be responsible for displaying the individual details of a wish. Since you are using slots, the parent component will determine the content of each slot.
--->
 <script>
   import { FaHeart } from 'svelte-icons/fa';
   import { savedWishes } from '../../stores/savedWishesStore.js';
 
   export let wish;
   export let userRole;
-  export let onSelect; // Prop for the function to call when the checkbox is changed
+  export let onSelect;
   export let onSave;
   export let selectedChild;
   export let handleToggleWish;

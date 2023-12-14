@@ -1,7 +1,7 @@
 <script>
   import { navigate } from 'svelte-navigator';
-
   import { isDarkMode } from '../../stores/globalStore.js';
+  import { toast, Toaster } from 'svelte-french-toast';
 
   let childUsername = '';
   let childPassword = '';
@@ -32,8 +32,7 @@
       }
     } catch (error) {
       console.error(error.message);
-      // const errorResult = await response.json();
-      // throw new Error(errorResult.message || 'Server responded with an error');
+      toast.error('Failed to signup the child');
     }
   }
 </script>
@@ -57,6 +56,8 @@
     href="/privacy-policy">Privacy Policy</a
   >.
 </p>
+
+<Toaster />
 
 <style>
   main {
