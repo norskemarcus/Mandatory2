@@ -30,7 +30,6 @@ export default function setupSocketHandlers(socket, io) {
         io.to(parentSocketId).emit('new-wish', {
           childId: childId,
           wish: wish,
-          // any other data you need to send
         });
       } else {
         console.error(`No active socket for parent ID ${parentId}`);
@@ -56,11 +55,7 @@ export default function setupSocketHandlers(socket, io) {
   });
 
   socket.on('respond-to-suggestion', async data => {
-    // Process the response (e.g., update the database)
-    // Then notify the parent
-    const parentSocketId = getSocketIdByUserId(parentId); // Assuming you have the parent's ID
-    io.to(parentSocketId).emit('suggestion-response', {
-      /* relevant data */
-    });
+    const parentSocketId = getSocketIdByUserId(parentId);
+    io.to(parentSocketId).emit('suggestion-response', {});
   });
 }

@@ -39,8 +39,6 @@ router.post('/api/parent/suggestions', async (req, res) => {
 
       if (childSocketId) {
         req.io.to(childSocketId).emit('new-suggestion', { childId: childId, wish, suggestionId: suggestionId });
-
-        // req.io.emit('new-suggestion', { childId: childId, wish, suggestionId: suggestionId });
       }
     }
 
@@ -55,42 +53,47 @@ router.post('/api/child/respond-to-suggestion', async (req, res) => {
   try {
     const { suggestionId, response } = req.body;
     const userId = req.session.user.id;
+    const childUsername = req.session.user.username;
+    const parentId = await getParentId(userId);
+    const parentSocketId = getSocketIdByUserId(parentId);
 
     if (!userId || req.session.user.role !== 'Child') {
       return res.status(403).send({ message: 'Unauthorized' });
     }
 
-    if (response === 'accept') {
-      const result = await acceptSuggestion(suggestionId, userId);
+    const result = await acceptSuggestion(suggestionId, userId);
 
+    if (result.error) {
+      return res.status(500).send({ message: result.error });
+    }
+
+    if (response === 'accept') {
       await deleteSuggestion(suggestionId);
 
-      req.io.emit('suggestion-deleted', { suggestionId: suggestionId });
-
-      const parentId = await getParentId(childId);
-      const parentSocketId = getSocketIdByUserId(parentId);
       if (parentSocketId) {
-        const message = response === 'accept' ? `${childUsername} liked "${result.title}" and saved it.` : `${childUsername} did not like "${result.title}" and denied it.`;
+        const message = `${childUsername} liked "${result.title}" and saved it!`;
 
         req.io.to(parentSocketId).emit('suggestion-response', {
           suggestionId: suggestionId,
           message: message,
+          url: result.url,
         });
       }
 
-      // req.io.to(parentUserId).emit('suggestion-response', {
-      //   message: `Your suggestion of ${result.title} was accepted by ${userId.username}.`,
-      // });
-
       res.status(200).send(result);
     } else if (response === 'deny') {
-      const result = await deleteSuggestion(suggestionId);
+      await deleteSuggestion(suggestionId);
 
-      await getParentId(userId);
+      if (parentSocketId) {
+        const message = `${childUsername} did not like the suggestion and denied it.`;
 
-      req.io.to(parentId).emit('suggestion-response', {
-        message: `Your suggestion of ${result.title} was not accepted by ${userId.username}.`,
-      });
+        req.io.to(parentSocketId).emit('suggestion-response', {
+          suggestionId: suggestionId,
+          message: message,
+          url: result.url,
+        });
+      }
+
       res.status(200).send(result);
     } else {
       res.status(400).send({ error: 'Invalid response' });
@@ -100,17 +103,6 @@ router.post('/api/child/respond-to-suggestion', async (req, res) => {
     res.status(500).send({ error: 'Failed to process suggestion response' });
   }
 });
-
-// async function getParentId(userId) {
-//   const parentIdSQL = 'SELECT parent_id FROM users WHERE id = ?;';
-//   const parent_id_result = await query(parentIdSQL, [userId]);
-
-//   if (parent_id_result.length === 0) {
-//     return { error: 'ParentId not found' };
-//   }
-
-//   return parent_id_result[0].parent_id;
-// }
 
 async function acceptSuggestion(suggestionId, userId) {
   try {
@@ -128,7 +120,7 @@ async function acceptSuggestion(suggestionId, userId) {
 
     await deleteSuggestion(suggestionId);
 
-    return { message: 'Suggestion accepted and wish created' };
+    return { message: 'Suggestion accepted and wish created', title: suggestion.title, url: suggestion.url };
   } catch (error) {
     console.error('Error in acceptSuggestion:', error);
     return { error: 'Failed to accept suggestion' };

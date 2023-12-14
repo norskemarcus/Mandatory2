@@ -98,7 +98,9 @@
   }
 </script>
 
-<ChildDropdown bind:selectedChild on:childSelected={onChildSelected} />
+<div class="small-dropdown">
+  <ChildDropdown bind:selectedChild on:childSelected={onChildSelected} />
+</div>
 
 <form on:submit|preventDefault={performSearch} class="search-form">
   <input type="text" bind:value={searchQuery} placeholder="Search for products" class="search-input" />
@@ -142,6 +144,11 @@
 </svelte:head>
 
 <style>
+  .small-dropdown {
+    width: 200px;
+    font-size: 0.8em;
+  }
+
   .search-form {
     display: flex;
     align-items: center;

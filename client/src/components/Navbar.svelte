@@ -19,7 +19,7 @@
   const navigate = useNavigate();
 
   $: if ($user) {
-    initializeSocketListeners(addNotification, addSuggestion, handleMessage);
+    initializeSocketListeners(addNotification, addSuggestion);
 
     if ($user && $user.role === 'Parent') {
       fetchNotifications($user.id)
@@ -42,10 +42,6 @@
     }
   } else {
     user.set(null);
-  }
-
-  function handleMessage(message) {
-    toast.success(message);
   }
 
   async function handleResponseToSuggestion(suggestionId, response) {

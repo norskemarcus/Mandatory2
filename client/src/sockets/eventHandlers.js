@@ -1,23 +1,19 @@
 import socket from '../sockets/socket.js';
 
-export function initializeSocketListeners(addNotification, addSuggestion, showToast) {
+export function initializeSocketListeners(addNotification, addSuggestion) {
   socket.on('new-wish', async data => {
-    const notificationMessage = `${data.childUsername} added a new wish: ${data.wish.title}`;
-
     addNotification({
-      message: notificationMessage,
-      link: `/wishlist`, // TODO: refactor with an optional parameter
+      message: `${data.childUsername} added a new wish: ${data.wish.title}`,
+      link: `/wishlist`, // TODO: refactor to link directly to user
       color: 'default',
       id: data.notificationId,
     });
   });
 
   socket.on('wish-deleted', async data => {
-    console.log('wish-deleted:', data);
-
     addNotification({
       message: `${data.childUsername} has deleted a wish: ${data.wish.title}`,
-      link: `/childsWishlist`,
+      link: `/wishlist`,
       type: 'alert',
       id: data.notificationId,
     });
@@ -33,20 +29,9 @@ export function initializeSocketListeners(addNotification, addSuggestion, showTo
   });
 
   socket.on('suggestion-response', data => {
-    if (showToast) {
-      showToast(data.message);
-    }
+    addNotification({
+      message: `${data.message}`,
+      link: data.url,
+    });
   });
-}
-
-// socket.on('suggestion-deleted', data => {
-//   const deletedSuggestionId = data.suggestionId;
-
-//   suggestions.update(currentSuggestions => {
-//     return currentSuggestions.filter(suggestion => suggestion.id !== deletedSuggestionId);
-//   });
-// });
-
-export function respondToSuggestion(suggestionId, response) {
-  socket.emit('respond-to-suggestion', { suggestionId: suggestionId, response: response });
 }

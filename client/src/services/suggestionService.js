@@ -14,7 +14,6 @@ export async function fetchSuggestions(childId) {
 }
 
 export async function handleSuggestionResponse(suggestionId, response) {
-  console.log('suggestionId: in handleSuggestionResponse (frontend)', suggestionId);
   try {
     const result = await fetch('http://localhost:8080/api/child/respond-to-suggestion', {
       method: 'POST',
