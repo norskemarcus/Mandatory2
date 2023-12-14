@@ -2,9 +2,7 @@
   import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'sveltestrap';
   import { Link } from 'svelte-navigator';
   import 'iconify-icon';
-  import { fetchUser } from '../user/userApi';
   import { user } from '../stores/globalStore.js';
-  import { onMount } from 'svelte';
   import { isDarkMode } from '../stores/globalStore.js';
   import { FormGroup, Input } from 'sveltestrap';
   import { notifications, addNotification } from '../stores/notificationStore.js';
@@ -16,13 +14,12 @@
   import { handleSuggestionResponse } from '../services/suggestionService.js';
   import { toast, Toaster } from 'svelte-french-toast';
   let isOpen = false;
+  import { useNavigate } from 'svelte-navigator';
 
-  onMount(async () => {
-    await checkUserLoginStatus();
+  const navigate = useNavigate();
 
-    if ($user) {
-      initializeSocketListeners(addNotification, addSuggestion);
-    }
+  $: if ($user) {
+    initializeSocketListeners(addNotification, addSuggestion);
 
     if ($user && $user.role === 'Parent') {
       fetchNotifications($user.id)
@@ -43,7 +40,9 @@
           console.error('Error fetching suggestions:', error);
         });
     }
-  });
+  } else {
+    user.set(null);
+  }
 
   async function handleResponseToSuggestion(suggestionId, response) {
     const result = await handleSuggestionResponse(suggestionId, response);
@@ -63,20 +62,6 @@
     isOpen = event.detail.isOpen;
   }
 
-  async function checkUserLoginStatus() {
-    try {
-      const response = await fetchUser();
-
-      if (response) {
-        user.set(response);
-      } else {
-        user.set(null);
-      }
-    } catch (error) {
-      console.error('User login status check error:', error);
-    }
-  }
-
   async function handleLogout() {
     try {
       const response = await fetch('http://localhost:8080/auth/logout', {
@@ -90,7 +75,7 @@
       if (response.ok) {
         user.set(null);
         socket.emit('user-logout'); // TODO: REMOVE THIS??????????????????????????????????
-        window.location.href = '/';
+        navigate('/');
       } else {
         console.error('Error logging out:', response.status);
       }
@@ -129,11 +114,9 @@
           <DropdownMenu end class="suggestions-dropdown">
             {#each $suggestions as suggestion}
               <div class="suggestion-item">
-                {#if suggestion.title}
-                  <span class="suggestion-title">{suggestion.title}</span>
-                {:else if suggestion.message}
-                  <span>{suggestion.message}</span>
-                {/if}
+                <a href={suggestion.url} target="_blank" class="suggestion-title">
+                  {suggestion.title}
+                </a>
                 <div class="suggestion-actions">
                   <button class="btn btn-success btn-sm" on:click={() => handleResponseToSuggestion(suggestion.id, 'accept')}>Accept</button>
                   <button class="btn btn-danger btn-sm" on:click={() => handleResponseToSuggestion(suggestion.id, 'deny')}>Deny</button>

@@ -26,8 +26,8 @@ export function initializeSocketListeners(addNotification, addSuggestion) {
 
   socket.on('new-suggestion', async data => {
     addSuggestion({
-      message: `You have a new wish suggestion: ${data.wish.title}`,
-      link: `/wishlist`, // TODO, fix this /${data.wish.id} **************************
+      title: `You have a new wish suggestion: ${data.wish.title}`,
+      url: data.wish.url,
       wish: data.wish,
       id: data.suggestionId,
     });
