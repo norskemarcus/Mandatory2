@@ -5,6 +5,7 @@
   import { user } from '../../stores/globalStore.js';
   import { deleteWish } from '../../services/wishService.js';
   import { toast, Toaster } from 'svelte-french-toast';
+  import 'iconify-icon';
 
   let wishes = [];
   let editMode = false;
@@ -91,7 +92,7 @@
         <WishSetCard {wish} {userRole} />
         {#if editMode}
           <div class="buttons">
-            <button on:click={() => handleDelete(wish)} class="del-btn">Delete</button>
+            <button on:click={() => handleDelete(wish)} class="del-btn"> <iconify-icon icon="bi-x" style="color: red; font-size: 24px;"></iconify-icon></button>
           </div>
         {/if}
       </div>
@@ -123,17 +124,25 @@
     justify-content: space-between;
   }
 
-  .buttons {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-top: 1em;
+  .wish-item {
+    position: relative;
+    margin-bottom: 20px;
   }
 
   .wish-item button {
     width: auto;
     margin: 5px;
     padding: 5px 10px;
+  }
+
+  .buttons {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    opacity: 0.9;
   }
 
   .display-btn {
@@ -148,11 +157,12 @@
   }
 
   .del-btn {
-    background-color: #d9534f;
-    color: white;
+    background-color: transparent;
+
     border: none;
     cursor: pointer;
-    border-radius: 5px;
+    /* border-radius: 5px;*/
+    padding: 5px;
   }
 
   dialog {

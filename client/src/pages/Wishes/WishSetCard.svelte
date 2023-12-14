@@ -1,10 +1,9 @@
-<!-- 
-  This component seems to be a wrapper for WishCard. It uses the wish prop and passes it down to WishCard. 
+<!-- wrapper component around WishCard. It imports WishCard and uses it within its own structure, potentially adding or altering certain aspects of how a wish is presented. -->
 
-WishSetCard.svelte: This component should be responsible for displaying an individual wish and handling the selection of wishes. It should receive props from WishList.svelte for the wish, userRole, and isSelected properties.
--->
 <script>
   import WishCard from './WishCard.svelte';
+  import placeholderImage from '../../assets/placeholder_image.png';
+
   export let wish;
   export let userRole;
   export let onSelect = () => {};
@@ -19,22 +18,41 @@ WishSetCard.svelte: This component should be responsible for displaying an indiv
     <span slot="title">{wish.title}</span>
     <span slot="image">
       {#if wish.image_url}
-        <a href={wish.url} target="_blank" rel="noopener noreferrer">
-          <img src={wish.image_url} alt={wish.title} class="wish-image" />
-        </a>
+        <div class="wish-image-container">
+          <a href={wish.url} target="_blank" rel="noopener noreferrer">
+            <img src={wish.image_url} alt={wish.title} class="wish-image" />
+          </a>
+        </div>
       {:else}
-        <span class="placeholder-image">No Image Available</span>
+        <div class="wish-image-container">
+          <img src={placeholderImage} alt="placeholder" class="placeholder-image" />
+        </div>
       {/if}
     </span>
-    <span slot="price">Price: {wish.currency} {wish.price}</span>
+
+    <span slot="price">Price: {wish.price} </span>
   </WishCard>
 </article>
 
 <style>
+  .wish-image-container {
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
   .wish-image {
+    max-height: 100%;
     max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
+    object-fit: cover; /* Cover the container without distorting the image */
+  }
+
+  .placeholder-image {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 </style>

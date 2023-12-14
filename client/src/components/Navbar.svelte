@@ -41,7 +41,7 @@
         });
     }
   } else {
-    user.set(null);
+    //user.set(null);
   }
 
   async function handleResponseToSuggestion(suggestionId, response) {

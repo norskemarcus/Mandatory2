@@ -1,5 +1,5 @@
 <!-- 
-This component should only be responsible for displaying an individual wish. Since you are using slots, the parent component will determine the content of each slot.
+This component should only be responsible for displaying the individual details of a wish. Since you are using slots, the parent component will determine the content of each slot.
 -->
 <script>
   import { FaHeart } from 'svelte-icons/fa';
@@ -70,6 +70,7 @@ This component should only be responsible for displaying an individual wish. Sin
   .wish-set-card {
     display: flex;
     flex-direction: column;
+    height: 100%;
     width: 200px;
     border: 1px solid #aaa;
     border-radius: 2px;

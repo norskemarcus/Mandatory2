@@ -25,7 +25,7 @@
 
       if (response.ok) {
         message = data.message;
-        dispatch('login');
+        // dispatch('login');
         user.set(data.user);
 
         // if ($user && $user.id) {

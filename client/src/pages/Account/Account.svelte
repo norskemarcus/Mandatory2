@@ -61,6 +61,7 @@
     const confirmDelete = confirm(confirmDeleteMessage);
     if (confirmDelete) {
       navigate('/');
+      user.set(null);
     }
   }
 </script>

@@ -1,10 +1,18 @@
 <script>
+  import { onMount } from 'svelte';
+  import { navigate } from 'svelte-navigator';
+  import { user } from '../../stores/globalStore.js';
+
   let username = 'test1@test.com';
   let password = 'test1234';
   let message = '';
   let newUser = null;
 
-  async function handleSubmit(event) {
+  onMount(() => {
+    message = '';
+  });
+
+  async function handleSubmit() {
     try {
       const response = await fetch('http://localhost:8080/auth/signup', {
         method: 'POST',
@@ -18,22 +26,24 @@
       const data = await response.json();
       if (response.ok) {
         message = data.message;
-        newUser = data.user;
-        window.location.href = '/';
+        user.set(data.user);
+
+        setTimeout(() => {
+          navigate('/');
+        }, 3000);
       } else {
         console.error('Server error response:', data);
         message = 'Error: ' + data.message;
-        newUser = null;
+        user.set(null);
       }
     } catch (error) {
       console.error('Fetch error:', error);
       message = 'Error: Something went wrong';
-      newUser = null;
+      user.set(null);
     }
   }
 </script>
 
-<!-- preventDefault = shortcut for preventing the default form submission behavior, without having to explicitly call event.preventDefault(); -->
 <main>
   <div class="form-container">
     <form on:submit|preventDefault={handleSubmit}>
@@ -49,10 +59,6 @@
 
   {#if message}
     <div class="message">{message}</div>
-  {/if}
-
-  {#if newUser}
-    <div class="message">New user successfully registered</div>
   {/if}
 </main>
 
