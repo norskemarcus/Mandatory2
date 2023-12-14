@@ -8,11 +8,11 @@
   import { isDarkMode } from '../stores/globalStore.js';
   import { FormGroup, Input } from 'sveltestrap';
   import { notifications, addNotification } from '../stores/notificationStore.js';
-  import { initializeSocketListeners, respondToSuggestion } from '../sockets/eventHandlers.js';
+  import { initializeSocketListeners } from '../sockets/eventHandlers.js';
   import { fetchSuggestions } from '../services/suggestionService.js';
   import { deleteNotification, fetchNotifications } from '../services/notificationService.js';
   import socket from '../sockets/socket.js';
-  import { suggestions, addSuggestion } from '../stores/suggestionStore';
+  import { suggestions, addSuggestion, removeSuggestion } from '../stores/suggestionStore';
   import { handleSuggestionResponse } from '../services/suggestionService.js';
   import { toast, Toaster } from 'svelte-french-toast';
   let isOpen = false;
@@ -48,7 +48,7 @@
   async function handleResponseToSuggestion(suggestionId, response) {
     const result = await handleSuggestionResponse(suggestionId, response);
     if (result.ok) {
-      suggestions.update(suggestions => suggestions.filter(s => s.id !== suggestionId));
+      removeSuggestion(suggestionId);
       toast.success(result.message);
     } else {
       toast.error(result.message);
@@ -135,8 +135,8 @@
                   <span>{suggestion.message}</span>
                 {/if}
                 <div class="suggestion-actions">
-                  <button class="btn btn-success btn-sm" on:click={() => handleResponseToSuggestion(suggestion.id || suggestion.suggestionId, 'accept')}>Accept</button>
-                  <button class="btn btn-danger btn-sm" on:click={() => handleResponseToSuggestion(suggestion.id || suggestion.suggestionId, 'deny')}>Deny</button>
+                  <button class="btn btn-success btn-sm" on:click={() => handleResponseToSuggestion(suggestion.id, 'accept')}>Accept</button>
+                  <button class="btn btn-danger btn-sm" on:click={() => handleResponseToSuggestion(suggestion.id, 'deny')}>Deny</button>
                 </div>
               </div>
             {/each}

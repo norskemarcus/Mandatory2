@@ -29,7 +29,7 @@ export function initializeSocketListeners(addNotification, addSuggestion) {
       message: `You have a new wish suggestion: ${data.wish.title}`,
       link: `/wishlist`, // TODO, fix this /${data.wish.id} **************************
       wish: data.wish,
-      suggestionId: data.suggestionId,
+      id: data.suggestionId,
     });
   });
 

@@ -12,12 +12,6 @@ export const addNotification = notification => {
   });
 };
 
-// export const addNotification = notification => {
-//   notifications.update(n => {
-//     return [...n, notification];
-//   });
-// };
-
 export const dismissNotification = index => {
   notifications.update(n => n.filter((_, i) => i !== index));
 };
