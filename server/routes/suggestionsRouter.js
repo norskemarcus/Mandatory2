@@ -2,6 +2,7 @@ import Router from 'express';
 import { query } from '../database/connection.js';
 import { fetchSuggestions, insertSuggestion } from '../services/suggestionsService.js';
 import dotenv from 'dotenv';
+import { getSocketIdByUserId } from '../sockets/socketStore.js';
 dotenv.config();
 
 const router = Router();
@@ -10,10 +11,7 @@ router.get('/api/child/suggestions/:childId', async (req, res) => {
   if (!req.session.user || req.session.user.role !== 'Child') {
     return res.status(401).send({ error: 'Unauthorized' });
   }
-
   const childId = req.params.childId;
-  // TODO: WHATS BEST TO USE  ?????*******************************************************************
-  //const childId = req.session.user.id;
 
   try {
     const suggestions = await fetchSuggestions(childId);
@@ -26,7 +24,6 @@ router.get('/api/child/suggestions/:childId', async (req, res) => {
 
 router.post('/api/parent/suggestions', async (req, res) => {
   try {
-    // Destructure wish from the request body
     const { childId, wish } = req.body;
     const parentUserId = req.session.user?.id;
 
@@ -37,15 +34,19 @@ router.post('/api/parent/suggestions', async (req, res) => {
     const suggestionId = await insertSuggestion(wish, childId, parentUserId);
 
     if (suggestionId) {
-      req.io.emit('new-suggestion', { childId: childId, wish, suggestionId: suggestionId });
+      const childSocketId = getSocketIdByUserId(childId);
 
-      return res.status(201).send({ message: 'Suggestion saved successfully', suggestionId: suggestionId });
-    } else {
-      return res.status(500).send({ error: 'Failed to save suggestion' });
+      if (childSocketId) {
+        req.io.to(childSocketId).emit('new-suggestion', { childId: childId, wish, suggestionId: suggestionId });
+
+        // req.io.emit('new-suggestion', { childId: childId, wish, suggestionId: suggestionId });
+      }
     }
+
+    res.status(200).send({ message: 'Suggestion sent successfully' });
   } catch (error) {
-    console.error('Error saving suggestion:', error);
-    return res.status(500).send({ error: error.message });
+    console.error('Error in sending suggestion:', error);
+    res.status(500).send({ message: 'Internal Server Error' });
   }
 });
 

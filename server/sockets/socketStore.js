@@ -12,4 +12,8 @@ function getUserId(socketId) {
   return socketUserMap[socketId];
 }
 
-export { addUser, removeUser, getUserId };
+function getSocketIdByUserId(userId) {
+  return Object.keys(socketUserMap).find(socketId => socketUserMap[socketId] === userId);
+}
+
+export { addUser, removeUser, getUserId, getSocketIdByUserId };
