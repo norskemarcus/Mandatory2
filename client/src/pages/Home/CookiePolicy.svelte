@@ -5,7 +5,7 @@
   function updateConsent(allCookies = false) {
     isConsentGiven.set(true);
     localStorage.setItem('cookieConsent', allCookies ? 'all' : 'necessary');
-    location.reload(); // OBS NOT THE BEST WAY!
+    // location.reload();
     navigate('/');
   }
 </script>
@@ -21,8 +21,7 @@
     your browser's local storage and is not used for tracking purposes.
   </p>
 
-  <button class="green-button" on:click={() => updateConsent(true)}>Accept all cookies</button>
-  <button class="gray-button" on:click={() => updateConsent(false)}>Accept necessary cookies</button>
+  <button class="green-button" on:click={() => updateConsent(true)}>Accept all necessary cookies</button>
 </main>
 
 <style>

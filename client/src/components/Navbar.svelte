@@ -46,8 +46,6 @@
   });
 
   async function handleResponseToSuggestion(suggestionId, response) {
-    console.log('suggestionId in Navbar:', suggestionId);
-
     const result = await handleSuggestionResponse(suggestionId, response);
     if (result.ok) {
       suggestions.update(suggestions => suggestions.filter(s => s.id !== suggestionId));

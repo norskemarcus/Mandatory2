@@ -53,7 +53,7 @@
       <ChildAccounts />
     </PrivateRoute>
 
-    <PrivateRoute path="/addWish">
+    <PrivateRoute path="/addwish">
       <AddWish />
     </PrivateRoute>
 

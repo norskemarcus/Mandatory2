@@ -25,21 +25,23 @@ export function initializeSocketListeners(addNotification, addSuggestion) {
   socket.on('new-suggestion', async data => {
     addSuggestion({
       message: `You have a new wish suggestion: ${data.wish.title}`,
-      link: `/wishlist`, // TODO, fix this /${data.wish.id}
+      link: `/wishlist`, // TODO, fix this /${data.wish.id} **************************
       wish: data.wish,
       suggestionId: data.suggestionId,
     });
   });
 
+  // TODO: THIS IS NOT WORKING!! ********************************
   socket.on('suggestion-response', data => {
     addNotification({
       message: `${data.wish.title} was accepted or denied by your child`,
     });
   });
 
+  // TODO: THIS IS NOT WORKING ****************************
   socket.on('suggestion-deleted', data => {
     const deletedSuggestionId = data.suggestionId;
-    // Update your state to filter out the deleted suggestion
+
     suggestions.update(currentSuggestions => {
       return currentSuggestions.filter(suggestion => suggestion.id !== deletedSuggestionId);
     });
