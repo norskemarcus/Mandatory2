@@ -2,6 +2,7 @@ import Router from 'express';
 const router = Router();
 import { query } from '../database/connection.js';
 import dotenv from 'dotenv';
+import { getSocketIdByUserId } from '../sockets/socketStore.js';
 dotenv.config();
 
 router.get('/api/wishes', async (req, res) => {
@@ -68,7 +69,6 @@ async function createWish(io, userId, title, description, price, url, imageUrl) 
     const insertSQL = 'INSERT INTO wishes (title, description, price, url, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)';
 
     const priceValue = price ? parseFloat(price) : null;
-    // const priceValue = price && !isNaN(parseFloat(price)) ? parseFloat(price) : null;
 
     const insertResults = await query(insertSQL, [title, description, priceValue, url, imageUrl, userId]);
 
@@ -88,7 +88,7 @@ async function createWish(io, userId, title, description, price, url, imageUrl) 
       const notificationMessage = `${childUsername} added a new wish: ${title}`;
       const notificationId = await saveNotification(userId, parentId, notificationMessage, insertResults.insertId);
 
-      emitNewWishEvent(io, userId, childUsername, newWish, notificationId);
+      emitNewWishEvent(io, userId, childUsername, newWish, notificationId, parentId);
     }
     return { message: 'Wish created successfully', wishId: insertResults.insertId };
   } catch (error) {
@@ -117,8 +117,20 @@ async function saveNotification(userId, parentId, message, wishId = null) {
   }
 }
 
-function emitNewWishEvent(io, userId, childUsername, newWish, notificationId) {
-  io.emit('new-wish', { userId: userId, childUsername: childUsername, wish: newWish, notificationId: notificationId });
+// function emitNewWishEvent(io, userId, childUsername, newWish, notificationId) {
+//   io.emit('new-wish', { userId: userId, childUsername: childUsername, wish: newWish, notificationId: notificationId });
+// }
+
+function emitNewWishEvent(io, userId, childUsername, newWish, notificationId, parentId) {
+  const parentSocketId = getSocketIdByUserId(parentId);
+  if (parentSocketId) {
+    io.to(parentSocketId).emit('new-wish', {
+      userId: userId,
+      childUsername: childUsername,
+      wish: newWish,
+      notificationId: notificationId,
+    });
+  }
 }
 
 router.post('/api/form/wishes', async (req, res) => {
@@ -219,8 +231,16 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
     await query('COMMIT');
 
     if (childUsername) {
-      req.io.emit('wish-deleted', { childUsername: childUsername, wish: wishTitle, notificationId: notificationId });
+      const parentSocketId = getSocketIdByUserId(req.session.user.parent_id);
+      if (parentSocketId) {
+        req.io.to(parentSocketId).emit('wish-deleted', {
+          childUsername: childUsername,
+          wish: wishTitle,
+          notificationId: notificationId,
+        });
+      }
     }
+    // req.io.emit('wish-deleted', { childUsername: childUsername, wish: wishTitle, notificationId: notificationId });
 
     res.status(200).send({ message: 'Wish deleted successfully' });
   } catch (error) {

@@ -19,7 +19,7 @@
   const navigate = useNavigate();
 
   $: if ($user) {
-    initializeSocketListeners(addNotification, addSuggestion);
+    initializeSocketListeners(addNotification, addSuggestion, handleMessage);
 
     if ($user && $user.role === 'Parent') {
       fetchNotifications($user.id)
@@ -41,7 +41,11 @@
         });
     }
   } else {
-    //user.set(null);
+    user.set(null);
+  }
+
+  function handleMessage(message) {
+    toast.success(message);
   }
 
   async function handleResponseToSuggestion(suggestionId, response) {
@@ -74,7 +78,7 @@
 
       if (response.ok) {
         user.set(null);
-        socket.emit('user-logout'); // TODO: REMOVE THIS??????????????????????????????????
+        socket.emit('user-logout');
         navigate('/');
       } else {
         console.error('Error logging out:', response.status);

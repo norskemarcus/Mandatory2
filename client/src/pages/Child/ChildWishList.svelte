@@ -158,11 +158,10 @@
 
   .del-btn {
     background-color: transparent;
-
+    color: black;
     border: none;
     cursor: pointer;
-    /* border-radius: 5px;*/
-    padding: 5px;
+    border-radius: 5px;
   }
 
   dialog {

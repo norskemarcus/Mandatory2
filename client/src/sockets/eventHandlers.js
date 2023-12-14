@@ -1,7 +1,6 @@
 import socket from '../sockets/socket.js';
-import { suggestions } from '../stores/suggestionStore.js';
 
-export function initializeSocketListeners(addNotification, addSuggestion) {
+export function initializeSocketListeners(addNotification, addSuggestion, showToast) {
   socket.on('new-wish', async data => {
     const notificationMessage = `${data.childUsername} added a new wish: ${data.wish.title}`;
 
@@ -33,22 +32,20 @@ export function initializeSocketListeners(addNotification, addSuggestion) {
     });
   });
 
-  // TODO: THIS IS NOT WORKING!! ********************************
   socket.on('suggestion-response', data => {
-    addNotification({
-      message: `${data.wish.title} was accepted or denied by your child`,
-    });
-  });
-
-  // TODO: THIS IS NOT WORKING ****************************
-  socket.on('suggestion-deleted', data => {
-    const deletedSuggestionId = data.suggestionId;
-
-    suggestions.update(currentSuggestions => {
-      return currentSuggestions.filter(suggestion => suggestion.id !== deletedSuggestionId);
-    });
+    if (showToast) {
+      showToast(data.message);
+    }
   });
 }
+
+// socket.on('suggestion-deleted', data => {
+//   const deletedSuggestionId = data.suggestionId;
+
+//   suggestions.update(currentSuggestions => {
+//     return currentSuggestions.filter(suggestion => suggestion.id !== deletedSuggestionId);
+//   });
+// });
 
 export function respondToSuggestion(suggestionId, response) {
   socket.emit('respond-to-suggestion', { suggestionId: suggestionId, response: response });

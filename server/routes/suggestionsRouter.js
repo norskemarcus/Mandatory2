@@ -3,6 +3,7 @@ import { query } from '../database/connection.js';
 import { fetchSuggestions, insertSuggestion } from '../services/suggestionsService.js';
 import dotenv from 'dotenv';
 import { getSocketIdByUserId } from '../sockets/socketStore.js';
+import { getParentId } from '../services/userService.js';
 dotenv.config();
 
 const router = Router();
@@ -66,7 +67,16 @@ router.post('/api/child/respond-to-suggestion', async (req, res) => {
 
       req.io.emit('suggestion-deleted', { suggestionId: suggestionId });
 
-      // const parentUserId = await getParentId(userId);
+      const parentId = await getParentId(childId);
+      const parentSocketId = getSocketIdByUserId(parentId);
+      if (parentSocketId) {
+        const message = response === 'accept' ? `${childUsername} liked "${result.title}" and saved it.` : `${childUsername} did not like "${result.title}" and denied it.`;
+
+        req.io.to(parentSocketId).emit('suggestion-response', {
+          suggestionId: suggestionId,
+          message: message,
+        });
+      }
 
       // req.io.to(parentUserId).emit('suggestion-response', {
       //   message: `Your suggestion of ${result.title} was accepted by ${userId.username}.`,
@@ -76,7 +86,7 @@ router.post('/api/child/respond-to-suggestion', async (req, res) => {
     } else if (response === 'deny') {
       const result = await deleteSuggestion(suggestionId);
 
-      const parentId = await getParentId(userId);
+      await getParentId(userId);
 
       req.io.to(parentId).emit('suggestion-response', {
         message: `Your suggestion of ${result.title} was not accepted by ${userId.username}.`,
@@ -91,18 +101,16 @@ router.post('/api/child/respond-to-suggestion', async (req, res) => {
   }
 });
 
-async function getParentId(userId) {
-  const parentIdSQL = 'SELECT parent_id FROM users WHERE id = ?;';
-  const parent_id_result = await query(parentIdSQL, [userId]);
+// async function getParentId(userId) {
+//   const parentIdSQL = 'SELECT parent_id FROM users WHERE id = ?;';
+//   const parent_id_result = await query(parentIdSQL, [userId]);
 
-  console.log('parent_id_result :', parent_id_result.parent_id);
+//   if (parent_id_result.length === 0) {
+//     return { error: 'ParentId not found' };
+//   }
 
-  if (parent_id_result.length === 0) {
-    return { error: 'ParentId not found' };
-  }
-
-  return parent_id_result[0].parent_id;
-}
+//   return parent_id_result[0].parent_id;
+// }
 
 async function acceptSuggestion(suggestionId, userId) {
   try {

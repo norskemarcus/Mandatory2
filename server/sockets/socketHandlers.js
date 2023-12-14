@@ -19,8 +19,25 @@ export default function setupSocketHandlers(socket, io) {
     removeUser(socket.id);
   });
 
-  socket.on('child-add-wish', data => {
-    // io.emit('parent-wish-added', data);
+  socket.on('child-add-wish', async data => {
+    const { childId, wish } = data;
+
+    const parentId = await getParentId(childId);
+
+    if (parentId) {
+      const parentSocketId = getSocketIdByUserId(parentId);
+      if (parentSocketId) {
+        io.to(parentSocketId).emit('new-wish', {
+          childId: childId,
+          wish: wish,
+          // any other data you need to send
+        });
+      } else {
+        console.error(`No active socket for parent ID ${parentId}`);
+      }
+    } else {
+      console.error(`Parent ID for child ID ${childId} not found`);
+    }
   });
 
   socket.on('new-suggestion', async data => {
@@ -36,5 +53,14 @@ export default function setupSocketHandlers(socket, io) {
     } else {
       console.error(`No active socket for child ID ${childId}`);
     }
+  });
+
+  socket.on('respond-to-suggestion', async data => {
+    // Process the response (e.g., update the database)
+    // Then notify the parent
+    const parentSocketId = getSocketIdByUserId(parentId); // Assuming you have the parent's ID
+    io.to(parentSocketId).emit('suggestion-response', {
+      /* relevant data */
+    });
   });
 }
