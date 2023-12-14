@@ -2,15 +2,12 @@ import { addUser, removeUser, getUserId, getSocketIdByUserId } from './socketSto
 
 export default function setupSocketHandlers(socket, io) {
   socket.on('user-login', ({ userId }) => {
-    console.log(`User ${userId} logged in with socket ID ${socket.id}`);
-    // map each socket connection to the corresponding user ID.
     addUser(socket.id, userId);
   });
 
   socket.on('user-logout', () => {
     const userId = getUserId(socket.id);
     if (userId) {
-      console.log(`User ${userId} logged out.`);
       removeUser(socket.id);
     }
   });
@@ -21,7 +18,6 @@ export default function setupSocketHandlers(socket, io) {
 
   socket.on('child-add-wish', async data => {
     const { childId, wish } = data;
-
     const parentId = await getParentId(childId);
 
     if (parentId) {
@@ -41,7 +37,6 @@ export default function setupSocketHandlers(socket, io) {
 
   socket.on('new-suggestion', async data => {
     const { childId, wish } = data;
-
     const childSocketId = getSocketIdByUserId(childId);
 
     if (childSocketId) {

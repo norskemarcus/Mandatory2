@@ -44,7 +44,7 @@ router.delete('/api/children/:childId', async (req, res) => {
 
   try {
     const childId = req.params.childId;
-    const deleteSql = 'DELETE FROM users WHERE id = ? AND parent_id = ?'; // Adjust SQL query as needed
+    const deleteSql = 'DELETE FROM users WHERE id = ? AND parent_id = ?'; 
     await query(deleteSql, [childId, req.session.user.id]);
 
     res.send('Child account deleted successfully');

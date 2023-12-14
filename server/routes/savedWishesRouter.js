@@ -84,11 +84,7 @@ router.patch('/api/parent/saved-wishes/:childId', async (req, res) => {
 
 router.delete('/api/parent/unsave-wish/:childId', async (req, res) => {
   try {
-    console.log('unsave');
-    // wishId bliver sendt med body
     const { wishId } = req.body;
-
-    // childId bliver sendt som paramater
     const childId = req.params.childId;
 
     if (!req.session.user || req.session.user.role !== 'Parent') {

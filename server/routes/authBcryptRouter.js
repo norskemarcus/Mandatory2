@@ -9,8 +9,7 @@ router.post('/auth/signup', async (req, res) => {
     const role = 'Parent';
 
     const user = await signUp(username, password, role);
-    req.session.user = { id: user.id, username: user.username, role: user.role };
-    //req.session.user = { id: user.id, role: role };
+    req.session.user = { id: user.id, username: user.username, role: role };
     req.session.save();
 
     res.status(201).send({ message: 'User created successfully' });

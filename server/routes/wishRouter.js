@@ -113,13 +113,9 @@ async function saveNotification(userId, parentId, message, wishId = null) {
     return null;
   } catch (error) {
     console.error('Error saving notification:', error);
-    throw error; // Propagate the error to handle it in the calling function
+    throw error;
   }
 }
-
-// function emitNewWishEvent(io, userId, childUsername, newWish, notificationId) {
-//   io.emit('new-wish', { userId: userId, childUsername: childUsername, wish: newWish, notificationId: notificationId });
-// }
 
 function emitNewWishEvent(io, userId, childUsername, newWish, notificationId, parentId) {
   const parentSocketId = getSocketIdByUserId(parentId);
@@ -208,7 +204,6 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
   try {
     await query('START TRANSACTION');
 
-    // Fetch the wish details
     const wishTitleSQL = 'SELECT title FROM wishes WHERE id = ?';
     const [wish] = await query(wishTitleSQL, [wishId]);
     const wishTitle = wish?.title;
@@ -240,7 +235,6 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
         });
       }
     }
-    // req.io.emit('wish-deleted', { childUsername: childUsername, wish: wishTitle, notificationId: notificationId });
 
     res.status(200).send({ message: 'Wish deleted successfully' });
   } catch (error) {
