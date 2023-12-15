@@ -135,8 +135,16 @@
     text-align: left;
   }
 
+  a {
+    color: green;
+  }
+
   th {
     background-color: #f2f2f2;
+  }
+
+  button {
+    background-color: rgb(89, 226, 89);
   }
 
   a.bought {

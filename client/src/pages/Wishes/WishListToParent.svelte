@@ -161,7 +161,7 @@
 {/if}
 
 <svelte:head>
-  <title>My Wishlist</title>
+  <title>Childs Wishlist</title>
 </svelte:head>
 
 <style>

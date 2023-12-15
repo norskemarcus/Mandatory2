@@ -103,6 +103,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 1rem;
   }
 
   .save-button {
@@ -116,10 +117,7 @@
     width: auto;
     height: 20px;
     padding: 0;
-  }
-
-  .heart-icon {
-    margin-right: 0.5em;
+    gap: 5px;
   }
 
   .saved {
@@ -135,25 +133,4 @@
   :global(body.dark-mode) .missing-price {
     color: #666;
   }
-  /* }
-  :global(body.dark-mode) .lego-set-card {
-    background-color: #333;
-    border-color: #444;
-    color: #ddd;
-  }
-
-  :global(body.dark-mode) h2 {
-    border-color: #555;
-  }
-
-  :global(body.dark-mode) .lego-item-number::before,
-  :global(body.dark-mode) .lego-age::before {
-    color: #ccc;
-  }
-
-  :global(body.dark-mode) .missing-name,
-  :global(body.dark-mode) .missing-item-number,
-  :global(body.dark-mode) .missing-age {
-    color: #666;
-  } */
 </style>

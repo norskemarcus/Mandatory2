@@ -43,6 +43,10 @@
     overflow: hidden;
   }
 
+  .wish-set-card {
+    margin-bottom: 20px;
+  }
+
   .wish-image {
     max-height: 100%;
     max-width: 100%;

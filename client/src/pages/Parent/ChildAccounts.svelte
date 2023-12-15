@@ -2,6 +2,7 @@
   import { navigate } from 'svelte-navigator';
   import { isDarkMode } from '../../stores/globalStore.js';
   import { toast, Toaster } from 'svelte-french-toast';
+  import { Link } from 'svelte-navigator';
 
   let childUsername = '';
   let childPassword = '';
@@ -38,7 +39,7 @@
 </script>
 
 <main>
-  <h1>Add a child account</h1>
+  <h2>Add a child account</h2>
   <form on:submit|preventDefault={addChild}>
     <input type="text" bind:value={childUsername} placeholder="Username for the child" required />
     <input type="password" bind:value={childPassword} placeholder="Password" required />
@@ -52,9 +53,9 @@
 </main>
 
 <p>
-  We collect a username and password to create a secure, personalized account for your child. Usernames allow for privacy and safety online. The password helps keep the account secure. As a parent or guardian, you have full control over this account and can manage it according to our <a
-    href="/privacy-policy">Privacy Policy</a
-  >.
+  We collect a username and password to create a secure, personalized account for your child. Usernames allow for privacy and safety online. The password helps keep the account secure. As a parent or guardian, you have full control over this account and can delete it whenever you want <Link
+    to="/account">here</Link
+  >
 </p>
 
 <Toaster />
