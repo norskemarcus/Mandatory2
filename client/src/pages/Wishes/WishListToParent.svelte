@@ -139,7 +139,7 @@
           return new Set(currentSet);
         });
       } else {
-        // Handle error response
+        console.error('An error occurred while un-saving a wish');
       }
     } catch (error) {
       console.error('An error occurred while un-saving a wish');

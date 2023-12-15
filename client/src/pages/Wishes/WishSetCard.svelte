@@ -1,5 +1,3 @@
-<!-- wrapper component around WishCard. It imports WishCard and uses it within its own structure, potentially adding or altering certain aspects of how a wish is presented. -->
-
 <script>
   import WishCard from './WishCard.svelte';
   import placeholderImage from '../../assets/placeholder_image.png';

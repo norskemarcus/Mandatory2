@@ -1,11 +1,11 @@
 <script>
-  export let contactLink = '/contact';
+  import { Link } from 'svelte-navigator';
 </script>
 
 <footer>
   <div class="footer-content">
     <div class="footer-links">
-      <a href={contactLink}>Contact me</a>
+      <Link to="/contact" style="color: white; text-decoration: none;">Contact me</Link>
     </div>
     <div class="footer-links">
       <a href="https://kea.dk">KEA</a>
