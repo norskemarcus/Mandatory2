@@ -1,5 +1,5 @@
 <script>
-  import { FaHeart } from 'svelte-icons/fa';
+  import { FaHeart, FaTrash } from 'svelte-icons/fa';
   import { savedWishes } from '../../stores/savedWishesStore.js';
 
   export let wish;
@@ -9,7 +9,7 @@
   export let selectedChild;
   export let handleToggleWish;
   let buttonClass = 'save-button';
-
+  export let onDelete;
   let isSaved;
 
   savedWishes.subscribe(currentSet => {
@@ -20,6 +20,12 @@
 
   function saveWish() {
     handleToggleWish(selectedChild.id, wish.id);
+  }
+
+  function handleDelete() {
+    if (onDelete) {
+      onDelete(wish);
+    }
   }
 </script>
 
@@ -60,6 +66,12 @@
         {isSaved ? 'Unsave' : 'Save'}
       </button>
     {/if}
+    {#if userRole === 'Child'}
+      <button on:click={handleDelete} class={buttonClass}>
+        <!-- https://icon-sets.iconify.design/arcticons/trashcan/ -->
+        <FaTrash class="trash-icon" />
+      </button>
+    {/if}
   </div>
 </article>
 
@@ -73,7 +85,7 @@
     border-radius: 2px;
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
     padding: 1em;
-    margin: 1em;
+    margin: 0.7em;
     transition:
       background-color 0.3s,
       border-color 0.3s,
@@ -100,10 +112,16 @@
   }
 
   .button-container {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 1rem;
+    margin-top: auto;
+  }
+
+  .trash-icon {
+    height: 20px;
+    color: grey;
   }
 
   .save-button {

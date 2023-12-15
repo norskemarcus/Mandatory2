@@ -8,7 +8,6 @@
   import 'iconify-icon';
 
   let wishes = [];
-  let editMode = false;
   let toBeDeleted = null;
   let dialogRef;
   let loggedIn = false;
@@ -25,14 +24,21 @@
     }
   });
 
-  function toggleEditMode() {
-    editMode = !editMode;
-  }
-
   function handleDelete(wish) {
     selectedWishId = wish.id;
     toBeDeleted = wish;
     dialogRef.showModal();
+  }
+
+  // function handleDialogClose() {
+  //   if (dialogRef && !dialogRef.returnValue) {
+  //     toBeDeleted = null;
+  //     selectedWishId = null;
+  //   }
+  // }
+
+  function handleDialogCancel() {
+    dialogRef.close();
   }
 
   async function handleConfirmDelete() {
@@ -78,32 +84,19 @@
 <h3>My Wishlist:</h3>
 
 <div class="wishlist-container">
-  <button on:click={toggleEditMode} class="display-btn">
-    {#if editMode}
-      Display Cards
-    {:else}
-      Display Edit/Delete Buttons
-    {/if}
-  </button>
-
   <div class="wishlist">
     {#each wishes as wish (wish.id)}
-      <div class="wish-item">
-        <WishSetCard {wish} {userRole} />
-        {#if editMode}
-          <div class="buttons">
-            <button on:click={() => handleDelete(wish)} class="del-btn"> <iconify-icon icon="bi-x" style="color: red; font-size: 24px;"></iconify-icon></button>
-          </div>
-        {/if}
-      </div>
+      <WishSetCard {wish} {userRole} onDelete={handleDelete} />
     {/each}
   </div>
 
-  {#if editMode}
-    <dialog id="confirm-delete" bind:this={dialogRef}>
+  <dialog id="confirm-delete" bind:this={dialogRef}>
+    <div class="dialog-content">
+      Are you sure you want to delete this wish?
       <button on:click={handleConfirmDelete} class="del-btn">Confirm Delete</button>
-    </dialog>
-  {/if}
+      <button on:click={handleDialogCancel} class="cancel-btn">Cancel</button>
+    </div>
+  </dialog>
 </div>
 <Toaster />
 
@@ -124,46 +117,6 @@
     justify-content: space-between;
   }
 
-  .wish-item {
-    position: relative;
-    margin-bottom: 20px;
-  }
-
-  .wish-item button {
-    width: auto;
-    margin: 5px;
-    padding: 5px 10px;
-  }
-
-  .buttons {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    opacity: 0.9;
-  }
-
-  .display-btn {
-    width: 50%;
-    padding: 5px 10px;
-    margin-bottom: 20px;
-    background-color: #5f26a8;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-
-  .del-btn {
-    background-color: transparent;
-    color: black;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-
   dialog {
     border-radius: 5px;
     padding: 20px;
@@ -171,8 +124,20 @@
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
   }
 
-  :global(body.dark-mode) .wish-item {
-    border-color: #444;
-    color: #ddd;
+  .del-btn {
+    background-color: #d83e3e;
+    border: none;
+    padding: 10px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  .cancel-btn {
+    background-color: #ccc;
+    border: none;
+    padding: 10px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 5px;
   }
 </style>

@@ -7,12 +7,12 @@
   export let onSelect = () => {};
   export let selectedChild = null;
   export let onSave = () => {};
-
+  export let onDelete = () => {};
   export let handleToggleWish = () => {}; //  default function = optional prop
 </script>
 
 <article class="wish-set-card">
-  <WishCard {wish} {userRole} {onSelect} {onSave} {selectedChild} {handleToggleWish}>
+  <WishCard {wish} {userRole} {onSelect} {onSave} {selectedChild} {handleToggleWish} {onDelete}>
     <span slot="title">{wish.title}</span>
     <span slot="image">
       {#if wish.image_url}
