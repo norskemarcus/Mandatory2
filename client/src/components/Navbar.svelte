@@ -213,9 +213,11 @@
             <DropdownItem><Link to="/" on:click={handleLogout} class="dropdown-item">Log out</Link></DropdownItem>
           </DropdownMenu>
         </Dropdown>
-        <FormGroup>
-          <Input id="c3" type="switch" label="Dark mode" on:change={toggleTheme} bind:checked={$isDarkMode} />
-        </FormGroup>
+
+        <div class="switch-container">
+          <Input id="c3" type="switch" on:change={toggleTheme} />
+          <iconify-icon icon="mdi:moon-waning-crescent" style="font-size: 1.5em; color: silver;"></iconify-icon>
+        </div>
 
         <!-- Not logged in -->
       {:else}
@@ -225,9 +227,11 @@
         <NavItem>
           <Link to="/signup" class="nav-link">Sign up</Link>
         </NavItem>
-        <FormGroup>
-          <Input id="c3" type="switch" label="Dark mode" on:change={toggleTheme} />
-        </FormGroup>
+
+        <div class="switch-container">
+          <Input id="c3" type="switch" on:change={toggleTheme} />
+          <iconify-icon icon="mdi:moon-waning-crescent" style="font-size: 1.5em; color: silver;"></iconify-icon>
+        </div>
       {/if}
     </Nav>
   </Collapse>
@@ -236,10 +240,22 @@
 <Toaster />
 
 <style>
+  .switch-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 3rem;
+  }
+
   .house-icon {
     color: rgb(31, 13, 13);
     font-size: 24px;
   }
+
+  .nav {
+    align-items: center;
+  }
+
   .notification-item {
     display: flex;
     justify-content: space-between;
@@ -283,18 +299,22 @@
     margin-top: 0.5rem;
   }
 
+  .dark-mode-switch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+  }
+
   @media (max-width: 1150px) {
-    .notification-item {
-      flex-direction: column;
-      align-items: flex-start;
-      min-width: 0;
-      width: 100%;
+    .switch-container {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-left: 1rem;
     }
 
-    .notification-item span {
-      max-width: 100%;
-      white-space: normal;
-    }
+    
   }
 
   @media (max-width: 768px) {
