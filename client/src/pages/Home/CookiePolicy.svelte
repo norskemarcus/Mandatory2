@@ -5,7 +5,6 @@
   function updateConsent(allCookies = false) {
     isConsentGiven.set(true);
     localStorage.setItem('cookieConsent', allCookies ? 'all' : 'necessary');
-    // location.reload();
     navigate('/');
   }
 </script>
@@ -36,17 +35,6 @@
     font-size: 16px;
     margin: 4px 2px;
 
-    border-radius: 20px;
-  }
-
-  .gray-button {
-    background-color: #e7e7e7;
-    border: none;
-    color: black;
-    padding: 15px 32px;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
     border-radius: 20px;
   }
 </style>

@@ -30,13 +30,6 @@
     dialogRef.showModal();
   }
 
-  // function handleDialogClose() {
-  //   if (dialogRef && !dialogRef.returnValue) {
-  //     toBeDeleted = null;
-  //     selectedWishId = null;
-  //   }
-  // }
-
   function handleDialogCancel() {
     dialogRef.close();
   }

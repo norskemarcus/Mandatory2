@@ -21,15 +21,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 const allRoutesRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // reset efter 15 min
-  limit: 200,
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
 });
 
 const authRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes, reset efter 15 min
-  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes). -------------------------------Change this when finished!! TODO ************************************************************************************************************* ////////////////////////////////////////////// !!!!!!!!
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
 });
@@ -52,7 +52,7 @@ app.use(sessionMiddleware);
 import http from 'http';
 const server = http.createServer(app);
 
-import { Server } from 'socket.io'; // WebSocket server
+import { Server } from 'socket.io';
 
 const io = new Server(server, {
   cors: {
@@ -62,7 +62,6 @@ const io = new Server(server, {
 });
 
 // Middleware to attach io to the request object
-// This middleware is used to attach the io instance to every incoming request in your Express app. It's useful when you want to access the io instance (your Socket.IO server) in your route handlers.
 app.use((req, res, next) => {
   req.io = io;
   next();
@@ -96,16 +95,8 @@ app.use(notificationRouter);
 import suggestionRouter from './routes/suggestionsRouter.js';
 app.use(suggestionRouter);
 
-//  pass the io-middleware to your routes so that you can emit events from your routes.
-// This is specifically for making the io instance available in your routes. It's a good approach if you need to emit events from your routes.
-// app.use('/api/parent/suggestions', ioMiddleware, suggestionRouter);
-
 import savedWishesRouter from './routes/savedWishesRouter.js';
 app.use(savedWishesRouter);
-
-// app.get('*', (req, res) => {
-//   res.sendFile(path.resolve('../client/dist/index.html'));
-// });
 
 let initializationAttempts = 0;
 

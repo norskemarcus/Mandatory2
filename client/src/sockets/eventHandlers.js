@@ -4,7 +4,7 @@ export function initializeSocketListeners(addNotification, addSuggestion) {
   socket.on('new-wish', async data => {
     addNotification({
       message: `${data.childUsername} added a new wish: ${data.wish.title}`,
-      link: `/wishlist`, // TODO: refactor to link directly to user
+      link: `/wishlist`, 
       color: 'default',
       id: data.notificationId,
     });

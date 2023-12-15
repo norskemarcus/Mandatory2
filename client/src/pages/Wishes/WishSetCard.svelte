@@ -8,7 +8,7 @@
   export let selectedChild = null;
   export let onSave = () => {};
   export let onDelete = () => {};
-  export let handleToggleWish = () => {}; //  default function = optional prop
+  export let handleToggleWish = () => {};
 </script>
 
 <article class="wish-set-card">
@@ -48,7 +48,7 @@
   .wish-image {
     max-height: 100%;
     max-width: 100%;
-    object-fit: cover; /* Cover the container without distorting the image */
+    object-fit: cover; 
   }
 
   .placeholder-image {
