@@ -1,6 +1,6 @@
 export async function fetchSuggestions(childId) {
   try {
-    const response = await fetch(`http://localhost:8080/api/child/suggestions/${childId}`, { credentials: 'include' });
+    const response = await fetch(`/api/child/suggestions/${childId}`, { credentials: 'include' });
     if (!response.ok) {
       throw new Error('Failed to fetch suggestions');
     }
@@ -15,7 +15,7 @@ export async function fetchSuggestions(childId) {
 
 export async function handleSuggestionResponse(suggestionId, response) {
   try {
-    const result = await fetch('http://localhost:8080/api/child/respond-to-suggestion', {
+    const result = await fetch('/api/child/respond-to-suggestion', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

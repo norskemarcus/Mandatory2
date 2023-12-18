@@ -23,32 +23,6 @@ body.dark-mode {
   --bs-navbar-color: #fff;
 }
 
-body {
-  margin: 0;
-  background-color: var(--background-color);
-  color: var(--text-color);
- 
-}
-
-
-.form-check-input {
-  background-color: #eee !important; 
-}
-
-.form-check-input:checked {
-  background-color: grey !important; 
-}
-
-.navbar {
-  background-color: var(--navbar-color);
-}
-
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
 
 nav a {
   margin-right: 20px; 
@@ -65,21 +39,10 @@ nav a.login {
 }
 
 .mainRouter {
-  max-width: 90%;
+  max-width: 100%;
   padding: 1em;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
 
 button:hover {
   border-color: black;
@@ -89,24 +52,6 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
-
-
-:global(body.dark-mode) .navbar {
-  background-color: var(--bs-navbar-bg) !important;
-  color: var(--bs-navbar-color) !important;
-}
-
-:global(body.dark-mode) .navbar-dark .navbar-nav .nav-link {
-  color: var(--bs-navbar-dark-color) !important;
-}
-:global(body.dark-mode) .navbar-dark .navbar-nav .nav-link:hover {
-  color: var(--bs-navbar-dark-hover-color) !important;
-}
-
-:global(body.dark-mode) .form-check-input:checked {
-  background-color: #ccc !important; 
-}
-
 
 
 @media (max-width: 1150px) {
@@ -124,7 +69,7 @@ nav a  {
   margin-right: 1rem;
 }
 
-}
+} 
 
 
 @media (prefers-color-scheme: light) {

@@ -1,12 +1,15 @@
 <script>
   import { onMount, createEventDispatcher } from 'svelte';
   const dispatch = createEventDispatcher();
+  import { user } from '../../stores/globalStore.js';
 
   let children = [];
   export let selectedChild = null;
 
   onMount(async () => {
-    await fetchChildren();
+    if ($user && $user.role === 'Parent') {
+      await fetchChildren();
+    }
   });
 
   function handleChange() {
@@ -15,7 +18,7 @@
 
   async function fetchChildren() {
     try {
-      const response = await fetch('http://localhost:8080/api/parent/family-children', {
+      const response = await fetch('/api/parent/family-children', {
         credentials: 'include',
       });
 

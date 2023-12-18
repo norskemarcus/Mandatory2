@@ -1,35 +1,13 @@
 <script>
-  import { onMount } from 'svelte';
   import ChildDropdown from './ChildDropdown.svelte';
-  import { fetchUser } from '../../user/userApi.js';
   import { user } from '../../stores/globalStore.js';
-
   let savedWishes = [];
-  let loggedIn = false;
-  let userRole = '';
   let selectedChild = null;
-  let authenticationChecked = false;
-
-  async function checkAuthentication() {
-    if (!authenticationChecked) {
-      const fetchedUser = await fetchUser();
-      if (fetchedUser) {
-        user.set(fetchedUser);
-        userRole = fetchedUser.role;
-        loggedIn = true;
-      }
-      authenticationChecked = true;
-    }
-  }
-
-  onMount(() => {
-    checkAuthentication();
-  });
 
   async function fetchSavedWishes(childId) {
-    if (childId) {
+    if (childId && $user && $user.role === 'Parent') {
       try {
-        const response = await fetch(`http://localhost:8080/api/parent/saved-wishes/${childId}`, {
+        const response = await fetch(`/api/parent/saved-wishes/${childId}`, {
           credentials: 'include',
         });
         if (response.ok) {
@@ -67,7 +45,7 @@
     });
 
     try {
-      const response = await fetch(`http://localhost:8080/api/parent/saved-wishes/${childId}`, {
+      const response = await fetch(`/api/parent/saved-wishes/${childId}`, {
         method: 'PATCH',
         body: JSON.stringify({ wishId: wish.wish_id, bought: newBoughtStatus }),
         headers: {
@@ -103,33 +81,6 @@
     {/if}
   {/each}
 
-  <!-- <table>
-    <thead>
-      <tr>
-        <th>Wish</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each savedWishes as wish (wish.id)}
-        {#if wish.id !== undefined}
-          <tr>
-            <td>
-              <a class={wish.bought ? 'bought' : ''} href={wish.url} target="_blank" rel="noopener noreferrer">
-                {wish.title}
-              </a>
-            </td>
-            <td class="button-cell">
-              <button on:click={() => toggleBoughtStatus(wish, selectedChild.id)} class={wish.bought ? 'bought' : ''}>
-                {wish.bought ? 'Bought' : 'Buy'}
-              </button>
-            </td>
-          </tr>
-        {/if}
-      {/each}
-    </tbody>
-  </table> -->
-
   {#if savedWishes.length === 0}
     <p>No wishes are saved for this child.</p>
   {/if}
@@ -137,7 +88,7 @@
 
 <style>
   .parent-dashboard {
-    max-width: 800px;
+    max-width: 90%;
     margin: 0 auto;
     padding: 1rem;
   }
@@ -151,7 +102,7 @@
   }
 
   a {
-    color: #007bff;
+    color: black;
     text-decoration: none;
     flex-grow: 1;
   }
@@ -194,66 +145,23 @@
       margin-top: 5px;
     }
   }
-  /* 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    color: var(--text-color);
+
+  :global(body.dark-mode) .parent-dashboard {
+    background-color: #333;
+    color: #ccc;
   }
 
-  th,
-  td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: left;
-    background-color: var(--table-bg-color);
+  :global(body.dark-mode) a,
+  :global(body.dark-mode) a.bought {
+    color: #ccc;
   }
 
-  .button-cell {
-    text-align: center;
+  :global(body.dark-mode) button,
+  :global(body.dark-mode) .bought-button {
+    background-color: #6c757d;
   }
 
-  a {
-    color: var(--link-color);
-  }
-
-  th {
-    background-color: var(--table-header-bg-color);
-  }
-
-  button {
-    background-color: rgb(89, 226, 89);
-    padding: 10px 15px;
-    width: 100px;
-    height: 50px;
-    text-align: center;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    line-height: 20px;
-  }
-
-  a.bought {
-    color: #888;
-    text-decoration: line-through;
-  }
-
-  button.bought {
+  :global(body.dark-mode) hr {
     background-color: #ccc;
-    cursor: not-allowed;
   }
-
-  @media (max-width: 768px) {
-    button {
-      padding: 5px 10px;
-      font-size: 0.8em;
-      width: 70px;
-      height: 40px;
-    }
-  } */
 </style>

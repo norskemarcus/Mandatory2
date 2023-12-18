@@ -12,7 +12,7 @@
       toast.error('Please fill in at least a title.');
     } else {
       try {
-        const response = await fetch('http://localhost:8080/api/form/wishes', {
+        const response = await fetch('/api/form/wishes', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

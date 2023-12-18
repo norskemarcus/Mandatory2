@@ -44,7 +44,7 @@
 
   async function fetchSavedWishes(childId) {
     try {
-      const response = await fetch(`http://localhost:8080/api/parent/saved-wishes/${childId}`, {
+      const response = await fetch(`/api/parent/saved-wishes/${childId}`, {
         credentials: 'include',
       });
 
@@ -70,7 +70,7 @@
 
   async function fetchWishesForChild(childId) {
     try {
-      const endpoint = `http://localhost:8080/api/parent/child-wishlist/${childId}`;
+      const endpoint = `/api/parent/child-wishlist/${childId}`;
 
       const response = await fetch(endpoint, {
         credentials: 'include',
@@ -98,7 +98,7 @@
 
   async function saveSelectedWish(childId, wishId) {
     try {
-      const response = await fetch(`http://localhost:8080/api/parent/saved-wishes/${childId}`, {
+      const response = await fetch(`/api/parent/saved-wishes/${childId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -123,7 +123,7 @@
 
   async function unsaveWish(childId, wishId) {
     try {
-      const response = await fetch(`http://localhost:8080/api/parent/unsave-wish/${childId}`, {
+      const response = await fetch(`/api/parent/unsave-wish/${childId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

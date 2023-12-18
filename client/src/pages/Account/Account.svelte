@@ -4,22 +4,16 @@
   import { navigate } from 'svelte-navigator';
   import { onMount } from 'svelte';
 
-  let loggedIn = false;
-  let userRole = '';
   let parentUsername = '';
   let children = [];
 
-  $: {
-    if ($user) {
-      userRole = $user.role;
-      loggedIn = true;
-      if (userRole === 'Parent') {
-        fetchChildrenData();
-      } else if (userRole === 'Child') {
-        fetchParentData();
-      }
+  onMount(async () => {
+    if ($user && $user.role === 'Parent') {
+      await fetchChildrenData();
+    } else if ($user.role === 'Child') {
+      await fetchParentData();
     }
-  }
+  });
 
   async function fetchChildrenData() {
     try {
@@ -55,7 +49,7 @@
 
   async function deleteUserAccount() {
     let confirmDeleteMessage = 'Are you sure you want to delete your account? This action cannot be undone.';
-    if (userRole === 'Parent') {
+    if ($user.role === 'Parent') {
       confirmDeleteMessage += " Deleting your account will affect your children's access to the app.";
     }
 
@@ -70,21 +64,21 @@
 <div class="account-container">
   <h1 class="account-header">Your Account</h1>
   <p class="account-info">Username: {$user.username}</p>
-  <p class="account-info">Role: {userRole}</p>
-  {#if userRole === 'Parent'}
+  <p class="account-info">Role: {$user.role}</p>
+  {#if $user.role === 'Parent'}
     <ul class="children-list">
       {#each children as child}
         <li class="children-item">
           {child.username}
-          <button class="delete-child-btn" on:click={() => handleDeleteChild(child.id)}>Delete Child</button>
+          <button class="delete-child-btn" on:click={() => handleDeleteChild(child.id)}>Delete</button>
         </li>
       {/each}
     </ul>
-  {:else if userRole === 'Child'}
+  {:else if $user.role === 'Child'}
     <p class="account-info">Parent: {parentUsername}</p>
   {/if}
   <button class="delete-account-btn" on:click={deleteUserAccount}>Delete Account</button>
-  {#if userRole === 'Parent'}
+  {#if $user.role === 'Parent'}
     <p class="warning-message">Deleting your account will affect your children's access to the app.</p>
   {/if}
 </div>

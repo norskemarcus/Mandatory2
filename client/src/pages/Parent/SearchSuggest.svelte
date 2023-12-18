@@ -64,7 +64,7 @@
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/parent/suggestions', {
+      const response = await fetch('/api/parent/suggestions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

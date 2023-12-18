@@ -48,7 +48,7 @@
   .wish-image {
     max-height: 100%;
     max-width: 100%;
-    object-fit: cover; 
+    object-fit: cover;
   }
 
   .placeholder-image {
@@ -56,5 +56,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    .wish-image-container {
+      height: 100px;
+    }
   }
 </style>

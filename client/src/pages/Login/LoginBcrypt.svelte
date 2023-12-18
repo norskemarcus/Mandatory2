@@ -13,7 +13,7 @@
 
   async function login() {
     try {
-      const response = await fetch('http://localhost:8080/auth/login', {
+      const response = await fetch('/auth/login', {
         method: 'POST',
         headers: {
           Accept: 'application/json',

@@ -1,26 +1,20 @@
 <script>
-  import { onMount } from 'svelte';
   import WishSetCard from '../Wishes/WishSetCard.svelte';
-  import { fetchUser } from '../../user/userApi.js';
   import { user } from '../../stores/globalStore.js';
   import { deleteWish } from '../../services/wishService.js';
   import { toast, Toaster } from 'svelte-french-toast';
   import 'iconify-icon';
+  import { onMount } from 'svelte';
 
   let wishes = [];
   let toBeDeleted = null;
   let dialogRef;
-  let loggedIn = false;
   let userRole = '';
   let selectedWishId = null;
 
   onMount(async () => {
-    const fetchedUser = await fetchUser();
-    if (fetchedUser) {
-      user.set(fetchedUser);
-      userRole = fetchedUser.role;
-      loggedIn = true;
-      fetchWishes();
+    if ($user) {
+      await fetchWishes();
     }
   });
 
@@ -56,7 +50,7 @@
 
   async function fetchWishes() {
     try {
-      const endpoint = 'http://localhost:8080/api/wishes';
+      const endpoint = '/api/wishes';
 
       const response = await fetch(endpoint, {
         credentials: 'include',

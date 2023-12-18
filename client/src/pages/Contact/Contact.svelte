@@ -11,7 +11,7 @@
       toast.error('Please fill in name, mail and message');
     } else {
       try {
-        const response = await fetch('http://localhost:8080/api/contact', {
+        const response = await fetch('/api/contact', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

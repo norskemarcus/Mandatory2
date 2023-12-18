@@ -68,7 +68,6 @@
     {/if}
     {#if userRole === 'Child'}
       <button on:click={handleDelete} class={buttonClass}>
-        <!-- https://icon-sets.iconify.design/arcticons/trashcan/ -->
         <FaTrash class="trash-icon" />
       </button>
     {/if}
@@ -148,18 +147,7 @@
   }
 
   :global(body.dark-mode) .wish-set-card {
-    --card-bg-color: #333;
-    --card-border-color: #555;
-  }
-
-  /* 
-  :global(body.dark-mode) h2 {
+    color: #cac4c4;
     border-color: #555;
   }
-
-  :global(body.dark-mode) .missing-title,
-  :global(body.dark-mode) .missing-description,
-  :global(body.dark-mode) .missing-price {
-    color: #666;
-  } */
 </style>

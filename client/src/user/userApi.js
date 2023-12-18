@@ -1,6 +1,6 @@
 export async function fetchUser() {
   try {
-    const response = await fetch('http://localhost:8080/auth/check-login', {
+    const response = await fetch('/auth/check-login', {
       credentials: 'include',
     });
 
@@ -18,7 +18,7 @@ export async function fetchUser() {
 
 export async function fetchParentUsername(parentId) {
   try {
-    const response = await fetch(`http://localhost:8080/api/children/${parentId}`, {
+    const response = await fetch(`/api/children/${parentId}`, {
       credentials: 'include',
     });
 
@@ -36,7 +36,7 @@ export async function fetchParentUsername(parentId) {
 
 export async function fetchChildren() {
   try {
-    const response = await fetch(`http://localhost:8080/api/children`, {
+    const response = await fetch(`/api/children`, {
       credentials: 'include',
     });
 
@@ -55,7 +55,7 @@ export async function fetchChildren() {
 
 export async function deleteChildAccount(childId) {
   try {
-    const response = await fetch(`http://localhost:8080/api/children/${childId}`, {
+    const response = await fetch(`/api/children/${childId}`, {
       method: 'DELETE',
       credentials: 'include',
     });
@@ -75,7 +75,7 @@ export async function deleteChildAccount(childId) {
 
 export async function deleteAccount() {
   try {
-    const response = await fetch(`http://localhost:8080/api/users`, {
+    const response = await fetch(`/api/users`, {
       method: 'DELETE',
       credentials: 'include',
     });

@@ -14,7 +14,7 @@
       return;
     }
     try {
-      const response = await fetch('http://localhost:8080/auth/signup/child', {
+      const response = await fetch('/auth/signup/child', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

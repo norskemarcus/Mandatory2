@@ -15,8 +15,6 @@
   import { toast, Toaster } from 'svelte-french-toast';
   let isOpen = false;
   import { useNavigate } from 'svelte-navigator';
-  import { onMount } from 'svelte';
-  import { fetchUser } from '../user/userApi.js';
 
   const navigate = useNavigate();
 
@@ -64,7 +62,7 @@
 
   async function handleLogout() {
     try {
-      const response = await fetch('http://localhost:8080/auth/logout', {
+      const response = await fetch('/auth/logout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -250,8 +248,7 @@
   }
 
   .house-icon {
-    /* color: rgb(31, 13, 13); */
-    color: var(--icon-color, rgb(31, 13, 13));
+    color: rgb(31, 13, 13);
     font-size: 24px;
   }
 
@@ -265,8 +262,8 @@
     align-items: center;
     min-width: 800px;
 
-    background-color: var(--notification-bg-color, #fff);
-    color: var(--notification-text-color, #000);
+    background-color: #ffffff;
+    color: #000;
   }
 
   .notification-item.alert {
@@ -278,7 +275,7 @@
     border: none;
     background: none;
     cursor: pointer;
-    color: var(--dismiss-btn-color, #333);
+    color: #333;
     margin-left: 10px;
   }
 
@@ -312,12 +309,17 @@
     align-self: center;
   }
 
-  /* Define additional dark-mode specific variables */
-  .dark-mode {
-    --icon-color: #ccc;
-    --notification-bg-color: #242424;
-    --notification-text-color: #fff;
-    --dismiss-btn-color: #fff;
+  :global(body.dark-mode) .house-icon {
+    color: #ccc;
+  }
+
+  :global(body.dark-mode) .notification-item {
+    background-color: #242424;
+    color: #fff;
+  }
+
+  :global(body.dark-mode) .dismiss-btn {
+    color: #fff;
   }
 
   @media (max-width: 1150px) {
