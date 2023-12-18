@@ -76,6 +76,9 @@
     width: 100%;
     padding: 10px;
     margin-top: 5px;
+    color: var(--text-color);
+    background-color: var(--input-bg-color);
+    border-color: var(--input-border-color);
   }
 
   button {
@@ -100,5 +103,10 @@
     max-width: 15em;
     min-width: auto;
     margin: 0 auto;
+  }
+
+  :global(body.dark-mode) input {
+    background-color: lightgrey;
+    color: black;
   }
 </style>

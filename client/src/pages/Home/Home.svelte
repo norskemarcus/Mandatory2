@@ -1,5 +1,6 @@
 <script>
   import familyWishlistImage from '../../assets/ai_frontpagephoto.png';
+  import { Link } from 'svelte-navigator';
 </script>
 
 <main>
@@ -8,7 +9,8 @@
       <h1>Welcome to the Wishing Wand</h1>
 
       <p>Creating and sharing wishlists has never been easier. Invite your family, add wishes, and see what your loved ones are dreaming of — all in one place. Start today and make gift-giving special and straightforward.</p>
-      <a href="/signup" class="btn-signup">Get Started</a>
+
+      <Link to="/signup" class="btn-signup">Get Started</Link>
     </div>
     <div class="intro-image">
       <img src={familyWishlistImage} alt="Family using WishLink app" />
@@ -41,14 +43,6 @@
     font-size: 1.2rem;
     line-height: 1.6;
     margin-bottom: 2rem;
-  }
-
-  .btn-signup {
-    padding: 10px 20px;
-    background-color: #5f26a8;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
   }
 
   .intro-image {

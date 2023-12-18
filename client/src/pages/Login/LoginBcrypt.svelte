@@ -102,4 +102,9 @@
   .button-container {
     align-items: center;
   }
+
+  :global(body.dark-mode) input {
+    background-color: lightgrey;
+    color: black;
+  }
 </style>

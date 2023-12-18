@@ -67,12 +67,13 @@
     padding: 1rem;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    background: white;
+    background: var(--main-bg-color);
+    color: var(--text-color);
   }
 
-  h1 {
+  h2 {
     text-align: center;
-    color: #333;
+    color: var(--header-text-color);
   }
 
   form {
@@ -123,16 +124,31 @@
     margin-top: 1rem;
   }
 
-  a {
-    color: #007bff;
-    text-decoration: none;
-  }
-
-  a:hover {
-    text-decoration: underline;
-  }
-
   .dark-text {
+    color: var(--dark-text-color);
+  }
+
+  :global(body.dark-mode) input[type='text'],
+  :global(body.dark-mode) input[type='password'] {
+    background-color: #444;
+    color: #ccc;
+    border-color: #555;
+  }
+
+  :global(body.dark-mode) label {
+    color: #ccc;
+  }
+
+  :global(body.dark-mode) .dark-text {
+    color: #ccc;
+  }
+
+  :global(body.dark-mode) button {
     color: #fff;
+  }
+
+  :global(body.dark-mode) button:disabled {
+    background-color: #555;
+    color: #777;
   }
 </style>

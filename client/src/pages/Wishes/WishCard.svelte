@@ -86,6 +86,11 @@
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
     padding: 1em;
     margin: 0.7em;
+
+    background-color: var(--card-bg-color);
+    color: var(--text-color);
+    border-color: var(--card-border-color);
+
     transition:
       background-color 0.3s,
       border-color 0.3s,
@@ -142,6 +147,12 @@
     color: rgb(184, 117, 117);
   }
 
+  :global(body.dark-mode) .wish-set-card {
+    --card-bg-color: #333;
+    --card-border-color: #555;
+  }
+
+  /* 
   :global(body.dark-mode) h2 {
     border-color: #555;
   }
@@ -150,5 +161,5 @@
   :global(body.dark-mode) .missing-description,
   :global(body.dark-mode) .missing-price {
     color: #666;
-  }
+  } */
 </style>

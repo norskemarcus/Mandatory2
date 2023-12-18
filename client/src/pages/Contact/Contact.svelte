@@ -46,7 +46,7 @@
       <input id="subject" type="subject" name="subject" bind:value={subject} />
 
       <label for="message">Message</label>
-      <textarea class="message" id="message" name="message" cols="100" rows="10" bind:value={message} placeholder="I wonder why..." />
+      <textarea class="message" id="message" name="message" cols="100" rows="10" bind:value={message} placeholder="Write your question here" />
 
       <div class="profile-buttons">
         <button type="submit">Send</button>
@@ -85,6 +85,8 @@
     width: 100%;
     padding: 10px;
     margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
   }
 
   button {
@@ -94,10 +96,34 @@
     margin-top: 1em;
     border: none;
     cursor: pointer;
+    border-radius: 5px;
   }
 
   .message {
     width: 100%;
     margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+  }
+
+  :global(body.dark-mode) .contact-container {
+    color: #ccc;
+  }
+
+  :global(body.dark-mode) input,
+  :global(body.dark-mode) .message {
+    background-color: #333;
+    border-color: #555;
+    color: #ddd;
+  }
+
+  :global(body.dark-mode) button {
+    background-color: #444;
+    color: #fff;
+  }
+
+  :global(body.dark-mode) button:hover {
+    background-color: #555;
   }
 </style>

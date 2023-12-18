@@ -145,7 +145,7 @@
 <style>
   .small-dropdown {
     width: 200px;
-    font-size: 0.8em;
+    font-size: 1em;
   }
 
   .search-form {
@@ -265,7 +265,35 @@
     background-color: #0056b3;
   }
 
+  :global(body.dark-mode) .search-form {
+    background-color: #444;
+  }
+
+  :global(body.dark-mode) .search-input {
+    background-color: #444;
+    color: #ccc;
+  }
+
   :global(body.dark-mode) .search-result-image-container {
-    background-color: #000;
+    background-color: #444;
+  }
+
+  :global(body.dark-mode) .search-result-card {
+    border-color: #444;
+    background-color: #333;
+  }
+
+  :global(body.dark-mode) .search-result-link,
+  :global(body.dark-mode) .search-result-title,
+  :global(body.dark-mode) .search-result-price {
+    color: #ccc;
+  }
+
+  :global(body.dark-mode) .save-button {
+    background-color: #6c757d;
+  }
+
+  :global(body.dark-mode) .save-button:hover {
+    background-color: #5a6268;
   }
 </style>

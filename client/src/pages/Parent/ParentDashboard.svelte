@@ -89,7 +89,21 @@
 
   <ChildDropdown bind:selectedChild on:childSelected={handleChildSelected} />
 
-  <table>
+  {#each savedWishes as wish (wish.id)}
+    {#if wish.id !== undefined}
+      <div class="wish-item">
+        <a class={wish.bought ? 'bought' : ''} href={wish.url} target="_blank" rel="noopener noreferrer">
+          {wish.title}
+        </a>
+        <button on:click={() => toggleBoughtStatus(wish, selectedChild.id)} class={wish.bought ? 'bought-button' : 'buy-button'}>
+          {wish.bought ? 'Bought' : 'Buy'}
+        </button>
+      </div>
+      <hr />
+    {/if}
+  {/each}
+
+  <!-- <table>
     <thead>
       <tr>
         <th>Wish</th>
@@ -105,7 +119,7 @@
                 {wish.title}
               </a>
             </td>
-            <td>
+            <td class="button-cell">
               <button on:click={() => toggleBoughtStatus(wish, selectedChild.id)} class={wish.bought ? 'bought' : ''}>
                 {wish.bought ? 'Bought' : 'Buy'}
               </button>
@@ -114,7 +128,7 @@
         {/if}
       {/each}
     </tbody>
-  </table>
+  </table> -->
 
   {#if savedWishes.length === 0}
     <p>No wishes are saved for this child.</p>
@@ -122,10 +136,70 @@
 </div>
 
 <style>
+  .parent-dashboard {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  .wish-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 0.2rem;
+  }
+
+  a {
+    color: #007bff;
+    text-decoration: none;
+    flex-grow: 1;
+  }
+
+  a.bought,
+  .bought-button {
+    color: #888;
+    text-decoration: line-through;
+  }
+
+  button {
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    width: 80px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .bought-button {
+    background-color: #ccc;
+  }
+
+  hr {
+    border: none;
+    height: 1px;
+    background-color: #ccc;
+    margin: 10px 0;
+  }
+
+  @media (max-width: 768px) {
+    .wish-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    button {
+      margin-top: 5px;
+    }
+  }
+  /* 
   table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    color: var(--text-color);
   }
 
   th,
@@ -133,18 +207,35 @@
     border: 1px solid #ccc;
     padding: 8px;
     text-align: left;
+    background-color: var(--table-bg-color);
+  }
+
+  .button-cell {
+    text-align: center;
   }
 
   a {
-    color: green;
+    color: var(--link-color);
   }
 
   th {
-    background-color: #f2f2f2;
+    background-color: var(--table-header-bg-color);
   }
 
   button {
     background-color: rgb(89, 226, 89);
+    padding: 10px 15px;
+    width: 100px;
+    height: 50px;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    line-height: 20px;
   }
 
   a.bought {
@@ -156,4 +247,13 @@
     background-color: #ccc;
     cursor: not-allowed;
   }
+
+  @media (max-width: 768px) {
+    button {
+      padding: 5px 10px;
+      font-size: 0.8em;
+      width: 70px;
+      height: 40px;
+    }
+  } */
 </style>

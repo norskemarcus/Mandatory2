@@ -2,6 +2,7 @@
   import { fetchParentUsername, fetchChildren, deleteChildAccount } from '../../user/userApi.js';
   import { user } from '../../stores/globalStore.js';
   import { navigate } from 'svelte-navigator';
+  import { onMount } from 'svelte';
 
   let loggedIn = false;
   let userRole = '';
@@ -159,6 +160,38 @@
     color: #d60f23;
     font-size: 0.9rem;
     margin-top: 10px;
+  }
+
+  :global(body.dark-mode) .account-container {
+    background: #2a2b2d;
+    color: #f7f7f7;
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+  }
+
+  :global(body.dark-mode) .account-header,
+  :global(body.dark-mode) .account-info {
+    color: #f7f7f7;
+  }
+
+  :global(body.dark-mode) .delete-child-btn,
+  :global(body.dark-mode) .delete-account-btn {
+    background-color: #a60f23;
+    color: #fff;
+  }
+
+  :global(body.dark-mode) .children-item {
+    background: #3b3c3e;
+    border: 1px solid #444;
+    color: #f7f7f7;
+  }
+
+  :global(body.dark-mode) .warning-message {
+    color: #ffb3b3;
+  }
+
+  :global(body.dark-mode) .delete-account-btn:hover,
+  :global(body.dark-mode) .delete-child-btn:hover {
+    background-color: #d84251;
   }
 
   @media (max-width: 768px) {

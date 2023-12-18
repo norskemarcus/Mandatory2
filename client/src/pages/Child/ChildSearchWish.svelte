@@ -45,7 +45,6 @@
     }
   }
 
-
   async function saveToWishlist(item, index) {
     try {
       const checkResponse = await fetch(`/api/wishes/check?url=${encodeURIComponent(item.link)}`);
@@ -239,7 +238,7 @@
   }
 
   .save-button {
-    background-color: green; 
+    background-color: green;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -265,5 +264,33 @@
 
   :global(body.dark-mode) .search-result-image-container {
     background-color: #000;
+  }
+
+  :global(body.dark-mode) .search-form {
+    background-color: #444;
+  }
+
+  :global(body.dark-mode) .search-input {
+    background-color: #444;
+    color: #ccc;
+  }
+
+  :global(body.dark-mode) .search-result-image-container {
+    background-color: #444;
+  }
+
+  :global(body.dark-mode) .search-result-card {
+    border-color: #444;
+    background-color: #333;
+  }
+
+  :global(body.dark-mode) .search-result-link,
+  :global(body.dark-mode) .search-result-title,
+  :global(body.dark-mode) .search-result-price {
+    color: #ccc;
+  }
+
+  :global(body.dark-mode) .save-button:hover {
+    background-color: #5a6268;
   }
 </style>

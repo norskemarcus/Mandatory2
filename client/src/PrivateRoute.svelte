@@ -1,31 +1,4 @@
-<!-- <script>
-  import { Route } from 'svelte-navigator';
-  import { user } from './store/stores.js';
 
-  export let when;
-  export let component;
-  export let { ...restProps } = {};
-
-  // Check if the user is authenticated
-  let authenticated = false;
-
-  // Subscribe to the user store to check if the user is authenticated
-  $: {
-    const userValue = $user;
-    authenticated = userValue !== null; // Modify this condition based on your user store structure
-  }
-</script>
-
- Check if the user is authenticated; if not, redirect to a login page 
-{#if authenticated}
-  {#if when === null || (typeof when === 'function' && when(user))}
-    <Route {restProps} {component} />
-  {:else}
-    <Route path="/login" />
-  {/if}
-{:else}
-  <p>You must be logged in to access this page.</p>
-{/if} -->
 <script>
   import { Route } from 'svelte-navigator';
   import PrivateRouteGuard from './PrivateRouteGuard.svelte';

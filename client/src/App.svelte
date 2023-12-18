@@ -15,7 +15,6 @@
   import { isDarkMode } from './stores/globalStore.js';
   import { onMount } from 'svelte';
   import ParentDashboard from './pages/Parent/ParentDashboard.svelte';
-  import CookiePolicy from './pages/Home/CookiePolicy.svelte';
   import ChildAccounts from './pages/Parent/ChildAccounts.svelte';
   import ChildWishList from './pages/Child/ChildWishList.svelte';
   import Account from './pages/Account/Account.svelte';
@@ -79,7 +78,6 @@
 
     <Route path="/login" on:click={clearMessage} component={Login} />
     <Route path="/signup" component={Signup} />
-    <Route path="/cookie-policy" component={CookiePolicy} />
   </div>
 
   <Footer />
@@ -89,6 +87,7 @@
   .mainRouter {
     display: flex;
     flex-direction: column;
+    margin-left: 2rem;
     min-height: 77vh;
   }
 </style>
