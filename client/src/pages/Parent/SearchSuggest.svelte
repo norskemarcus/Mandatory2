@@ -1,34 +1,12 @@
 <script>
-  import { onMount } from 'svelte';
   import ChildDropdown from './ChildDropdown.svelte';
-  import { fetchUser } from '../../user/userApi.js';
   import { user } from '../../stores/globalStore.js';
   import { toast, Toaster } from 'svelte-french-toast';
 
-  let loggedIn = false;
-  let userRole = '';
   let selectedChild = null;
-  let authenticationChecked = false;
-
   let searchQuery = '';
   let searchResults = [];
   let isLoading = false;
-
-  async function checkAuthentication() {
-    if (!authenticationChecked) {
-      const fetchedUser = await fetchUser();
-      if (fetchedUser) {
-        user.set(fetchedUser);
-        userRole = fetchedUser.role;
-        loggedIn = true;
-      }
-      authenticationChecked = true;
-    }
-  }
-
-  onMount(() => {
-    checkAuthentication();
-  });
 
   function onChildSelected(event) {
     selectedChild = event.detail;
@@ -37,7 +15,7 @@
   async function performSearch() {
     searchResults = [];
 
-    if (searchQuery.trim()) {
+    if (searchQuery.trim() && $user && $user.role === 'Parent') {
       isLoading = true;
       try {
         const response = await fetch(`/api/search?query=${encodeURIComponent(searchQuery)}`);
@@ -280,7 +258,7 @@
 
   :global(body.dark-mode) .search-result-card {
     border-color: #444;
-    background-color: #333;
+    background-color: #444;
   }
 
   :global(body.dark-mode) .search-result-link,
@@ -289,11 +267,12 @@
     color: #ccc;
   }
 
-  :global(body.dark-mode) .save-button {
-    background-color: #6c757d;
-  }
-
   :global(body.dark-mode) .save-button:hover {
     background-color: #5a6268;
+  }
+
+  :global(body.dark-mode) .placeholder-image {
+    background-color: #444;
+    color: #ccc;
   }
 </style>

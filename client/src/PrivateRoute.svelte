@@ -1,4 +1,3 @@
-
 <script>
   import { Route } from 'svelte-navigator';
   import PrivateRouteGuard from './PrivateRouteGuard.svelte';

@@ -1,6 +1,6 @@
 export async function deleteWish(wishId) {
   try {
-    const response = await fetch(`/api/wishes/${wishId}`, {
+    const response = await fetch(`http://localhost:8080/api/wishes/${wishId}`, {
       method: 'DELETE',
       credentials: 'include',
     });

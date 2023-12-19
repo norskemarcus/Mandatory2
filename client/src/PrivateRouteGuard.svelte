@@ -2,15 +2,8 @@
   import { useNavigate, useLocation } from 'svelte-navigator';
   import { user } from './stores/globalStore.js';
 
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  $: if (!$user) {
-    navigate('/login', {
-      state: { from: $location.pathname },
-      replace: true,
-    });
-  }
+  // const navigate = useNavigate();
+  // const location = useLocation();
 </script>
 
 {#if $user}

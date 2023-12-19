@@ -4,24 +4,56 @@
   import 'iconify-icon';
   import { user } from '../stores/globalStore.js';
   import { isDarkMode } from '../stores/globalStore.js';
-  import { FormGroup, Input } from 'sveltestrap';
+  import { Input } from 'sveltestrap';
   import { notifications, addNotification } from '../stores/notificationStore.js';
   import { initializeSocketListeners } from '../sockets/eventHandlers.js';
   import { fetchSuggestions } from '../services/suggestionService.js';
   import { deleteNotification, fetchNotifications } from '../services/notificationService.js';
   import socket from '../sockets/socket.js';
+  import { useNavigate } from 'svelte-navigator';
   import { suggestions, addSuggestion, removeSuggestion } from '../stores/suggestionStore';
   import { handleSuggestionResponse } from '../services/suggestionService.js';
   import { toast, Toaster } from 'svelte-french-toast';
-  let isOpen = false;
-  import { useNavigate } from 'svelte-navigator';
+  import { onMount } from 'svelte';
+  // import { fetchUser } from '../user/userApi';
 
+  let isOpen = false;
   const navigate = useNavigate();
+
+  // onMount(async () => {
+  //   await checkUserLoginStatus();
+
+  //   if ($user) {
+  //     initializeSocketListeners(addNotification, addSuggestion);
+  //   }
+
+  //   if ($user && $user.role === 'Parent') {
+  //     fetchNotifications($user.id)
+  //       .then(fetchedNotifications => {
+  //         notifications.set(fetchedNotifications);
+  //       })
+  //       .catch(error => {
+  //         console.error('Error fetching notifications:', error);
+  //       });
+  //   }
+
+  //   if ($user && $user.role === 'Child') {
+  //     fetchSuggestions($user.id)
+  //       .then(fetchSuggestions => {
+  //         suggestions.set(fetchSuggestions);
+  //       })
+  //       .catch(error => {
+  //         console.error('Error fetching suggestions:', error);
+  //       });
+  //   }
+  // });
 
   $: if ($user) {
     initializeSocketListeners(addNotification, addSuggestion);
 
     if ($user && $user.role === 'Parent') {
+      console.log('I have logged in as parent');
+
       fetchNotifications($user.id)
         .then(fetchedNotifications => {
           notifications.set(fetchedNotifications);
@@ -41,6 +73,44 @@
         });
     }
   }
+
+  // async function checkUserLoginStatus() {
+  //   try {
+  //     const response = await fetchUser();
+
+  //     if (response) {
+  //       user.set(response);
+  //     } else {
+  //       user.set(null);
+  //     }
+  //   } catch (error) {
+  //     console.error('User login status check error:', error);
+  //   }
+  // }
+
+  // $: if ($user) {
+  //   initializeSocketListeners(addNotification, addSuggestion);
+
+  //   if ($user && $user.role === 'Parent') {
+  //     fetchNotifications($user.id)
+  //       .then(fetchedNotifications => {
+  //         notifications.set(fetchedNotifications);
+  //       })
+  //       .catch(error => {
+  //         console.error('Error fetching notifications:', error);
+  //       });
+  //   }
+
+  //   if ($user && $user.role === 'Child') {
+  //     fetchSuggestions($user.id)
+  //       .then(fetchSuggestions => {
+  //         suggestions.set(fetchSuggestions);
+  //       })
+  //       .catch(error => {
+  //         console.error('Error fetching suggestions:', error);
+  //       });
+  //   }
+  // }
 
   async function handleResponseToSuggestion(suggestionId, response) {
     const result = await handleSuggestionResponse(suggestionId, response);
@@ -83,6 +153,8 @@
   }
 
   async function handleDismissParent(notificationId) {
+    console.log('notificationId in handleDismissParent:', notificationId);
+
     try {
       await deleteNotification(notificationId);
       notifications.update(n => n.filter(notification => notification.id !== notificationId));

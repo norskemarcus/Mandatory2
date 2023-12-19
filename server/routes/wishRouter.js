@@ -219,11 +219,14 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
     const idResult = await query(lastIdSql);
     const notificationId = idResult[0]?.id;
 
+    console.log('notificationId in wishRouter:', notificationId);
+
     // Delete the wish
     const deleteWishSQL = 'DELETE FROM wishes WHERE id = ? AND user_id = ?';
     await query(deleteWishSQL, [wishId, userId]);
 
     await query('COMMIT');
+    console.log('COMMIT');
 
     if (childUsername) {
       const parentSocketId = getSocketIdByUserId(req.session.user.parent_id);
@@ -239,6 +242,7 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
     res.status(200).send({ message: 'Wish deleted successfully' });
   } catch (error) {
     await query('ROLLBACK');
+    console.log('ROLLBACK');
     console.error('Error during deleting wish:', error);
     res.status(500).send({ error: 'Failed to delete wish' });
   }

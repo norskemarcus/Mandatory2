@@ -1,6 +1,7 @@
 <script>
   import { FaHeart, FaTrash } from 'svelte-icons/fa';
   import { savedWishes } from '../../stores/savedWishesStore.js';
+  import { user } from '../../stores/globalStore.js';
 
   export let wish;
   export let userRole;
@@ -54,19 +55,21 @@
   </div>
 
   <div class="wish-price">
-    <slot name="price">
-      <span class="missing-price" />
-    </slot>
+    {#if wish.price != null}
+      <slot name="price">
+        <span>{wish.price}</span>
+      </slot>
+    {/if}
   </div>
 
   <div class="button-container">
-    {#if userRole === 'Parent'}
+    {#if $user.role === 'Parent'}
       <button on:click={saveWish} class={buttonClass}>
         <FaHeart class={'heart-icon ' + heartClass} />
         {isSaved ? 'Unsave' : 'Save'}
       </button>
     {/if}
-    {#if userRole === 'Child'}
+    {#if $user.role === 'Child'}
       <button on:click={handleDelete} class={buttonClass}>
         <FaTrash class="trash-icon" />
       </button>
@@ -85,10 +88,6 @@
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
     padding: 1em;
     margin: 0.7em;
-
-    background-color: var(--card-bg-color);
-    color: var(--text-color);
-    border-color: var(--card-border-color);
 
     transition:
       background-color 0.3s,
@@ -149,5 +148,6 @@
   :global(body.dark-mode) .wish-set-card {
     color: #cac4c4;
     border-color: #555;
+    background-color: #333;
   }
 </style>

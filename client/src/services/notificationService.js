@@ -1,6 +1,6 @@
 export async function fetchNotifications(parentId) {
   try {
-    const response = await fetch(`/notifications/${parentId}`);
+    const response = await fetch(`http://localhost:8080/notifications/${parentId}`);
     if (!response.ok) {
       throw new Error('Failed to fetch notifications');
     }
@@ -13,9 +13,8 @@ export async function fetchNotifications(parentId) {
   }
 }
 export async function deleteNotification(notificationId) {
-  console.log('notificationId in deleteNotification:', notificationId);
   try {
-    const response = await fetch(`/notifications/${notificationId}`, {
+    const response = await fetch(`http://localhost:8080/notifications/${notificationId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

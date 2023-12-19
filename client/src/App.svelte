@@ -13,7 +13,6 @@
   import Footer from './components/Footer.svelte';
   import Navbar from './components/Navbar.svelte';
   import { isDarkMode } from './stores/globalStore.js';
-  import { onMount } from 'svelte';
   import ParentDashboard from './pages/Parent/ParentDashboard.svelte';
   import ChildAccounts from './pages/Parent/ChildAccounts.svelte';
   import ChildWishList from './pages/Child/ChildWishList.svelte';
@@ -21,16 +20,13 @@
 
   let message = '';
 
-  onMount(() => {
-    const unsubscribe = isDarkMode.subscribe(value => {
-      if (value) {
-        document.body.classList.add('dark-mode');
-      } else {
-        document.body.classList.remove('dark-mode');
-      }
-    });
-    return unsubscribe;
-  });
+  $: {
+    if ($isDarkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }
 
   function clearMessage() {
     message = '';

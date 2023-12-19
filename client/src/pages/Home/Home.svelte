@@ -14,16 +14,22 @@
       <h1>Welcome back, {$user.username}!</h1>
       <p>See the latest from your family's wishlists, find new gift ideas, or manage your account.</p>
       <nav class="user-nav">
-        <Link to="/parentDashboard" class="btn-user">My saved wishes</Link>
-        <Link to="/wishlist" class="btn-user">Family Wishlist</Link>
+        <Link to="/parentDashboard" style="text-decoration: none; background-color: green; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: inline-block; margin-right: 10px;">My saved wishes</Link>
+        <Link to="/wishlist" style="text-decoration: none; background-color: green; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: inline-block;">Family Wishlist</Link>
+
+        <Link to="/account" style="text-decoration: none; background-color: green; color: white; padding: 10px 20px; border-radius: 5px;">My account</Link>
       </nav>
     </div>
   {:else if $user && $user.role === 'Child'}
     <div class="user-intro-container">
       <h1>Welcome back, {$user.username}!</h1>
-
+      <p>Take a look of your wishlist, find new gift ideas, or manage your account.</p>
       <nav class="user-nav">
         <Link to="/childsWishlist" style="text-decoration: none; background-color: green; color: white; padding: 10px 20px; border-radius: 5px;">My wishlist</Link>
+
+        <Link to="/search" style="text-decoration: none; background-color: green; color: white; padding: 10px 20px; border-radius: 5px;">Search & save</Link>
+
+        <Link to="/account" style="text-decoration: none; background-color: green; color: white; padding: 10px 20px; border-radius: 5px;">My account</Link>
       </nav>
     </div>
   {:else}
@@ -77,6 +83,9 @@
 
   .user-nav {
     margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
   @media (max-width: 768px) {

@@ -4,13 +4,15 @@ export function initializeSocketListeners(addNotification, addSuggestion) {
   socket.on('new-wish', async data => {
     addNotification({
       message: `${data.childUsername} added a new wish: ${data.wish.title}`,
-      link: `/wishlist`, 
+      link: `/wishlist`,
       color: 'default',
       id: data.notificationId,
     });
   });
 
   socket.on('wish-deleted', async data => {
+    console.log('wish-deleted socket on in eventHandlers.js');
+
     addNotification({
       message: `${data.childUsername} has deleted a wish: ${data.wish.title}`,
       link: `/wishlist`,
