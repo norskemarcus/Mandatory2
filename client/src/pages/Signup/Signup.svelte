@@ -88,6 +88,7 @@
     margin-top: 3em;
     border: none;
     cursor: pointer;
+    border-radius: 5px;
   }
 
   .form-container {

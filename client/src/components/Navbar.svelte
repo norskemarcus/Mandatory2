@@ -15,7 +15,7 @@
   import { handleSuggestionResponse } from '../services/suggestionService.js';
   import { toast, Toaster } from 'svelte-french-toast';
   import { onMount } from 'svelte';
-  // import { fetchUser } from '../user/userApi';
+  import { fetchUser } from '../user/userApi';
 
   let isOpen = false;
   const navigate = useNavigate();

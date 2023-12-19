@@ -261,13 +261,13 @@
   .save-button i.fas.fa-heart {
     margin-right: 8px;
   }
-
   :global(body.dark-mode) .search-result-image-container {
     background-color: #000;
   }
 
   :global(body.dark-mode) .search-form {
     background-color: #444;
+    box-shadow: 0 1px 6px 0 rgba(255, 255, 255, 0.28);
   }
 
   :global(body.dark-mode) .search-input {

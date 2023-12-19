@@ -73,101 +73,75 @@
 
 <style>
   .wish-set-form {
-    min-width: 50%;
-    max-width: 80%;
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 700px;
+    margin: 20px auto;
     padding: 20px;
-    background-color: var(--form-bg-color);
-    color: var(--text-color);
-    border-color: var(--form-border-color);
-
+    background-color: #fff;
+    color: #333;
     border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-
-    transition:
-      background-color 0.3s,
-      border-color 0.3s,
-      box-shadow 0.3s;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
 
   label {
-    display: block;
+    margin-top: 10px;
     margin-bottom: 5px;
     font-weight: bold;
-    transition: color 0.3s;
+    align-self: flex-start;
   }
 
-  input {
-    color: var(--text-color);
-    background-color: var(--input-bg-color);
-    border-color: var(--input-border-color);
-  }
-
-  .small-input,
-  input[type='text'],
-  input[type='number'] {
+  input,
+  button {
+    width: 100%;
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    transition:
-      background-color 0.3s,
-      border-color 0.3s,
-      color 0.3s;
   }
 
-  input[type='text'] {
-    width: 100%;
-  }
-
-  input[type='number'] {
-    width: calc(50% - 20px);
-    display: inline-block;
+  input {
+    background-color: #f7f7f7;
+    color: #333;
   }
 
   button {
-    padding: 10px 20px;
     background-color: #0077cc;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
+    color: white;
     cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 2rem;
+    border: none;
   }
 
   button:hover {
     background-color: #0056aa;
   }
 
-  .button-container {
-    text-align: start;
-  }
-
   :global(body.dark-mode) .wish-set-form {
-    background-color: var(--form-bg-color);
-    border-color: var(--form-border-color);
+    background-color: #333;
+    color: #ccc;
+    border-color: #555;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
   }
 
   :global(body.dark-mode) label {
-    background-color: var(--label-bg-color);
+    color: #ccc;
   }
 
-  :global(body.dark-mode) .small-input,
-  :global(body.dark-mode) input[type='text'],
-  :global(body.dark-mode) input[type='number'] {
-    background-color: var(--input-bg-color);
-    border-color: var(--input-border-color);
-    color: var(--input-text-color);
+  :global(body.dark-mode) input {
+    background-color: #444;
+    color: #ccc;
+    border-color: #555;
   }
 
   :global(body.dark-mode) button {
-    background-color: var(--button-bg-color);
+    background-color: #0056aa;
+    color: #fff;
   }
 
   :global(body.dark-mode) button:hover {
-    background-color: var(--button-hover-bg-color);
+    background-color: #003f88;
   }
 </style>

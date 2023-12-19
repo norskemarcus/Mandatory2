@@ -88,6 +88,8 @@
     margin-top: 1em;
     border: none;
     cursor: pointer;
+    margin-top: 3em;
+    border-radius: 5px;
   }
 
   form {
