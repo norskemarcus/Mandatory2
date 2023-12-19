@@ -134,6 +134,7 @@
     border-radius: 24px;
     box-shadow: 0 1px 6px 0 rgba(32, 33, 36, 0.28);
     margin-top: 2rem;
+    width: 100%;
   }
 
   .search-input {
@@ -142,6 +143,7 @@
     padding: 0.5em;
     border-radius: 24px;
     outline: none;
+    width: 100%;
   }
 
   .search-icon-button {

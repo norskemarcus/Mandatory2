@@ -13,6 +13,7 @@ function getUserId(socketId) {
 }
 
 function getSocketIdByUserId(userId) {
+  console.log('userId in socketStore.js:', userId);
   return Object.keys(socketUserMap).find(socketId => socketUserMap[socketId] === userId);
 }
 

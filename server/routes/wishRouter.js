@@ -83,6 +83,7 @@ async function createWish(io, userId, title, description, price, url, imageUrl) 
         return { error: 'User not found' };
       }
 
+      // THIS parentId is correct!
       const parentId = parent_id_result[0].parent_id;
 
       const notificationMessage = `${childUsername} added a new wish: ${title}`;
@@ -198,11 +199,19 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
     return res.status(401).send({ error: 'User is not logged in' });
   }
 
+  if (!req.session.user || req.session.user.role !== 'Child') {
+    return res.status(401).send('Unauthorized');
+  }
+
   const userId = req.session.user.id;
   const wishId = req.params.wishId;
 
   try {
     await query('START TRANSACTION');
+
+    // Check if the wish is saved and delete it from saved_wishes
+    const deleteSavedWishSQL = 'DELETE FROM saved_wishes WHERE wish_id = ?';
+    await query(deleteSavedWishSQL, [wishId]);
 
     const wishTitleSQL = 'SELECT title FROM wishes WHERE id = ?';
     const [wish] = await query(wishTitleSQL, [wishId]);
@@ -219,17 +228,23 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
     const idResult = await query(lastIdSql);
     const notificationId = idResult[0]?.id;
 
-    console.log('notificationId in wishRouter:', notificationId);
-
     // Delete the wish
     const deleteWishSQL = 'DELETE FROM wishes WHERE id = ? AND user_id = ?';
     await query(deleteWishSQL, [wishId, userId]);
 
     await query('COMMIT');
-    console.log('COMMIT');
 
     if (childUsername) {
-      const parentSocketId = getSocketIdByUserId(req.session.user.parent_id);
+      const parentIdSQL = 'SELECT parent_id FROM users WHERE id = ?;';
+      const parent_id_result = await query(parentIdSQL, [userId]);
+
+      if (parent_id_result.length === 0) {
+        return { error: 'User not found' };
+      }
+
+      const parentId = parent_id_result[0].parent_id;
+      const parentSocketId = getSocketIdByUserId(parentId);
+
       if (parentSocketId) {
         req.io.to(parentSocketId).emit('wish-deleted', {
           childUsername: childUsername,
@@ -247,4 +262,5 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
     res.status(500).send({ error: 'Failed to delete wish' });
   }
 });
+
 export default router;
