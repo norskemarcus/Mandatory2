@@ -56,6 +56,7 @@
 
       fetchNotifications($user.id)
         .then(fetchedNotifications => {
+          console.log('fetched notifications', fetchedNotifications);
           notifications.set(fetchedNotifications);
         })
         .catch(error => {
@@ -157,6 +158,7 @@
 
     try {
       await deleteNotification(notificationId);
+      //dismissNotification her
       notifications.update(n => n.filter(notification => notification.id !== notificationId));
     } catch (error) {
       console.error('Error in handleDismissParent:', error);

@@ -3,6 +3,8 @@ const router = Router();
 import { query } from '../database/connection.js';
 import dotenv from 'dotenv';
 import { getSocketIdByUserId } from '../sockets/socketStore.js';
+
+import { createWish } from '../services/wishService.js';
 dotenv.config();
 
 router.get('/api/wishes', async (req, res) => {
@@ -46,87 +48,6 @@ async function getChildUsername(userId) {
   } catch (error) {
     console.error('Error fetching child username:', error);
     throw new Error('Failed to fetch child username');
-  }
-}
-
-async function createWish(io, userId, title, description, price, url, imageUrl) {
-  try {
-    if (url) {
-      const checkExistingURLSQL = 'SELECT id FROM wishes WHERE url = ? AND user_id = ?';
-      const existingWishesByURL = await query(checkExistingURLSQL, [url, userId]);
-
-      if (existingWishesByURL.length > 0) {
-        return { error: 'A wish with this URL already exists' };
-      }
-    } else {
-      const checkExistingTitleSQL = 'SELECT id FROM wishes WHERE title = ? AND user_id = ?';
-      const existingWishesByTitle = await query(checkExistingTitleSQL, [title, userId]);
-
-      if (existingWishesByTitle.length > 0) {
-        return { error: 'A wish with this title already exists' };
-      }
-    }
-    const insertSQL = 'INSERT INTO wishes (title, description, price, url, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)';
-
-    const priceValue = price ? parseFloat(price) : null;
-
-    const insertResults = await query(insertSQL, [title, description, priceValue, url, imageUrl, userId]);
-
-    if (insertResults.insertId) {
-      const newWish = { title, description, price: priceValue, url, imageUrl };
-      const childUsername = await getChildUsername(userId);
-
-      const parentIdSQL = 'SELECT parent_id FROM users WHERE id = ?;';
-      const parent_id_result = await query(parentIdSQL, [userId]);
-
-      if (parent_id_result.length === 0) {
-        return { error: 'User not found' };
-      }
-
-      // THIS parentId is correct!
-      const parentId = parent_id_result[0].parent_id;
-
-      const notificationMessage = `${childUsername} added a new wish: ${title}`;
-      const notificationId = await saveNotification(userId, parentId, notificationMessage, insertResults.insertId);
-
-      emitNewWishEvent(io, userId, childUsername, newWish, notificationId, parentId);
-    }
-    return { message: 'Wish created successfully', wishId: insertResults.insertId };
-  } catch (error) {
-    console.error('Error creating wish:', error);
-    throw new Error('Failed to create wish');
-  }
-}
-
-async function saveNotification(userId, parentId, message, wishId = null) {
-  try {
-    const notificationInsertSQL = 'INSERT INTO notifications (user_id, parent_id, message, wish_id) VALUES (?, ?, ?, ?)';
-
-    const lastIdSql = 'SELECT LAST_INSERT_ID() as id';
-
-    const insertResult = await query(notificationInsertSQL, [userId, parentId, message, wishId]);
-
-    if (insertResult && insertResult.affectedRows > 0) {
-      const idResult = await query(lastIdSql);
-      return idResult[0].id;
-    }
-
-    return null;
-  } catch (error) {
-    console.error('Error saving notification:', error);
-    throw error;
-  }
-}
-
-function emitNewWishEvent(io, userId, childUsername, newWish, notificationId, parentId) {
-  const parentSocketId = getSocketIdByUserId(parentId);
-  if (parentSocketId) {
-    io.to(parentSocketId).emit('new-wish', {
-      userId: userId,
-      childUsername: childUsername,
-      wish: newWish,
-      notificationId: notificationId,
-    });
   }
 }
 
@@ -216,12 +137,17 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
     const wishTitleSQL = 'SELECT title FROM wishes WHERE id = ?';
     const [wish] = await query(wishTitleSQL, [wishId]);
     const wishTitle = wish?.title;
+    console.log('wish:', wish);
 
     // Create a notification about the wish deletion
+    // egen funktion
     const childUsername = await getChildUsername(userId);
     const notificationMessage = `${childUsername} has deleted a wish: ${wishTitle}`;
+
+    const parentId = await getParentId(userId);
+
     const notificationInsertSQL = 'INSERT INTO notifications (user_id, parent_id, message, wish_id) VALUES (?, ?, ?, ?)';
-    await query(notificationInsertSQL, [userId, req.session.user.parent_id, notificationMessage, wishId]);
+    await query(notificationInsertSQL, [userId, parentId, notificationMessage, wishId]);
 
     // Retrieve the ID of the newly created notification
     const lastIdSql = 'SELECT LAST_INSERT_ID() as id';
@@ -235,14 +161,7 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
     await query('COMMIT');
 
     if (childUsername) {
-      const parentIdSQL = 'SELECT parent_id FROM users WHERE id = ?;';
-      const parent_id_result = await query(parentIdSQL, [userId]);
-
-      if (parent_id_result.length === 0) {
-        return { error: 'User not found' };
-      }
-
-      const parentId = parent_id_result[0].parent_id;
+      const parentId = await getParentId(userId);
       const parentSocketId = getSocketIdByUserId(parentId);
 
       if (parentSocketId) {
@@ -262,5 +181,16 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
     res.status(500).send({ error: 'Failed to delete wish' });
   }
 });
+
+export async function getParentId(userId) {
+  const parentIdSQL = 'SELECT parent_id FROM users WHERE id = ?;';
+  const parent_id_result = await query(parentIdSQL, [userId]);
+
+  if (parent_id_result.length === 0) {
+    return { error: 'User not found' };
+  }
+
+  return parent_id_result[0].parent_id;
+}
 
 export default router;

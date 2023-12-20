@@ -4,6 +4,7 @@ import { fetchSuggestions, insertSuggestion } from '../services/suggestionsServi
 import dotenv from 'dotenv';
 import { getSocketIdByUserId } from '../sockets/socketStore.js';
 import { getParentId } from '../services/userService.js';
+import { saveNotification } from '../services/notificationService.js';
 dotenv.config();
 
 const router = Router();
@@ -74,10 +75,13 @@ router.post('/api/child/respond-to-suggestion', async (req, res) => {
       if (parentSocketId) {
         const message = `${childUsername} liked "${result.title}" and saved it!`;
 
+        const notificationId = await saveNotification(userId, parentId, message);
+
         req.io.to(parentSocketId).emit('suggestion-response', {
           suggestionId: suggestionId,
           message: message,
           url: result.url,
+          notificationId: notificationId,
         });
       }
 
@@ -87,6 +91,9 @@ router.post('/api/child/respond-to-suggestion', async (req, res) => {
 
       if (parentSocketId) {
         const message = `${childUsername} did not like the "${result.title}" and denied it.`;
+
+        // const notificationMessage = `${childUsername} added a new wish: ${title}`;
+        // const notificationId = await saveNotification(userId, parentId, notificationMessage, insertResults.insertId);
 
         req.io.to(parentSocketId).emit('suggestion-response', {
           suggestionId: suggestionId,
