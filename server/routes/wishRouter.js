@@ -3,7 +3,7 @@ const router = Router();
 import { query } from '../database/connection.js';
 import dotenv from 'dotenv';
 import { getSocketIdByUserId } from '../sockets/socketStore.js';
-
+import { getParentId, getChildUsername } from '../services/userService.js';
 import { createWish } from '../services/wishService.js';
 dotenv.config();
 
@@ -39,17 +39,6 @@ router.get('/api/parent/child-wishlist/:childId', async (req, res) => {
     res.status(500).send({ error: 'Internal Server Error' });
   }
 });
-
-async function getChildUsername(userId) {
-  const getChildUserameSQL = 'SELECT username FROM users WHERE id = ?';
-  try {
-    const result = await query(getChildUserameSQL, [userId]);
-    return result[0]?.username;
-  } catch (error) {
-    console.error('Error fetching child username:', error);
-    throw new Error('Failed to fetch child username');
-  }
-}
 
 router.post('/api/form/wishes', async (req, res) => {
   try {
@@ -176,21 +165,10 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
     res.status(200).send({ message: 'Wish deleted successfully' });
   } catch (error) {
     await query('ROLLBACK');
-    console.log('ROLLBACK');
+
     console.error('Error during deleting wish:', error);
     res.status(500).send({ error: 'Failed to delete wish' });
   }
 });
-
-export async function getParentId(userId) {
-  const parentIdSQL = 'SELECT parent_id FROM users WHERE id = ?;';
-  const parent_id_result = await query(parentIdSQL, [userId]);
-
-  if (parent_id_result.length === 0) {
-    return { error: 'User not found' };
-  }
-
-  return parent_id_result[0].parent_id;
-}
 
 export default router;

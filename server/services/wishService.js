@@ -1,5 +1,7 @@
 import { saveNotification } from '../services/notificationService.js';
-import { getParentId } from '../routes/wishRouter.js';
+import { getParentId, getChildUsername } from '../services/userService.js';
+import { getSocketIdByUserId } from '../sockets/socketStore.js';
+import { query } from '../database/connection.js';
 
 export async function createWish(io, userId, title, description, price, url, imageUrl) {
   try {
@@ -27,13 +29,6 @@ export async function createWish(io, userId, title, description, price, url, ima
     if (insertResults.insertId) {
       const newWish = { title, description, price: priceValue, url, imageUrl };
       const childUsername = await getChildUsername(userId);
-
-      // const parentIdSQL = 'SELECT parent_id FROM users WHERE id = ?;';
-      // const parent_id_result = await query(parentIdSQL, [userId]);
-
-      // if (parent_id_result.length === 0) {
-      //   return { error: 'User not found' };
-      // }
 
       const parentId = await getParentId(userId);
 

@@ -1,3 +1,5 @@
+import { query } from '../database/connection.js';
+
 export async function saveNotification(userId, parentId, message, wishId = null) {
   try {
     const notificationInsertSQL = 'INSERT INTO notifications (user_id, parent_id, message, wish_id) VALUES (?, ?, ?, ?)';

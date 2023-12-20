@@ -92,13 +92,13 @@ router.post('/api/child/respond-to-suggestion', async (req, res) => {
       if (parentSocketId) {
         const message = `${childUsername} did not like the "${result.title}" and denied it.`;
 
-        // const notificationMessage = `${childUsername} added a new wish: ${title}`;
-        // const notificationId = await saveNotification(userId, parentId, notificationMessage, insertResults.insertId);
+        const notificationId = await saveNotification(userId, parentId, message);
 
         req.io.to(parentSocketId).emit('suggestion-response', {
           suggestionId: suggestionId,
           message: message,
           url: result.url,
+          notificationId: notificationId,
         });
       }
 

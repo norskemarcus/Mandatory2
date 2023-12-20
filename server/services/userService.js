@@ -15,3 +15,14 @@ export async function getParentId(childId) {
     throw error;
   }
 }
+
+export async function getChildUsername(userId) {
+  const getChildUserameSQL = 'SELECT username FROM users WHERE id = ?';
+  try {
+    const result = await query(getChildUserameSQL, [userId]);
+    return result[0]?.username;
+  } catch (error) {
+    console.error('Error fetching child username:', error);
+    throw new Error('Failed to fetch child username');
+  }
+}
