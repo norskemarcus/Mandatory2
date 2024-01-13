@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { query } from './connection.js';
 
-const saltRounds = 13; // cost factor for hashing
+const saltRounds = 13;
 
 export const createUsersTable = async () => {
   const createUserTableSQL = `

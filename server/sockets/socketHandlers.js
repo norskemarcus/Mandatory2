@@ -1,4 +1,4 @@
-import { addUser, removeUser, getUserId, getSocketIdByUserId } from './socketStore.js';
+import { addUser, removeUser, getUserId, getSocketIdByUserId } from './socketManager.js';
 
 export default function setupSocketHandlers(socket, io) {
   socket.on('user-login', ({ userId }) => {

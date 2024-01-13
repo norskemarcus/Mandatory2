@@ -11,10 +11,6 @@ export function initializeSocketListeners(addNotification, addSuggestion) {
   });
 
   socket.on('wish-deleted', async data => {
-    console.log('wish-deleted socket on in eventHandlers.js');
-
-    console.log(data);
-
     addNotification({
       message: `${data.childUsername} has deleted a wish: ${data.wish}`,
       link: `/wishlist`,

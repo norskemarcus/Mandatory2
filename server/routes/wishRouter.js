@@ -2,7 +2,7 @@ import Router from 'express';
 const router = Router();
 import { query } from '../database/connection.js';
 import dotenv from 'dotenv';
-import { getSocketIdByUserId } from '../sockets/socketStore.js';
+import { getSocketIdByUserId } from '../sockets/socketManager.js';
 import { getParentId, getChildUsername } from '../services/userService.js';
 import { createWish } from '../services/wishService.js';
 dotenv.config();
@@ -128,8 +128,6 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
     const wishTitle = wish?.title;
     console.log('wish:', wish);
 
-    // Create a notification about the wish deletion
-    // egen funktion
     const childUsername = await getChildUsername(userId);
     const notificationMessage = `${childUsername} has deleted a wish: ${wishTitle}`;
 
@@ -143,7 +141,6 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
     const idResult = await query(lastIdSql);
     const notificationId = idResult[0]?.id;
 
-    // Delete the wish
     const deleteWishSQL = 'DELETE FROM wishes WHERE id = ? AND user_id = ?';
     await query(deleteWishSQL, [wishId, userId]);
 

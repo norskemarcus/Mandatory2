@@ -4,10 +4,7 @@ export const user = writable(null);
 
 export const isDarkMode = writable(localStorage.getItem('isDarkMode') === 'true');
 
-$: {
-  localStorage.setItem('isDarkMode', isDarkMode.toString());
-}
-
-// isDarkMode.subscribe(value => {
-//   localStorage.setItem('isDarkMode', value);
-// });
+// Reactive statement to update local storage when isDarkMode changes
+isDarkMode.subscribe(value => {
+  localStorage.setItem('isDarkMode', value.toString());
+});

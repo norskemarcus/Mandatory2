@@ -160,6 +160,8 @@
   <p>Loading...</p>
 {/if}
 
+<Toaster />
+
 <svelte:head>
   <title>Childs Wishlist</title>
 </svelte:head>

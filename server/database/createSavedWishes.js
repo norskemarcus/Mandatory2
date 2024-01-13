@@ -12,7 +12,6 @@ export const createSavedWishesTable = async () => {
       FOREIGN KEY (parent_user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `;
-  // Note: Can also use ON DELETE CASCADE on the wish_id, so the saved_wish automatically deletes when a wish is deleted by a child. But I want to use transaction to show that's the alternative.
 
   try {
     await query(createSavedWishesTableSQL);

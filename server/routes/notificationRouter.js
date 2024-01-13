@@ -20,7 +20,6 @@ router.get('/notifications/:parentId', async (req, res) => {
 router.delete('/notifications/:id', async (req, res) => {
   try {
     const notificationId = req.params.id;
-    console.log('notificationId in the router:', notificationId);
 
     const deleteSQL = 'DELETE FROM notifications WHERE id = ?';
     await query(deleteSQL, [notificationId]);

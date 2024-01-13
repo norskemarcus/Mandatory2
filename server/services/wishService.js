@@ -1,6 +1,6 @@
 import { saveNotification } from '../services/notificationService.js';
 import { getParentId, getChildUsername } from '../services/userService.js';
-import { getSocketIdByUserId } from '../sockets/socketStore.js';
+import { getSocketIdByUserId } from '../sockets/socketManager.js';
 import { query } from '../database/connection.js';
 
 export async function createWish(io, userId, title, description, price, url, imageUrl) {

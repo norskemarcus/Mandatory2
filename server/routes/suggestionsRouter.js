@@ -2,7 +2,7 @@ import Router from 'express';
 import { query } from '../database/connection.js';
 import { fetchSuggestions, insertSuggestion } from '../services/suggestionsService.js';
 import dotenv from 'dotenv';
-import { getSocketIdByUserId } from '../sockets/socketStore.js';
+import { getSocketIdByUserId } from '../sockets/socketManager.js';
 import { getParentId } from '../services/userService.js';
 import { saveNotification } from '../services/notificationService.js';
 dotenv.config();

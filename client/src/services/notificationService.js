@@ -12,6 +12,7 @@ export async function fetchNotifications(parentId) {
     throw error;
   }
 }
+
 export async function deleteNotification(notificationId) {
   try {
     const response = await fetch(`http://localhost:8080/notifications/${notificationId}`, {
