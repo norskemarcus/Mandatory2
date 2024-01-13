@@ -1,6 +1,6 @@
 <script>
   import ChildDropdown from './ChildDropdown.svelte';
-  import { user } from '../../stores/globalStore.js';
+  import { user, BASE_URL } from '../../stores/globalStore.js';
   import { toast, Toaster } from 'svelte-french-toast';
 
   let selectedChild = null;
@@ -18,7 +18,7 @@
     if (searchQuery.trim() && $user && $user.role === 'Parent') {
       isLoading = true;
       try {
-        const response = await fetch(`/api/search?query=${encodeURIComponent(searchQuery)}`);
+        const response = await fetch(`${$BASE_URL}/api/search?query=${encodeURIComponent(searchQuery)}`);
         if (!response.ok) {
           throw new Error('Error fetching search results');
         }
@@ -42,7 +42,7 @@
     }
 
     try {
-      const response = await fetch('/api/parent/suggestions', {
+      const response = await fetch(`${$BASE_URL}/api/parent/suggestions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

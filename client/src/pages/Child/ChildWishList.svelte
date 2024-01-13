@@ -1,6 +1,6 @@
 <script>
   import WishSetCard from '../Wishes/WishSetCard.svelte';
-  import { user } from '../../stores/globalStore.js';
+  import { user, BASE_URL } from '../../stores/globalStore.js';
   import { deleteWish } from '../../services/wishService.js';
   import { toast, Toaster } from 'svelte-french-toast';
   import 'iconify-icon';
@@ -50,7 +50,7 @@
 
   async function fetchWishes() {
     try {
-      const endpoint = '/api/wishes';
+      const endpoint = `${$BASE_URL}/api/wishes`;
 
       const response = await fetch(endpoint, {
         credentials: 'include',

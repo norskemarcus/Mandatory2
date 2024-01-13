@@ -60,8 +60,9 @@ router.post('/api/form/wishes', async (req, res) => {
 
 router.post('/api/wishes', async (req, res) => {
   try {
-    const { title, description, price, url, imageUrl } = req.body;
+    let { title, description, price, url, imageUrl } = req.body;
     const userId = req.session.user.id;
+
     const result = await createWish(req.io, userId, title, description, price, url, imageUrl, userId);
 
     if (result.error) {
@@ -126,7 +127,6 @@ router.delete('/api/wishes/:wishId', async (req, res) => {
     const wishTitleSQL = 'SELECT title FROM wishes WHERE id = ?';
     const [wish] = await query(wishTitleSQL, [wishId]);
     const wishTitle = wish?.title;
-    console.log('wish:', wish);
 
     const childUsername = await getChildUsername(userId);
     const notificationMessage = `${childUsername} has deleted a wish: ${wishTitle}`;

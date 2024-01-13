@@ -1,11 +1,11 @@
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { user } from '../../stores/globalStore.js';
+  import { user, BASE_URL } from '../../stores/globalStore.js';
   import { useNavigate } from 'svelte-navigator';
-  const dispatch = createEventDispatcher();
   import socket from '../../sockets/socket.js';
 
   const navigate = useNavigate();
+  const dispatch = createEventDispatcher();
 
   export let username = 'test1@test.com';
   export let password = 'test1234';
@@ -13,7 +13,7 @@
 
   async function login() {
     try {
-      const response = await fetch('/auth/login', {
+      const response = await fetch(`${$BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',

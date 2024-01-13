@@ -56,7 +56,6 @@ router.post('/api/child/respond-to-suggestion', async (req, res) => {
     const userId = req.session.user.id;
     const childUsername = req.session.user.username;
     const parentId = await getParentId(userId);
-    console.log(parentId);
     const parentSocketId = getSocketIdByUserId(parentId);
 
     if (!userId || req.session.user.role !== 'Child') {

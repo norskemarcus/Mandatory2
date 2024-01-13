@@ -1,13 +1,13 @@
 <script>
   import ChildDropdown from './ChildDropdown.svelte';
-  import { user } from '../../stores/globalStore.js';
+  import { user, BASE_URL } from '../../stores/globalStore.js';
   let savedWishes = [];
   let selectedChild = null;
 
   async function fetchSavedWishes(childId) {
     if (childId && $user && $user.role === 'Parent') {
       try {
-        const response = await fetch(`/api/parent/saved-wishes/${childId}`, {
+        const response = await fetch(`${$BASE_URL}/api/parent/saved-wishes/${childId}`, {
           credentials: 'include',
         });
         if (response.ok) {
@@ -45,7 +45,7 @@
     });
 
     try {
-      const response = await fetch(`/api/parent/saved-wishes/${childId}`, {
+      const response = await fetch(`${$BASE_URL}/api/parent/saved-wishes/${childId}`, {
         method: 'PATCH',
         body: JSON.stringify({ wishId: wish.wish_id, bought: newBoughtStatus }),
         headers: {

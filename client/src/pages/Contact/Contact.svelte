@@ -1,5 +1,6 @@
 <script>
   import toast, { Toaster } from 'svelte-french-toast';
+  import { BASE_URL } from '../../stores/globalStore.js';
 
   let name = '';
   let email = '';
@@ -11,7 +12,7 @@
       toast.error('Please fill in name, mail and message');
     } else {
       try {
-        const response = await fetch('/api/contact', {
+        const response = await fetch(`${$BASE_URL}/api/contact`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

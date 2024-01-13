@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { navigate } from 'svelte-navigator';
-  import { user } from '../../stores/globalStore.js';
+  import { user, BASE_URL } from '../../stores/globalStore.js';
 
   let username = 'test1@test.com';
   let password = 'test1234';
@@ -13,7 +13,7 @@
 
   async function handleSubmit() {
     try {
-      const response = await fetch('/auth/signup', {
+      const response = await fetch(`${$BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',

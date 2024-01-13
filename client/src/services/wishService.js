@@ -1,6 +1,10 @@
+import { getBaseUrl } from '../services/baseUrlHelper.js';
+
+const BASE_URL = getBaseUrl();
+
 export async function deleteWish(wishId) {
   try {
-    const response = await fetch(`http://localhost:8080/api/wishes/${wishId}`, {
+    const response = await fetch(`${BASE_URL}/api/wishes/${wishId}`, {
       method: 'DELETE',
       credentials: 'include',
     });
@@ -10,7 +14,6 @@ export async function deleteWish(wishId) {
       return false;
     }
 
-    console.log('Success deleting wish');
     return true;
   } catch (error) {
     console.error('Delete wish error:', error);

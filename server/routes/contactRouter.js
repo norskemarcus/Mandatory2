@@ -6,6 +6,7 @@ import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 
 dotenv.config();
+
 let db;
 
 open({
@@ -29,6 +30,10 @@ router.post('/api/contact', async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
 
+    if (!name || !email || !subject || !message) {
+      return res.status(400).send({ message: 'All fields are required.' });
+    }
+
     await db.run('INSERT INTO contacts (name, email, subject, message) VALUES (?, ?, ?, ?)', [name, email, subject, message]);
 
     await sendEmail({
@@ -38,8 +43,6 @@ router.post('/api/contact', async (req, res) => {
       html: message,
     });
 
-    console.log('Message sent: %s', info.messageId);
-
     res.send({ success: true, message: 'Email sent successfully.' });
   } catch (error) {
     console.error('Error:', error);
@@ -48,15 +51,13 @@ router.post('/api/contact', async (req, res) => {
 });
 
 router.get('/api/data', async (req, res) => {
-  router.get('/api/data', async (req, res) => {
-    try {
-      const data = await db.all('SELECT * FROM contacts');
-      res.send(data);
-    } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({ success: false, message: 'Failed to retrieve data.' });
-    }
-  });
+  try {
+    const data = await db.all('SELECT * FROM contacts');
+    res.send(data);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send({ success: false, message: 'Failed to retrieve data.' });
+  }
 });
 
 export default router;

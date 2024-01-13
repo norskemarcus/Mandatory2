@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { toast, Toaster } from 'svelte-french-toast';
+  import { BASE_URL } from '../../stores/globalStore.js';
 
   let title = '';
   let description = '';
@@ -12,7 +13,7 @@
       toast.error('Please fill in at least a title.');
     } else {
       try {
-        const response = await fetch('/api/form/wishes', {
+        const response = await fetch(`${$BASE_URL}/api/form/wishes`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

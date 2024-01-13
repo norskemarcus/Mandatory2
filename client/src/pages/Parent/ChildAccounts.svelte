@@ -3,6 +3,7 @@
   import { isDarkMode } from '../../stores/globalStore.js';
   import { toast, Toaster } from 'svelte-french-toast';
   import { Link } from 'svelte-navigator';
+  import { BASE_URL } from '../../stores/globalStore.js';
 
   let childUsername = '';
   let childPassword = '';
@@ -14,7 +15,7 @@
       return;
     }
     try {
-      const response = await fetch('/auth/signup/child', {
+      const response = await fetch(`${$BASE_URL}/auth/signup/child`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

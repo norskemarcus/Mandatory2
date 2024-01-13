@@ -2,49 +2,34 @@
   import { onMount } from 'svelte';
   import WishSetCard from './WishSetCard.svelte';
   import ChildDropdown from '../Parent/ChildDropdown.svelte';
-  import { fetchUser } from '../../user/userApi.js';
-  import { user } from '../../stores/globalStore.js';
+  import { user, BASE_URL } from '../../stores/globalStore.js';
   import { savedWishes } from '../../stores/savedWishesStore.js';
   import { toast, Toaster } from 'svelte-french-toast';
 
   let wishes = [];
-  let loggedIn = false;
-  let userRole = '';
   let selectedChild = null;
-  let authenticationChecked = false;
   let children = [];
-  let isCurrentlySaved;
-
   let isLoading = true;
 
-  savedWishes.subscribe(currentSet => {
-    isCurrentlySaved = currentSet;
-  });
+  $: userRole = $user ? $user.role : '';
 
-  onMount(async () => {
+  onMount(() => {
     if (children.length > 0) {
-      await fetchWishesForChild(children[0].id);
+      selectedChild = children[0];
     }
-    await checkAuthentication();
-
-    isLoading = false;
   });
 
-  async function checkAuthentication() {
-    if (!authenticationChecked) {
-      const fetchedUser = await fetchUser();
-      if (fetchedUser) {
-        user.set(fetchedUser);
-        userRole = fetchedUser.role;
-        loggedIn = true;
-      }
-      authenticationChecked = true;
-    }
+  $: if (selectedChild) {
+    isLoading = true;
+    fetchSavedWishes(selectedChild.id);
+    fetchWishesForChild(selectedChild.id).then(() => {
+      isLoading = false;
+    });
   }
 
   async function fetchSavedWishes(childId) {
     try {
-      const response = await fetch(`/api/parent/saved-wishes/${childId}`, {
+      const response = await fetch(`${$BASE_URL}/api/parent/saved-wishes/${childId}`, {
         credentials: 'include',
       });
 
@@ -62,15 +47,11 @@
 
   async function handleChildSelected(event) {
     selectedChild = event.detail;
-    isLoading = true;
-    await fetchSavedWishes(selectedChild.id);
-    await fetchWishesForChild(selectedChild.id);
-    isLoading = false;
   }
 
   async function fetchWishesForChild(childId) {
     try {
-      const endpoint = `/api/parent/child-wishlist/${childId}`;
+      const endpoint = `${$BASE_URL}/api/parent/child-wishlist/${childId}`;
 
       const response = await fetch(endpoint, {
         credentials: 'include',
@@ -98,7 +79,7 @@
 
   async function saveSelectedWish(childId, wishId) {
     try {
-      const response = await fetch(`/api/parent/saved-wishes/${childId}`, {
+      const response = await fetch(`${$BASE_URL}/api/parent/saved-wishes/${childId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -123,7 +104,7 @@
 
   async function unsaveWish(childId, wishId) {
     try {
-      const response = await fetch(`/api/parent/unsave-wish/${childId}`, {
+      const response = await fetch(`${$BASE_URL}/api/parent/unsave-wish/${childId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
