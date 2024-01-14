@@ -1,10 +1,6 @@
-import { getBaseUrl } from '../services/baseUrlHelper.js';
-
-const BASE_URL = getBaseUrl();
-
 export async function fetchNotifications(parentId) {
   try {
-    const response = await fetch(`${BASE_URL}/notifications/${parentId}`);
+    const response = await fetch(`/notifications/${parentId}`);
     if (!response.ok) {
       throw new Error('Failed to fetch notifications');
     }
@@ -19,7 +15,7 @@ export async function fetchNotifications(parentId) {
 
 export async function deleteNotification(notificationId) {
   try {
-    const response = await fetch(`${BASE_URL}/notifications/${notificationId}`, {
+    const response = await fetch(`/notifications/${notificationId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

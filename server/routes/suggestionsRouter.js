@@ -122,8 +122,7 @@ async function acceptSuggestion(suggestionId, userId) {
 
     const suggestion = suggestions[0];
 
-    // misses currency
-    const wishResult = await createWishFromSuggestion(userId, suggestion.title, suggestion.description, suggestion.price, suggestion.url, suggestion.image_url);
+    await createWishFromSuggestion(userId, suggestion.title, suggestion.description, suggestion.price, suggestion.url, suggestion.image_url);
 
     await deleteSuggestion(suggestionId);
 
@@ -142,7 +141,6 @@ async function createWishFromSuggestion(userId, title, description, price, url, 
     if (existingWishes.length > 0) {
       return { error: 'A wish with this URL already exists' };
     }
-    // TODO: currency misses
 
     const insertSQL = 'INSERT INTO wishes (title, description, price, url, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?)';
 
@@ -164,13 +162,8 @@ async function deleteSuggestion(suggestionId) {
     if (!suggestionId) {
       throw new Error('No suggestionId provided');
     }
-
     const deleteSuggestionSQL = 'DELETE FROM suggestions WHERE id = ?';
     const result = await query(deleteSuggestionSQL, [suggestionId]);
-
-    if (result.affectedRows === 0) {
-      throw new Error('No suggestion found with the provided ID');
-    }
 
     return { message: 'Suggestion successfully deleted', deletedCount: result.affectedRows };
   } catch (error) {

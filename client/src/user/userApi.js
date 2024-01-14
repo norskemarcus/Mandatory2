@@ -2,23 +2,23 @@ import { getBaseUrl } from '../services/baseUrlHelper.js';
 
 const BASE_URL = getBaseUrl();
 
-export async function fetchUser() {
-  try {
-    const response = await fetch(`${BASE_URL}/auth/check-login`, {
-      credentials: 'include',
-    });
+// export async function fetchUser() {
+//   try {
+//     const response = await fetch(`${BASE_URL}/auth/check-login`, {
+//       credentials: 'include',
+//     });
 
-    if (response.ok) {
-      const data = await response.json();
-      return data.user;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    console.error('User fetch error:', error);
-    return null;
-  }
-}
+//     if (response.ok) {
+//       const data = await response.json();
+//       return data.user;
+//     } else {
+//       return null;
+//     }
+//   } catch (error) {
+//     console.error('User fetch error:', error);
+//     return null;
+//   }
+// }
 
 export async function fetchParentUsername(parentId) {
   try {

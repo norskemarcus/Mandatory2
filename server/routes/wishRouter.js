@@ -6,6 +6,7 @@ import { getSocketIdByUserId } from '../sockets/socketManager.js';
 import { getParentId, getChildUsername } from '../services/userService.js';
 import { createWish } from '../services/wishService.js';
 dotenv.config();
+import sanitizeHtml from 'sanitize-html';
 
 router.get('/api/wishes', async (req, res) => {
   if (!req.session.user) {
@@ -40,6 +41,59 @@ router.get('/api/parent/child-wishlist/:childId', async (req, res) => {
   }
 });
 
+router.get('/api/search', async (req, res) => {
+  try {
+    const { query } = req.query;
+    const response = await fetch(`https://www.googleapis.com/customsearch/v1?key=${process.env.GOOGLE_API_KEY}&cx=${process.env.GOOGLE_CUSTOM_SEARCH_CX}&q=${query}`);
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('API search error:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+router.get('/api/wishes/check', async (req, res) => {
+  try {
+    const url = req.query.url;
+    const userId = req.session.user.id;
+
+    const queryResult = await query('SELECT id FROM wishes WHERE url = ? AND user_id = ?', [url, userId]);
+
+    if (queryResult.length > 0) {
+      res.send({ isSavedByChild: true, wishId: queryResult[0].id });
+    } else {
+      res.send({ isSavedByChild: false });
+    }
+  } catch (error) {
+    console.error('Error checking wish:', error);
+    res.status(500).send({ error: 'Internal server error' });
+  }
+});
+
+// router.post('/api/wishes', async (req, res) => {
+//   try {
+//     let { title, description, price, url, imageUrl } = req.body;
+//     title = sanitizeHtml(title);
+//     description = sanitizeHtml(description);
+//     price = sanitizeHtml(price);
+//     url = sanitizeHtml(url);
+//     imageUrl = imageUrl ? sanitizeHtml(imageUrl) : null;
+
+//     const userId = req.session.user.id;
+
+//     const result = await createWish(req.io, userId, title, description, price, url, imageUrl);
+
+//     if (result.error) {
+//       return res.status(400).send({ error: result.error });
+//     }
+//     res.status(201).send(result);
+//   } catch (error) {
+//     console.error('Error creating wish:', error);
+//     res.status(500).send({ error: 'Failed to create wish' });
+//   }
+// });
+
 router.post('/api/form/wishes', async (req, res) => {
   try {
     const { title, description, price, url } = req.body;
@@ -72,36 +126,6 @@ router.post('/api/wishes', async (req, res) => {
   } catch (error) {
     console.error('Error creating wish:', error);
     res.status(500).send({ error: 'Failed to create wish' });
-  }
-});
-
-router.get('/api/search', async (req, res) => {
-  try {
-    const { query } = req.query;
-    const response = await fetch(`https://www.googleapis.com/customsearch/v1?key=${process.env.GOOGLE_API_KEY}&cx=${process.env.GOOGLE_CUSTOM_SEARCH_CX}&q=${query}`);
-    const data = await response.json();
-    res.json(data);
-  } catch (error) {
-    console.error('API search error:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
-
-router.get('/api/wishes/check', async (req, res) => {
-  try {
-    const url = req.query.url;
-    const userId = req.session.user.id;
-
-    const queryResult = await query('SELECT id FROM wishes WHERE url = ? AND user_id = ?', [url, userId]);
-
-    if (queryResult.length > 0) {
-      res.send({ isSavedByChild: true, wishId: queryResult[0].id });
-    } else {
-      res.send({ isSavedByChild: false });
-    }
-  } catch (error) {
-    console.error('Error checking wish:', error);
-    res.status(500).send({ error: 'Internal server error' });
   }
 });
 

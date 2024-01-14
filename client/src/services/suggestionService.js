@@ -1,10 +1,6 @@
-import { getBaseUrl } from '../services/baseUrlHelper.js';
-
-const BASE_URL = getBaseUrl();
-
 export async function fetchSuggestions(childId) {
   try {
-    const response = await fetch(`${BASE_URL}/api/child/suggestions/${childId}`, { credentials: 'include' });
+    const response = await fetch(`/api/child/suggestions/${childId}`, { credentials: 'include' });
     if (!response.ok) {
       throw new Error('Failed to fetch suggestions');
     }
@@ -19,7 +15,7 @@ export async function fetchSuggestions(childId) {
 
 export async function handleSuggestionResponse(suggestionId, response) {
   try {
-    const result = await fetch(`${BASE_URL}/api/child/respond-to-suggestion`, {
+    const result = await fetch(`/api/child/respond-to-suggestion`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

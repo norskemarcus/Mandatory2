@@ -13,7 +13,7 @@
     if (searchQuery.trim()) {
       isLoading = true;
       try {
-        const response = await fetch(`${$BASE_URL}/api/search?query=${encodeURIComponent(searchQuery)}`);
+        const response = await fetch(`/api/search?query=${encodeURIComponent(searchQuery)}`);
         if (!response.ok) {
           throw new Error('Error fetching search results');
         }
@@ -23,7 +23,7 @@
 
         const checkPromises = items.map(async item => {
           try {
-            const checkResponse = await fetch(`${$BASE_URL}/api/wishes/check?url=${encodeURIComponent(item.link)}`);
+            const checkResponse = await fetch(`/api/wishes/check?url=${encodeURIComponent(item.link)}`);
             if (checkResponse.ok) {
               const checkData = await checkResponse.json();
               return { ...item, isSavedByChild: checkData.isSavedByChild };
@@ -48,7 +48,7 @@
 
   async function saveToWishlist(item, index) {
     try {
-      const checkResponse = await fetch(`${$BASE_URL}/api/wishes/check?url=${encodeURIComponent(item.link)}`);
+      const checkResponse = await fetch(`/api/wishes/check?url=${encodeURIComponent(item.link)}`);
       if (!checkResponse.ok) {
         throw new Error('Error checking wishlist');
       }
@@ -63,7 +63,7 @@
           toast.error('Failed to unsave item from wishlist');
         }
       } else {
-        response = await fetch(`${$BASE_URL}/api/wishes`, {
+        response = await fetch(`/api/wishes`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
