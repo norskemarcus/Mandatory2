@@ -7,10 +7,21 @@
   let subject = '';
   let message = '';
 
+  const MAX_LENGTH = 255;
+  const MAX_MESSAGE_LENGTH = 1000;
+
+  function validateMessage(message) {
+    return message.length <= MAX_MESSAGE_LENGTH;
+  }
+
+  function validateLength(input) {
+    return input.length <= MAX_LENGTH;
+  }
+
   function validateEmail(email) {
     // Regular Expression (Regex), from https://sendbridge.com/tutorials/regular-expression-regex-for-email-validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return emailRegex.test(email) && email.length <= MAX_LENGTH;
   }
 
   async function submitForm() {
@@ -18,6 +29,8 @@
       toast.error('Please fill in name, email and message');
     } else if (!validateEmail(email)) {
       toast.error('Please enter a valid email address.');
+    } else if (!validateLength(name) || !validateLength(subject) || !validateMessage(message)) {
+      toast.error("Please don't write to much");
     } else {
       try {
         const response = await fetch(`${$BASE_URL}/api/contacts`, {
@@ -55,7 +68,7 @@
       <input id="subject" type="subject" name="subject" bind:value={subject} />
 
       <label for="message">Message</label>
-      <textarea class="message" id="message" name="message" cols="100" rows="10" bind:value={message} placeholder="Write your question here" />
+      <textarea class="message" id="message" name="message" cols="100" rows="10" bind:value={message} placeholder="Write your question here (max. 1000 char.)" />
 
       <div class="profile-buttons">
         <button type="submit">Send</button>
