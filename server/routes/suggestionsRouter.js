@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { getSocketIdByUserId } from '../sockets/socketManager.js';
 import { getParentId } from '../services/userService.js';
 import { saveNotification } from '../services/notificationService.js';
+import sanitizeHtml from 'sanitize-html';
 dotenv.config();
 
 const router = Router();
@@ -26,12 +27,21 @@ router.get('/api/children/suggestions/:childId', async (req, res) => {
 
 router.post('/api/parents/suggestions', async (req, res) => {
   try {
-    const { childId, wish } = req.body;
+    let { childId, wish } = req.body;
     const parentUserId = req.session.user?.id;
 
     if (!parentUserId || req.session.user.role !== 'Parent') {
       return res.status(403).send({ message: 'Unauthorized' });
     }
+
+    wish = {
+      title: sanitizeHtml(wish.title),
+      description: sanitizeHtml(wish.description),
+      price: wish.price,
+      url: sanitizeHtml(wish.url),
+      imageUrl: wish.imageUrl ? sanitizeHtml(wish.imageUrl) : null,
+      currency: wish.currency ? sanitizeHtml(wish.currency) : null,
+    };
 
     const suggestionId = await insertSuggestion(wish, childId, parentUserId);
 

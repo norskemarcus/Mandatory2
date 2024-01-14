@@ -7,9 +7,17 @@
   let subject = '';
   let message = '';
 
+  function validateEmail(email) {
+    // Regular Expression (Regex), from https://sendbridge.com/tutorials/regular-expression-regex-for-email-validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
   async function submitForm() {
     if (!name || !email || !message) {
-      toast.error('Please fill in name, mail and message');
+      toast.error('Please fill in name, email and message');
+    } else if (!validateEmail(email)) {
+      toast.error('Please enter a valid email address.');
     } else {
       try {
         const response = await fetch(`${$BASE_URL}/api/contacts`, {

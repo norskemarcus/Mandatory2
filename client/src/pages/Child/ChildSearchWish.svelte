@@ -22,6 +22,7 @@
 
         const checkPromises = items.map(async item => {
           try {
+            // encodeURIComponent converts special characters to secure character sequences
             const checkResponse = await fetch(`/api/wishes/checks?url=${encodeURIComponent(item.link)}`);
 
             if (checkResponse.ok) {

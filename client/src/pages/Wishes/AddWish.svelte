@@ -7,10 +7,44 @@
   let description = '';
   let price = '';
   let url = '';
+  const MAX_TITLE_LENGTH = 255;
+  const MAX_URL_LENGTH = 255;
+  const MAX_DESCRIPTION_LENGTH = 1000;
+
+  function isValidUrl(string) {
+    try {
+      new URL(string);
+    } catch (_) {
+      return false;
+    }
+    return true;
+  }
+
+  function validateUrl(url) {
+    return url.length <= MAX_URL_LENGTH && isValidUrl(url);
+  }
+
+  function validateTitle(title) {
+    return title.length <= MAX_TITLE_LENGTH;
+  }
+
+  function validateDescription(description) {
+    return description.length <= MAX_DESCRIPTION_LENGTH;
+  }
+
+  function validatePrice(price) {
+    return !isNaN(price) && price >= 0;
+  }
 
   async function addWishForm() {
-    if (!title) {
-      toast.error('Please fill in at least a title.');
+    if (!title || !validateTitle(title)) {
+      toast.error('Title is required and should be less than 255 characters.');
+    } else if (url && !validateUrl(url)) {
+      toast.error('Please enter a valid URL (less than 255 characters).');
+    } else if (!validateDescription(description)) {
+      toast.error(`Description should be less than ${MAX_DESCRIPTION_LENGTH} characters.`);
+    } else if (price && !validatePrice(price)) {
+      toast.error('Please enter a valid price.');
     } else {
       try {
         const response = await fetch(`${$BASE_URL}/api/wishes`, {

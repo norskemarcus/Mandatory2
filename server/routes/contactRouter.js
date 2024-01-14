@@ -1,38 +1,33 @@
 import Router from 'express';
 import { sendEmail } from '../services/mailer.js';
 import dotenv from 'dotenv';
-const router = Router();
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
+import { initializeDatabase, db } from '../database/createContacts.js';
+import sanitizeHtml from 'sanitize-html';
 
+const router = Router();
 dotenv.config();
 
-let db;
-
-open({
-  filename: 'sq3lite.db',
-  driver: sqlite3.Database,
-}).then(async database => {
-  db = database;
-
-  await db.run(`
-  CREATE TABLE IF NOT EXISTS contacts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT,
-    email TEXT,
-    subject TEXT,
-    message TEXT
-  )
-`);
-});
+// Async IIFE = Immediately Invoked Function Expression
+(async () => {
+  try {
+    await initializeDatabase();
+  } catch (error) {
+    console.error(error);
+  }
+})();
 
 router.post('/api/contacts', async (req, res) => {
   try {
-    const { name, email, subject, message } = req.body;
+    let { name, email, subject, message } = req.body;
 
     if (!name || !email || !subject || !message) {
       return res.status(400).send({ message: 'All fields are required.' });
     }
+
+    name = sanitizeHtml(name);
+    email = sanitizeHtml(email);
+    subject = sanitizeHtml(subject);
+    message = sanitizeHtml(message);
 
     await db.run('INSERT INTO contacts (name, email, subject, message) VALUES (?, ?, ?, ?)', [name, email, subject, message]);
 
