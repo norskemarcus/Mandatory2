@@ -12,7 +12,7 @@
       toast.error('Please fill in name, mail and message');
     } else {
       try {
-        const response = await fetch(`${$BASE_URL}/api/contact`, {
+        const response = await fetch(`${$BASE_URL}/api/contacts`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

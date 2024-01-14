@@ -18,7 +18,7 @@
     if (searchQuery.trim() && $user && $user.role === 'Parent') {
       isLoading = true;
       try {
-        const response = await fetch(`${$BASE_URL}/api/search?query=${encodeURIComponent(searchQuery)}`);
+        const response = await fetch(`${$BASE_URL}/api/searches?query=${encodeURIComponent(searchQuery)}`);
         if (!response.ok) {
           throw new Error('Error fetching search results');
         }
@@ -42,7 +42,7 @@
     }
 
     try {
-      const response = await fetch(`${$BASE_URL}/api/parent/suggestions`, {
+      const response = await fetch(`${$BASE_URL}/api/parents/suggestions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

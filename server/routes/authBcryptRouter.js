@@ -22,7 +22,7 @@ router.post('/auth/signup', async (req, res) => {
   }
 });
 
-router.post('/auth/signup/child', async (req, res) => {
+router.post('/auth/signup/children', async (req, res) => {
   if (!req.session.user || req.session.user.role !== 'Parent') {
     return res.status(403).send({ message: 'Unauthorized' });
   }
@@ -53,24 +53,6 @@ router.post('/auth/login', async (req, res) => {
     } else {
       res.status(500).send({ message: 'An error occurred while processing your login request.', error: error.message });
     }
-  }
-});
-
-router.post('/auth/login-accept', async (req, res) => {
-  const { uid } = req.body;
-
-  req.session.user = {
-    uid: uid,
-  };
-
-  res.send({ message: 'Authentication successful', user });
-});
-
-router.get('/auth/check-login', (req, res) => {
-  if (req.session.user) {
-    res.send({ loggedIn: true, user: req.session.user });
-  } else {
-    res.send({ loggedIn: false });
   }
 });
 

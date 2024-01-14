@@ -15,7 +15,7 @@
       return;
     }
     try {
-      const response = await fetch(`${$BASE_URL}/auth/signup/child`, {
+      const response = await fetch(`${$BASE_URL}/auth/signup/children`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

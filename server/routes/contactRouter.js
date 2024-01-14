@@ -26,7 +26,7 @@ open({
 `);
 });
 
-router.post('/api/contact', async (req, res) => {
+router.post('/api/contacts', async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
 

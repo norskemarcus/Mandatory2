@@ -1,5 +1,4 @@
 <script>
-  import { BASE_URL } from '../stores/globalStore.js';
   import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'sveltestrap';
   import { Link } from 'svelte-navigator';
   import 'iconify-icon';

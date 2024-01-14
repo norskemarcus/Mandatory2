@@ -29,7 +29,7 @@
 
   async function fetchSavedWishes(childId) {
     try {
-      const response = await fetch(`${$BASE_URL}/api/parent/saved-wishes/${childId}`, {
+      const response = await fetch(`${$BASE_URL}/api/parents/saved-wishes/${childId}`, {
         credentials: 'include',
       });
 
@@ -51,7 +51,7 @@
 
   async function fetchWishesForChild(childId) {
     try {
-      const endpoint = `${$BASE_URL}/api/parent/child-wishlist/${childId}`;
+      const endpoint = `${$BASE_URL}/api/parents/children-wishlists/${childId}`;
 
       const response = await fetch(endpoint, {
         credentials: 'include',
@@ -79,7 +79,7 @@
 
   async function saveSelectedWish(childId, wishId) {
     try {
-      const response = await fetch(`${$BASE_URL}/api/parent/saved-wishes/${childId}`, {
+      const response = await fetch(`${$BASE_URL}/api/parents/saved-wishes/${childId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -104,7 +104,7 @@
 
   async function unsaveWish(childId, wishId) {
     try {
-      const response = await fetch(`${$BASE_URL}/api/parent/unsave-wish/${childId}`, {
+      const response = await fetch(`${$BASE_URL}/api/parents/unsave-wishes/${childId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

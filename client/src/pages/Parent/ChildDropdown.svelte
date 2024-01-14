@@ -19,7 +19,7 @@
 
   async function fetchChildren() {
     try {
-      const response = await fetch(`${$BASE_URL}/api/parent/family-children`, {
+      const response = await fetch(`${$BASE_URL}/api/parents/family-children`, {
         credentials: 'include',
       });
 

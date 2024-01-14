@@ -9,7 +9,7 @@ dotenv.config();
 
 const router = Router();
 
-router.get('/api/child/suggestions/:childId', async (req, res) => {
+router.get('/api/children/suggestions/:childId', async (req, res) => {
   if (!req.session.user || req.session.user.role !== 'Child') {
     return res.status(401).send({ error: 'Unauthorized' });
   }
@@ -19,12 +19,12 @@ router.get('/api/child/suggestions/:childId', async (req, res) => {
     const suggestions = await fetchSuggestions(childId);
     res.send({ suggestions });
   } catch (error) {
-    console.error('Error in GET /api/child/suggestions:', error);
+    console.error('Error in GET /api/children/suggestions:', error);
     res.status(500).send({ error: 'Internal Server Error' });
   }
 });
 
-router.post('/api/parent/suggestions', async (req, res) => {
+router.post('/api/parents/suggestions', async (req, res) => {
   try {
     const { childId, wish } = req.body;
     const parentUserId = req.session.user?.id;
@@ -50,7 +50,7 @@ router.post('/api/parent/suggestions', async (req, res) => {
   }
 });
 
-router.post('/api/child/respond-to-suggestion', async (req, res) => {
+router.post('/api/children/responds-to-suggestions', async (req, res) => {
   try {
     const { suggestionId, response } = req.body;
     const userId = req.session.user.id;

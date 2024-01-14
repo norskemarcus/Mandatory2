@@ -34,8 +34,8 @@
         const response = await deleteWish(toBeDeleted.id);
 
         if (response) {
-          wishes = wishes.filter(w => w.id !== toBeDeleted.id);
-          wishes = [...wishes];
+          wishes = wishes.filter(wish => wish.id !== toBeDeleted.id);
+          // wishes = [...wishes];
           toBeDeleted = null;
         } else {
           toast.error('Failed to delete wish');

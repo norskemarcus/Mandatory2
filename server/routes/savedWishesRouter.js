@@ -3,7 +3,7 @@ import { query } from '../database/connection.js';
 
 const router = Router();
 
-router.get('/api/parent/saved-wishes/:childId', async (req, res) => {
+router.get('/api/parents/saved-wishes/:childId', async (req, res) => {
   try {
     if (!req.session.user || req.session.user.role !== 'Parent') {
       return res.status(403).json({ message: 'Unauthorized' });
@@ -19,7 +19,7 @@ router.get('/api/parent/saved-wishes/:childId', async (req, res) => {
   }
 });
 
-router.post('/api/parent/saved-wishes/:childId', async (req, res) => {
+router.post('/api/parents/saved-wishes/:childId', async (req, res) => {
   try {
     const { wishId } = req.body;
 
@@ -53,7 +53,7 @@ router.post('/api/parent/saved-wishes/:childId', async (req, res) => {
   }
 });
 
-router.patch('/api/parent/saved-wishes/:childId', async (req, res) => {
+router.patch('/api/parents/saved-wishes/:childId', async (req, res) => {
   try {
     const { bought } = req.body;
     console.log('bought:', bought);
@@ -82,7 +82,7 @@ router.patch('/api/parent/saved-wishes/:childId', async (req, res) => {
   }
 });
 
-router.delete('/api/parent/unsave-wish/:childId', async (req, res) => {
+router.delete('/api/parents/unsave-wishes/:childId', async (req, res) => {
   try {
     const { wishId } = req.body;
     const childId = req.params.childId;
@@ -110,7 +110,7 @@ router.delete('/api/parent/unsave-wish/:childId', async (req, res) => {
   }
 });
 
-router.get('/api/parent/family-children', async (req, res) => {
+router.get('/api/parents/family-children', async (req, res) => {
   try {
     if (!req.session.user || req.session.user.role !== 'Parent') {
       return res.status(403).json({ message: 'Unauthorized' });
