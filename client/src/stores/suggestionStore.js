@@ -4,11 +4,7 @@ export const suggestions = writable([]);
 
 export const addSuggestion = suggestion => {
   suggestions.update(currentSuggestions => {
-    const exists = currentSuggestions.some(s => s.id === suggestion.id);
-    if (!exists) {
-      return [...currentSuggestions, suggestion];
-    }
-    return currentSuggestions;
+    return [...currentSuggestions, suggestion];
   });
 };
 

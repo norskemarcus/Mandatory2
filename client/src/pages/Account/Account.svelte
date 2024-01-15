@@ -1,8 +1,9 @@
 <script>
-  import { fetchParentUsername, fetchChildren, deleteChildAccount } from '../../user/userApi.js';
+  import { fetchParentUsername, fetchChildren, deleteChildAccount, deleteAccount } from '../../user/userApi.js';
   import { user } from '../../stores/globalStore.js';
   import { navigate } from 'svelte-navigator';
   import { onMount } from 'svelte';
+  import { toast, Toaster } from 'svelte-french-toast';
 
   let parentUsername = '';
   let children = [];
@@ -42,7 +43,7 @@
         children = children.filter(child => child.id !== childId);
       } catch (error) {
         console.error('Error deleting child account:', error);
-        alert('An error occurred while trying to delete the child account. Please try again.');
+        toast.error('An error occurred while trying to delete the child account. Please try again.');
       }
     }
   }
@@ -55,8 +56,20 @@
 
     const confirmDelete = confirm(confirmDeleteMessage);
     if (confirmDelete) {
-      navigate('/');
-      user.set(null);
+      try {
+        const success = await deleteAccount();
+
+        if (success) {
+          toast.success('Your account has been successfully deleted.');
+          user.set(null);
+          navigate('/');
+        } else {
+          toast.error('An error occurred while trying to delete your account. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error deleting account:', error);
+        toast.error('An error occurred while trying to delete your account. Please try again.');
+      }
     }
   }
 </script>
@@ -82,6 +95,8 @@
     <p class="warning-message">Deleting your account will affect your children's access to the app.</p>
   {/if}
 </div>
+
+<Toaster />
 
 <style>
   .account-container {

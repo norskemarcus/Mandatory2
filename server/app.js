@@ -98,8 +98,6 @@ app.use(suggestionRouter);
 import savedWishesRouter from './routes/savedWishesRouter.js';
 app.use(savedWishesRouter);
 
-let initializationAttempts = 0;
-
 function startServer() {
   app.use(authBryptRouter);
   app.use(wishRouter);
@@ -110,14 +108,8 @@ function startServer() {
 
 function handleInitializationError(err) {
   console.error('Error during database initialization:', err);
-  initializationAttempts++;
-  if (initializationAttempts < 3) {
-    console.log(`Attempt ${initializationAttempts}: Retrying database initialization...`);
-    setTimeout(initializeDatabase, 5000);
-  } else {
-    console.error('Database initialization failed after 3 attempts, exiting...');
-    process.exit(1); // 1 indicate error
-  }
+  console.error('Exiting due to database initialization failure...');
+  process.exit(1); // 1 indicates an error
 }
 
 initializeDatabase().then(startServer).catch(handleInitializationError);

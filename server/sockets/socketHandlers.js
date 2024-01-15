@@ -1,4 +1,5 @@
 import { addUser, removeUser, getUserId, getSocketIdByUserId } from './socketManager.js';
+import { getParentId } from '../services/userService.js';
 
 export default function setupSocketHandlers(socket, io) {
   socket.on('user-login', ({ userId }) => {
@@ -35,7 +36,7 @@ export default function setupSocketHandlers(socket, io) {
     }
   });
 
-  socket.on('new-suggestion', async data => {
+  socket.on('new-suggestion', data => {
     const { childId, wish } = data;
     const childSocketId = getSocketIdByUserId(childId);
 
@@ -49,7 +50,7 @@ export default function setupSocketHandlers(socket, io) {
     }
   });
 
-  socket.on('respond-to-suggestion', async data => {
+  socket.on('respond-to-suggestion', () => {
     const parentSocketId = getSocketIdByUserId(parentId);
     io.to(parentSocketId).emit('suggestion-response', {});
   });
