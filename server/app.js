@@ -63,7 +63,7 @@ const io = new Server(server, {
 
 // Middleware to attach io to the request object
 app.use((req, res, next) => {
-  req.io = io;
+  req.io = io; // the routes get access to the Socket.IO server instance via req.io
   next();
 });
 

@@ -1,4 +1,4 @@
-const socketUserMap = {};
+const socketUserMap = {}; // key = socketId , value = userId
 
 function addUser(socketId, userId) {
   socketUserMap[socketId] = userId;
@@ -13,6 +13,7 @@ function getUserId(socketId) {
 }
 
 function getSocketIdByUserId(userId) {
+  // make array out of the object (socketUserMap)
   return Object.keys(socketUserMap).find(socketId => socketUserMap[socketId] === userId);
 }
 

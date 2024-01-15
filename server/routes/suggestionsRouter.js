@@ -60,70 +60,6 @@ router.post('/api/parents/suggestions', async (req, res) => {
   }
 });
 
-// router.post('/api/children/responds-to-suggestions', async (req, res) => {
-//   try {
-//     const { suggestionId, response } = req.body;
-//     const userId = req.session.user.id;
-//     const childUsername = req.session.user.username;
-//     const parentId = await getParentId(userId);
-//     const parentSocketId = getSocketIdByUserId(parentId);
-
-//     if (!userId || req.session.user.role !== 'Child') {
-//       return res.status(403).send({ message: 'Unauthorized' });
-//     }
-
-//     if (response === 'accept') {
-//       const acceptResult = await acceptSuggestion(suggestionId, userId);
-//       if (acceptResult.error) {
-//         return res.status(500).send({ message: acceptResult.error });
-//       }
-
-//       const deleteResult = await deleteSuggestion(suggestionId);
-
-//       if (deleteResult.error) {
-//         return res.status(500).send({ message: deleteResult.error });
-//       }
-
-//       if (parentSocketId) {
-//         const message = `${childUsername} liked "${result.title}" and saved it!`;
-
-//         const notificationId = await saveNotification(userId, parentId, message);
-
-//         req.io.to(parentSocketId).emit('suggestion-response', {
-//           suggestionId: suggestionId,
-//           message: message,
-//           url: result.url,
-//           notificationId: notificationId,
-//         });
-//       }
-
-//       res.status(200).send(result);
-//     } else if (response === 'deny') {
-//       const result = await deleteSuggestion(suggestionId);
-
-//       if (parentSocketId) {
-//         const message = `${childUsername} did not like the "${result.title}" and denied it.`;
-
-//         const notificationId = await saveNotification(userId, parentId, message);
-
-//         req.io.to(parentSocketId).emit('suggestion-response', {
-//           suggestionId: suggestionId,
-//           message: message,
-//           url: result.url,
-//           notificationId: notificationId,
-//         });
-//       }
-
-//       res.status(200).send(result);
-//     } else {
-//       res.status(400).send({ error: 'Invalid response' });
-//     }
-//   } catch (error) {
-//     console.error('Error responding to suggestion:', error);
-//     res.status(500).send({ error: 'Failed to process suggestion response' });
-//   }
-// });
-
 router.post('/api/children/responds-to-suggestions', async (req, res) => {
   const { suggestionId, response } = req.body;
   const userId = req.session.user.id;
@@ -155,18 +91,17 @@ router.post('/api/children/responds-to-suggestions', async (req, res) => {
           });
         } catch (notificationError) {
           console.error('Error in saveNotification:', notificationError);
-          // Handle notification error if needed
         }
       }
       res.status(200).send(acceptResult);
     } else if (response === 'deny') {
-      const deleteResult = await deleteSuggestion(suggestionId);
+      const deleteResult = await getAndDeleteSuggestion(suggestionId);
       if (deleteResult.error) {
         return res.status(500).send({ message: deleteResult.error });
       }
 
       if (parentSocketId) {
-        const message = `${childUsername} did not like the suggestion and denied it.`;
+        const message = `${childUsername} did not like "${deleteResult.suggestion.title}" and denied it.`;
 
         try {
           const notificationId = await saveNotification(userId, parentId, message);
@@ -177,7 +112,6 @@ router.post('/api/children/responds-to-suggestions', async (req, res) => {
           });
         } catch (notificationError) {
           console.error('Error in saveNotification:', notificationError);
-          // Handle notification error if needed
         }
       }
       res.status(200).send({ message: 'Suggestion denied' });
@@ -203,7 +137,7 @@ async function acceptSuggestion(suggestionId, userId) {
 
     await createWishFromSuggestion(userId, suggestion.title, suggestion.description, suggestion.price, suggestion.url, suggestion.image_url);
 
-    await deleteSuggestion(suggestionId);
+    await getAndDeleteSuggestion(suggestionId);
 
     return { message: 'Suggestion accepted and wish created', title: suggestion.title, url: suggestion.url };
   } catch (error) {
@@ -236,17 +170,37 @@ async function createWishFromSuggestion(userId, title, description, price, url, 
   }
 }
 
-async function deleteSuggestion(suggestionId) {
-  try {
-    if (!suggestionId) {
-      throw new Error('No suggestionId provided');
-    }
-    const deleteSuggestionSQL = 'DELETE FROM suggestions WHERE id = ?';
-    const result = await query(deleteSuggestionSQL, [suggestionId]);
+// async function deleteSuggestion(suggestionId) {
+//   try {
+//     if (!suggestionId) {
+//       throw new Error('No suggestionId provided');
+//     }
+//     const deleteSuggestionSQL = 'DELETE FROM suggestions WHERE id = ?';
+//     const result = await query(deleteSuggestionSQL, [suggestionId]);
 
-    return { message: 'Suggestion successfully deleted', deletedCount: result.affectedRows };
+//     return { message: 'Suggestion successfully deleted', deletedCount: result.affectedRows };
+//   } catch (error) {
+//     console.error('Error in deleteSuggestion:', error.message);
+//     return { error: 'Failed to delete suggestion', details: error.message };
+//   }
+// }
+
+async function getAndDeleteSuggestion(suggestionId) {
+  try {
+    const getSuggestionSQL = 'SELECT * FROM suggestions WHERE id = ?';
+    const suggestions = await query(getSuggestionSQL, [suggestionId]);
+
+    if (suggestions.length === 0) {
+      return { error: 'Suggestion not found' };
+    }
+    const suggestion = suggestions[0];
+
+    const deleteSuggestionSQL = 'DELETE FROM suggestions WHERE id = ?';
+    await query(deleteSuggestionSQL, [suggestionId]);
+
+    return { message: 'Suggestion successfully deleted', suggestion: suggestion };
   } catch (error) {
-    console.error('Error in deleteSuggestion:', error.message);
+    console.error('Error in getAndDeleteSuggestion:', error.message);
     return { error: 'Failed to delete suggestion', details: error.message };
   }
 }

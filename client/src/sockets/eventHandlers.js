@@ -1,7 +1,7 @@
 import socket from '../sockets/socket.js';
 
 export function initializeSocketListeners(addNotification, addSuggestion) {
-  socket.on('new-wish', async data => {
+  socket.on('new-wish', data => {
     addNotification({
       message: `${data.childUsername} added a new wish: ${data.wish.title}`,
       link: `/wishlist`,
@@ -10,7 +10,7 @@ export function initializeSocketListeners(addNotification, addSuggestion) {
     });
   });
 
-  socket.on('wish-deleted', async data => {
+  socket.on('wish-deleted', data => {
     addNotification({
       message: `${data.childUsername} has deleted a wish: ${data.wish}`,
       link: `/wishlist`,
@@ -19,7 +19,7 @@ export function initializeSocketListeners(addNotification, addSuggestion) {
     });
   });
 
-  socket.on('new-suggestion', async data => {
+  socket.on('new-suggestion', data => {
     addSuggestion({
       title: `You have a new wish suggestion: ${data.wish.title}`,
       url: data.wish.url,
