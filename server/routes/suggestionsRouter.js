@@ -60,58 +60,127 @@ router.post('/api/parents/suggestions', async (req, res) => {
   }
 });
 
-router.post('/api/children/responds-to-suggestions', async (req, res) => {
-  try {
-    const { suggestionId, response } = req.body;
-    const userId = req.session.user.id;
-    const childUsername = req.session.user.username;
-    const parentId = await getParentId(userId);
-    const parentSocketId = getSocketIdByUserId(parentId);
+// router.post('/api/children/responds-to-suggestions', async (req, res) => {
+//   try {
+//     const { suggestionId, response } = req.body;
+//     const userId = req.session.user.id;
+//     const childUsername = req.session.user.username;
+//     const parentId = await getParentId(userId);
+//     const parentSocketId = getSocketIdByUserId(parentId);
 
+//     if (!userId || req.session.user.role !== 'Child') {
+//       return res.status(403).send({ message: 'Unauthorized' });
+//     }
+
+//     if (response === 'accept') {
+//       const acceptResult = await acceptSuggestion(suggestionId, userId);
+//       if (acceptResult.error) {
+//         return res.status(500).send({ message: acceptResult.error });
+//       }
+
+//       const deleteResult = await deleteSuggestion(suggestionId);
+
+//       if (deleteResult.error) {
+//         return res.status(500).send({ message: deleteResult.error });
+//       }
+
+//       if (parentSocketId) {
+//         const message = `${childUsername} liked "${result.title}" and saved it!`;
+
+//         const notificationId = await saveNotification(userId, parentId, message);
+
+//         req.io.to(parentSocketId).emit('suggestion-response', {
+//           suggestionId: suggestionId,
+//           message: message,
+//           url: result.url,
+//           notificationId: notificationId,
+//         });
+//       }
+
+//       res.status(200).send(result);
+//     } else if (response === 'deny') {
+//       const result = await deleteSuggestion(suggestionId);
+
+//       if (parentSocketId) {
+//         const message = `${childUsername} did not like the "${result.title}" and denied it.`;
+
+//         const notificationId = await saveNotification(userId, parentId, message);
+
+//         req.io.to(parentSocketId).emit('suggestion-response', {
+//           suggestionId: suggestionId,
+//           message: message,
+//           url: result.url,
+//           notificationId: notificationId,
+//         });
+//       }
+
+//       res.status(200).send(result);
+//     } else {
+//       res.status(400).send({ error: 'Invalid response' });
+//     }
+//   } catch (error) {
+//     console.error('Error responding to suggestion:', error);
+//     res.status(500).send({ error: 'Failed to process suggestion response' });
+//   }
+// });
+
+router.post('/api/children/responds-to-suggestions', async (req, res) => {
+  const { suggestionId, response } = req.body;
+  const userId = req.session.user.id;
+  const childUsername = req.session.user.username;
+  const parentId = await getParentId(userId);
+  const parentSocketId = getSocketIdByUserId(parentId);
+
+  try {
     if (!userId || req.session.user.role !== 'Child') {
       return res.status(403).send({ message: 'Unauthorized' });
     }
 
-    const result = await acceptSuggestion(suggestionId, userId);
-
-    if (result.error) {
-      return res.status(500).send({ message: result.error });
-    }
-
     if (response === 'accept') {
-      await deleteSuggestion(suggestionId);
-
-      if (parentSocketId) {
-        const message = `${childUsername} liked "${result.title}" and saved it!`;
-
-        const notificationId = await saveNotification(userId, parentId, message);
-
-        req.io.to(parentSocketId).emit('suggestion-response', {
-          suggestionId: suggestionId,
-          message: message,
-          url: result.url,
-          notificationId: notificationId,
-        });
+      const acceptResult = await acceptSuggestion(suggestionId, userId);
+      if (acceptResult.error) {
+        return res.status(500).send({ message: acceptResult.error });
       }
 
-      res.status(200).send(result);
+      if (parentSocketId) {
+        const message = `${childUsername} liked "${acceptResult.title}" and saved it!`;
+        try {
+          const notificationId = await saveNotification(userId, parentId, message);
+
+          req.io.to(parentSocketId).emit('suggestion-response', {
+            suggestionId: suggestionId,
+            message: message,
+            url: acceptResult.url,
+            notificationId: notificationId,
+          });
+        } catch (notificationError) {
+          console.error('Error in saveNotification:', notificationError);
+          // Handle notification error if needed
+        }
+      }
+      res.status(200).send(acceptResult);
     } else if (response === 'deny') {
-      await deleteSuggestion(suggestionId);
-
-      if (parentSocketId) {
-        const message = `${childUsername} did not like the "${result.title}" and denied it.`;
-
-        const notificationId = await saveNotification(userId, parentId, message);
-
-        req.io.to(parentSocketId).emit('suggestion-response', {
-          suggestionId: suggestionId,
-          message: message,
-          url: result.url,
-          notificationId: notificationId,
-        });
+      const deleteResult = await deleteSuggestion(suggestionId);
+      if (deleteResult.error) {
+        return res.status(500).send({ message: deleteResult.error });
       }
 
-      res.status(200).send(result);
+      if (parentSocketId) {
+        const message = `${childUsername} did not like the suggestion and denied it.`;
+
+        try {
+          const notificationId = await saveNotification(userId, parentId, message);
+          req.io.to(parentSocketId).emit('suggestion-response', {
+            suggestionId: suggestionId,
+            message: message,
+            notificationId: notificationId,
+          });
+        } catch (notificationError) {
+          console.error('Error in saveNotification:', notificationError);
+          // Handle notification error if needed
+        }
+      }
+      res.status(200).send({ message: 'Suggestion denied' });
     } else {
       res.status(400).send({ error: 'Invalid response' });
     }

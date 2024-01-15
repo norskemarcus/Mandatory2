@@ -115,6 +115,8 @@
 
 <Toaster />
 
+<!-- Google Custom Search Engine (CSE): created a customized search engine -->
+
 <svelte:head>
   <script async src="https://cse.google.com/cse.js?cx=433462c853ba94cc2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
