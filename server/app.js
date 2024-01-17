@@ -44,7 +44,7 @@ const sessionMiddleware = session({
   cookie: {
     secure: false,
     httpOnly: true,
-    maxAge: 3600000, // 1 hour at my exam to prevent log out
+    maxAge: 3600000, // 1 hour
   },
 });
 

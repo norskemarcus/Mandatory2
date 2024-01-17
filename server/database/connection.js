@@ -20,6 +20,7 @@ connection.connect(err => {
 
 // Promise-based query function = wraps the traditional callback-style connection.query in a promise, which you can then await in an async function to ensure operations complete in sequence.
 const query = (sql, args) => {
+  // args = array of arguments for the query
   return new Promise((resolve, reject) => {
     connection.query(sql, args, (err, rows) => {
       if (err) return reject(err);
