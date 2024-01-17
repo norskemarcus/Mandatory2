@@ -39,12 +39,17 @@ router.get('/api/parents/children-wishlists/:childId', isAuthenticated, async (r
   }
 });
 
-router.get('/api/searches', isAuthenticated, async (req, res) => {
+// middleware not working here
+router.get('/api/searches', async (req, res) => {
+  // if (!req.session || !req.session.user) {
+  //   return res.status(401).send({ message: 'You need to be logged in to see this' });
+  // }
+
   try {
     const { query } = req.query;
     const response = await fetch(`https://www.googleapis.com/customsearch/v1?key=${process.env.GOOGLE_API_KEY}&cx=${process.env.GOOGLE_CUSTOM_SEARCH_CX}&q=${query}`);
     const data = await response.json();
-    res.json(data);
+    res.send(data);
   } catch (error) {
     console.error('API search error:', error);
     res.status(500).send('Internal Server Error');

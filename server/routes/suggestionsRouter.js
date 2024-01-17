@@ -11,7 +11,7 @@ dotenv.config();
 
 const router = Router();
 
-router.get('/api/children/suggestions/:childId', isAuthenticated, isChild, async (req, res) => {
+router.get('/api/children/suggestions/:childId', isAuthenticated, async (req, res) => {
   const childId = req.params.childId;
 
   try {
