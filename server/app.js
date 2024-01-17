@@ -12,7 +12,7 @@ import cors from 'cors';
 app.use(
   cors({
     credentials: true,
-    origin: 'http://localhost:5173', // true
+    origin: true,
   }),
 );
 
