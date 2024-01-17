@@ -69,9 +69,9 @@
     }
   }
 
-  function handleToggleWish(childId, wishId) {
+  async function handleToggleWish(childId, wishId) {
     if ($savedWishes.has(wishId)) {
-      unsaveWish(childId, wishId);
+      await unsaveWish(childId, wishId);
     } else {
       saveSelectedWish(childId, wishId);
     }

@@ -1,13 +1,11 @@
 import { Router } from 'express';
 import { query } from '../database/connection.js';
+import { isAuthenticated, isParent } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
-router.get('/api/parents/saved-wishes/:childId', async (req, res) => {
+router.get('/api/parents/saved-wishes/:childId', isAuthenticated, isParent, async (req, res) => {
   try {
-    if (!req.session.user || req.session.user.role !== 'Parent') {
-      return res.status(403).json({ message: 'Unauthorized' });
-    }
     const childId = req.params.childId;
 
     const childWishlist = await query('SELECT sw.wish_id, sw.child_id, sw.bought, w.title, w.url FROM saved_wishes sw JOIN wishes w ON sw.wish_id = w.id WHERE sw.child_id = ?', [childId]);
@@ -19,16 +17,10 @@ router.get('/api/parents/saved-wishes/:childId', async (req, res) => {
   }
 });
 
-router.post('/api/parents/saved-wishes/:childId', async (req, res) => {
+router.post('/api/parents/saved-wishes/:childId', isAuthenticated, isParent, async (req, res) => {
   try {
     const { wishId } = req.body;
-
     const childId = req.params.childId;
-
-    if (!req.session.user || req.session.user.role !== 'Parent') {
-      return res.status(403).send({ message: 'Unauthorized' });
-    }
-
     const parentUserId = req.session.user.id;
 
     const checkSql = 'SELECT * FROM saved_wishes WHERE child_id = ? AND parent_user_id = ? AND wish_id = ?';
@@ -53,19 +45,11 @@ router.post('/api/parents/saved-wishes/:childId', async (req, res) => {
   }
 });
 
-router.patch('/api/parents/saved-wishes/:childId', async (req, res) => {
+router.patch('/api/parents/saved-wishes/:childId', isAuthenticated, isParent, async (req, res) => {
   try {
     const { bought } = req.body;
-    console.log('bought:', bought);
     const childId = req.params.childId;
-    console.log('childId:', childId);
     const { wishId } = req.body;
-    console.log('wishId:', wishId);
-
-    if (!req.session.user || req.session.user.role !== 'Parent') {
-      return res.status(403).send({ message: 'Unauthorized' });
-    }
-
     const parentUserId = req.session.user.id;
 
     const updateSql = 'UPDATE saved_wishes SET bought = ? WHERE child_id = ? AND parent_user_id = ? AND wish_id = ?';
@@ -82,14 +66,10 @@ router.patch('/api/parents/saved-wishes/:childId', async (req, res) => {
   }
 });
 
-router.delete('/api/parents/unsave-wishes/:childId', async (req, res) => {
+router.delete('/api/parents/unsave-wishes/:childId', isAuthenticated, isParent, async (req, res) => {
   try {
     const { wishId } = req.body;
     const childId = req.params.childId;
-
-    if (!req.session.user || req.session.user.role !== 'Parent') {
-      return res.status(403).send({ message: 'Unauthorized' });
-    }
 
     const parentUserId = req.session.user.id;
 
@@ -110,11 +90,8 @@ router.delete('/api/parents/unsave-wishes/:childId', async (req, res) => {
   }
 });
 
-router.get('/api/parents/family-children', async (req, res) => {
+router.get('/api/parents/family-children', isAuthenticated, isParent, async (req, res) => {
   try {
-    if (!req.session.user || req.session.user.role !== 'Parent') {
-      return res.status(403).json({ message: 'Unauthorized' });
-    }
     const parentId = req.session.user.id;
 
     const familyChildren = await query('SELECT * FROM users WHERE role = "Child" AND parent_id = ?', [parentId]);

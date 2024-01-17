@@ -7,11 +7,9 @@ import { getParentId, getChildUsername } from '../services/userService.js';
 import { createWish } from '../services/wishService.js';
 dotenv.config();
 import sanitizeHtml from 'sanitize-html';
+import { isAuthenticated, isChild } from '../middleware/authMiddleware.js';
 
-router.get('/api/wishes', async (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).send({ error: 'User is not logged in' });
-  }
+router.get('/api/wishes', isAuthenticated, async (req, res) => {
   let userId = req.session.user.id;
   if (userId) {
     const selectSql = `SELECT * FROM wishes WHERE user_id = ?`;
@@ -27,7 +25,7 @@ router.get('/api/wishes', async (req, res) => {
   }
 });
 
-router.get('/api/parents/children-wishlists/:childId', async (req, res) => {
+router.get('/api/parents/children-wishlists/:childId', isAuthenticated, async (req, res) => {
   try {
     const childId = req.params.childId;
 
@@ -41,7 +39,7 @@ router.get('/api/parents/children-wishlists/:childId', async (req, res) => {
   }
 });
 
-router.get('/api/searches', async (req, res) => {
+router.get('/api/searches', isAuthenticated, async (req, res) => {
   try {
     const { query } = req.query;
     const response = await fetch(`https://www.googleapis.com/customsearch/v1?key=${process.env.GOOGLE_API_KEY}&cx=${process.env.GOOGLE_CUSTOM_SEARCH_CX}&q=${query}`);
@@ -53,7 +51,7 @@ router.get('/api/searches', async (req, res) => {
   }
 });
 
-router.get('/api/wishes/checks', async (req, res) => {
+router.get('/api/wishes/checks', isAuthenticated, async (req, res) => {
   try {
     const url = req.query.url;
     const userId = req.session.user.id;
@@ -71,7 +69,7 @@ router.get('/api/wishes/checks', async (req, res) => {
   }
 });
 
-router.post('/api/wishes', async (req, res) => {
+router.post('/api/wishes', isAuthenticated, async (req, res) => {
   try {
     let { title, description, price, url, imageUrl } = req.body;
     title = sanitizeHtml(title);
@@ -94,15 +92,7 @@ router.post('/api/wishes', async (req, res) => {
   }
 });
 
-router.delete('/api/wishes/:wishId', async (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).send({ error: 'User is not logged in' });
-  }
-
-  if (!req.session.user || req.session.user.role !== 'Child') {
-    return res.status(401).send('Unauthorized');
-  }
-
+router.delete('/api/wishes/:wishId', isAuthenticated, isChild, async (req, res) => {
   const userId = req.session.user.id;
   const wishId = req.params.wishId;
 

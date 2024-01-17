@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { signUp, logIn, signUpChild } from '../database/createUsers.js';
+import { signUp, logIn, signUpChild } from '../services/authService.js';
+import { isAuthenticated, isParent } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
@@ -22,11 +23,7 @@ router.post('/auth/signup', async (req, res) => {
   }
 });
 
-router.post('/auth/signup/children', async (req, res) => {
-  if (!req.session.user || req.session.user.role !== 'Parent') {
-    return res.status(403).send({ message: 'Unauthorized' });
-  }
-
+router.post('/auth/signup/children', isAuthenticated, isParent, async (req, res) => {
   try {
     const { username, password } = req.body;
     const parent_id = req.session.user.id;

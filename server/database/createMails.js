@@ -10,7 +10,7 @@ async function initializeDatabase() {
   });
 
   await db.run(`
-    CREATE TABLE IF NOT EXISTS contacts (
+    CREATE TABLE IF NOT EXISTS mails (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT,
       email TEXT,

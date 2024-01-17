@@ -12,7 +12,7 @@ import cors from 'cors';
 app.use(
   cors({
     credentials: true,
-    origin: true,
+    origin: 'http://localhost:5173', // true
   }),
 );
 
@@ -44,6 +44,7 @@ const sessionMiddleware = session({
   cookie: {
     secure: false,
     httpOnly: true,
+    maxAge: 3600000, // 1 hour at my exam to prevent log out
   },
 });
 
@@ -61,13 +62,14 @@ const io = new Server(server, {
   },
 });
 
-// Middleware to attach io to the request object
+// Middleware to provide access to the Socket.IO server instance in routes.
 app.use((req, res, next) => {
-  req.io = io; // the routes get access to the Socket.IO server instance via req.io
+  req.io = io;
   next();
 });
 
-// Share session middleware with Socket.IO
+// Share session middleware with Socket.IO = sharing the same request object between Express and Socket.IO.
+// User authentication data stored in the session is accessible to both the Express route handlers and the Socket.IO event handlers.
 io.use((socket, next) => {
   sessionMiddleware(socket.request, {}, next);
 });

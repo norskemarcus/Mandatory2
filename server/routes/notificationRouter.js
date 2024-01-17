@@ -1,9 +1,10 @@
 import Router from 'express';
 import { query } from '../database/connection.js';
+import { isAuthenticated } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
-router.get('/notifications/:parentId', async (req, res) => {
+router.get('/notifications/:parentId', isAuthenticated, async (req, res) => {
   const parentId = req.params.parentId;
   try {
     const querySQL = 'SELECT * FROM notifications WHERE parent_Id = ?';
@@ -17,7 +18,7 @@ router.get('/notifications/:parentId', async (req, res) => {
   }
 });
 
-router.delete('/notifications/:id', async (req, res) => {
+router.delete('/notifications/:id', isAuthenticated, async (req, res) => {
   try {
     const notificationId = req.params.id;
 

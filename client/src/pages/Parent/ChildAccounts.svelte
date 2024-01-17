@@ -11,7 +11,7 @@
 
   async function addChild() {
     if (!consentGiven) {
-      alert('You must provide consent to create an account for your child.');
+      toast.error('You must provide consent to create an account for your child.');
       return;
     }
     try {
@@ -28,6 +28,7 @@
       });
 
       if (response.ok) {
+        toast.success('Added child successfully');
         navigate('/parentDashboard');
       } else {
         throw new Error('Server responded with an error');

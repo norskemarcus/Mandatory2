@@ -1,7 +1,7 @@
 import Router from 'express';
 import { sendEmail } from '../services/mailer.js';
 import dotenv from 'dotenv';
-import { initializeDatabase, db } from '../database/createContacts.js';
+import { initializeDatabase, db } from '../database/createMails.js';
 import sanitizeHtml from 'sanitize-html';
 
 const router = Router();
@@ -45,14 +45,5 @@ router.post('/api/contacts', async (req, res) => {
   }
 });
 
-router.get('/api/data', async (req, res) => {
-  try {
-    const data = await db.all('SELECT * FROM contacts');
-    res.send(data);
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send({ success: false, message: 'Failed to retrieve data.' });
-  }
-});
 
 export default router;

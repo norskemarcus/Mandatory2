@@ -6,14 +6,12 @@ import { getSocketIdByUserId } from '../sockets/socketManager.js';
 import { getParentId } from '../services/userService.js';
 import { saveNotification } from '../services/notificationService.js';
 import sanitizeHtml from 'sanitize-html';
+import { isAuthenticated, isChild, isParent } from '../middleware/authMiddleware.js';
 dotenv.config();
 
 const router = Router();
 
-router.get('/api/children/suggestions/:childId', async (req, res) => {
-  if (!req.session.user || req.session.user.role !== 'Child') {
-    return res.status(401).send({ error: 'Unauthorized' });
-  }
+router.get('/api/children/suggestions/:childId', isAuthenticated, isChild, async (req, res) => {
   const childId = req.params.childId;
 
   try {
@@ -25,14 +23,10 @@ router.get('/api/children/suggestions/:childId', async (req, res) => {
   }
 });
 
-router.post('/api/parents/suggestions', async (req, res) => {
+router.post('/api/parents/suggestions', isAuthenticated, isParent, async (req, res) => {
   try {
     let { childId, wish } = req.body;
     const parentUserId = req.session.user?.id;
-
-    if (!parentUserId || req.session.user.role !== 'Parent') {
-      return res.status(403).send({ message: 'Unauthorized' });
-    }
 
     wish = {
       title: sanitizeHtml(wish.title),
@@ -60,7 +54,7 @@ router.post('/api/parents/suggestions', async (req, res) => {
   }
 });
 
-router.post('/api/children/responds-to-suggestions', async (req, res) => {
+router.post('/api/children/responds-to-suggestions', isAuthenticated, isChild, async (req, res) => {
   const { suggestionId, response } = req.body;
   const userId = req.session.user.id;
   const childUsername = req.session.user.username;
@@ -68,10 +62,6 @@ router.post('/api/children/responds-to-suggestions', async (req, res) => {
   const parentSocketId = getSocketIdByUserId(parentId);
 
   try {
-    if (!userId || req.session.user.role !== 'Child') {
-      return res.status(403).send({ message: 'Unauthorized' });
-    }
-
     if (response === 'accept') {
       const acceptResult = await acceptSuggestion(suggestionId, userId);
       if (acceptResult.error) {
@@ -169,21 +159,6 @@ async function createWishFromSuggestion(userId, title, description, price, url, 
     throw new Error('Failed to create wish');
   }
 }
-
-// async function deleteSuggestion(suggestionId) {
-//   try {
-//     if (!suggestionId) {
-//       throw new Error('No suggestionId provided');
-//     }
-//     const deleteSuggestionSQL = 'DELETE FROM suggestions WHERE id = ?';
-//     const result = await query(deleteSuggestionSQL, [suggestionId]);
-
-//     return { message: 'Suggestion successfully deleted', deletedCount: result.affectedRows };
-//   } catch (error) {
-//     console.error('Error in deleteSuggestion:', error.message);
-//     return { error: 'Failed to delete suggestion', details: error.message };
-//   }
-// }
 
 async function getAndDeleteSuggestion(suggestionId) {
   try {

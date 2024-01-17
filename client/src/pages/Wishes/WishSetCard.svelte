@@ -1,3 +1,10 @@
+<!-- WishSetCard:
+ * - Purpose: Initially, this component acted as a container for multiple WishCard components, 
+ *   including additional functionalities like edit and delete buttons for each wish.
+ * - Evolution: The design was modified to integrate the delete button directly within each WishCard for a cleaner UI.
+ * - Current Role: While its initial role as a container with extra controls has diminished, 
+ *   it still serves as a wrapper or aggregator for groups of wishes, particularly in different user contexts.
+ *   -->
 <script>
   import WishCard from './WishCard.svelte';
   import placeholderImage from '../../assets/placeholder_image.png';
