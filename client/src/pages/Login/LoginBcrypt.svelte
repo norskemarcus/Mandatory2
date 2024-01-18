@@ -1,14 +1,12 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
   import { user, BASE_URL } from '../../stores/globalStore.js';
   import { useNavigate } from 'svelte-navigator';
   import socket from '../../sockets/socket.js';
 
   const navigate = useNavigate();
-  const dispatch = createEventDispatcher();
 
-  export let username = 'test1@test.com';
-  export let password = 'test1234';
+  export let username = '';
+  export let password = '';
   export let message = '';
 
   async function login() {
@@ -27,7 +25,6 @@
 
       if (response.ok) {
         message = data.message;
-        // dispatch('login');
         user.set(data.user);
 
         if ($user && $user.id) {
