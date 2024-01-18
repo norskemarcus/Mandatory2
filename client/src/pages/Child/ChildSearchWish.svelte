@@ -1,6 +1,7 @@
 <script>
   import { toast, Toaster } from 'svelte-french-toast';
   import { deleteWish } from '../../services/wishService';
+  import { BASE_URL } from '../../stores/globalStore.js';
 
   let searchQuery = '';
   let searchResults = [];
@@ -12,7 +13,7 @@
     if (searchQuery.trim()) {
       isLoading = true;
       try {
-        const response = await fetch(`/api/searches?query=${encodeURIComponent(searchQuery)}`);
+        const response = await fetch(`${$BASE_URL}/api/searches?query=${encodeURIComponent(searchQuery)}`);
         if (!response.ok) {
           throw new Error('Error fetching search results');
         }
@@ -23,7 +24,7 @@
         const checkPromises = items.map(async item => {
           try {
             // encodeURIComponent converts special characters to secure character sequences
-            const checkResponse = await fetch(`/api/wishes/checks?url=${encodeURIComponent(item.link)}`);
+            const checkResponse = await fetch(`${$BASE_URL}/api/wishes/checks?url=${encodeURIComponent(item.link)}`);
 
             if (checkResponse.ok) {
               const checkData = await checkResponse.json();

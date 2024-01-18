@@ -12,6 +12,3 @@ export default defineConfig({
     },
   },
 });
-
-// OBS: only active during development, not for production builds
-// automatically be proxied to http://localhost:8080/notifications by Vite's development server.

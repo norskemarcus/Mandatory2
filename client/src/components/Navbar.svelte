@@ -2,7 +2,7 @@
   import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'sveltestrap';
   import { Link } from 'svelte-navigator';
   import 'iconify-icon';
-  import { user } from '../stores/globalStore.js';
+  import { user, BASE_URL } from '../stores/globalStore.js';
   import { isDarkMode } from '../stores/globalStore.js';
   import { Input } from 'sveltestrap';
   import { notifications, addNotification } from '../stores/notificationStore.js';
@@ -62,7 +62,7 @@
 
   async function handleLogout() {
     try {
-      const response = await fetch(`/auth/logout`, {
+      const response = await fetch(`${$BASE_URL}/auth/logout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
