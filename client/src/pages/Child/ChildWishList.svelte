@@ -35,7 +35,7 @@
 
         if (response) {
           wishes = wishes.filter(wish => wish.id !== toBeDeleted.id);
-          wishes = [...wishes];
+          // wishes = [...wishes];
           toBeDeleted = null;
         } else {
           toast.error('Failed to delete wish');
